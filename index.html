@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderra | Online Alışveriş</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">Moderra</a>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="sss.html">S.S.S.</a></li>
+                <li><a href="about.html">Hakkımızda</a></li>
+            </ul>
+
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count">0</span>
+                </i>
+                <i class="fas fa-user"></i>
+                <div class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+    <section class="slider container">
+        <div class="slides">
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="İndirim Kampanyası">
+                <div class="slide-content">
+                    <h2>Yaz İndirimleri Başladı!</h2>
+                    <p>Sezonun en trend ürünlerinde %50'ye varan indirimler</p>
+                    <a href="#urunler" class="btn">Hemen Alışverişe Başla</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1558769132-cb25c5d11e85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB4MGhvcGhvby1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Haftanın Fırsatları">
+                <div class="slide-content">
+                    <h2>Haftanın Fırsatları</h2>
+                    <p>Özel seçilmiş ürünlerde sınırlı süreli fırsatlar</p>
+                    <a href="#urunler" class="btn">Fırsatları Keşfet</a>
+                </div>
+            </div>
+        </div>
+        <div class="slider-nav">
+            <div class="slider-dot active"></div>
+            <div class="slider-dot"></div>
+        </div>
+    </section>
+
+    <section class="container" id="urunler"> 
+        <h2 class="section-title">Popüler Ürünler</h2>
+        <div class="products">
+            <div class="product-card">
+                <img src="https://storage.googleapis.com/gemini-images/prod/d3c88219-c68c-4a11-85b4-3a21394b8e21_640x480.png" alt="6.5 oz Karton Bardak Moderra" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">6.5 oz Karton Bardak (1000 adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="750.00">₺750,00</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="1" data-name="6.5 oz Karton Bardak" data-price="750.00">Sepete Ekle</button>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <img src="https://storage.googleapis.com/gemini-images/prod/93c9d813-f9a8-4444-934c-687f8f9024f0_640x480.png" alt="9 oz Karton Bardak Moderra" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">9 oz Karton Bardak (1000 adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="890.00">₺890,00</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="2" data-name="9 oz Karton Bardak" data-price="890.00">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://storage.googleapis.com/gemini-images/prod/e4f738f6-a832-474c-8f15-77987595085d_640x480.png" alt="Ahşap Karıştırıcı Moderra" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Ahşap Karıştırıcı (1000'li Paket)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="129.90">₺129,90</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="3" data-name="Ahşap Karıştırıcı" data-price="129.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1551108993-42173ac97232?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Stick Şeker Moderra" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Stick Şeker (Sade) (1000 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="99.90">₺99,90</span>
+                        <span class="old-price">₺119,90</span>
+                        <span class="discount-badge">%16</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="4" data-name="Stick Şeker Sade" data-price="99.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1541167760496-107b22abf2f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Premium Kahve Çekirdeği" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Premium Espresso Çekirdeği (1 kg)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="399.90">₺399,90</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="5" data-name="Premium Espresso Çekirdeği" data-price="399.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1603503251433-28f321473216?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Sıcak İçecek Kapakları" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Sıcak İçecek Kapağı (1000 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="149.90">₺149,90</span>
+                        <span class="old-price">₺219,90</span>
+                        <span class="discount-badge">%32</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="6" data-name="Sıcak İçecek Kapağı" data-price="149.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1627964434912-42173f4e1572?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Kraft Karton Bardak" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Kraft Bardak 8 oz (Logosuz, 1000 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="820.00">₺820,00</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="7" data-name="Kraft Bardak 8 oz Logosuz" data-price="820.00">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1627889397980-fe787595561a?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Esmer Stick Şeker" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Stick Şeker (Esmer) (1000 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="119.90">₺119,90</span>
+                        <span class="old-price">₺139,90</span>
+                        <span class="discount-badge">%14</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="8" data-name="Stick Şeker Esmer" data-price="119.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1601051515286-66385f541249?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Karton Bardak Manşeti" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Karton Bardak Manşeti (500 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="219.90">₺219,90</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="9" data-name="Karton Bardak Manşeti" data-price="219.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1596752006323-8c4c2a50a112?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Şeffaf Soğuk İçecek Bardağı" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Soğuk İçecek Bardağı 12 oz (100 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="199.90">₺199,90</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="10" data-name="Soğuk İçecek Bardağı 12 oz" data-price="199.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1592634862534-1181211b4021?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Tekli Paket Islak Mendil" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Tekli Paket Islak Mendil (1000 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="279.90">₺279,90</span>
+                        <span class="old-price">₺349,90</span>
+                        <span class="discount-badge">%20</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="11" data-name="Tekli Islak Mendil" data-price="279.90">Sepete Ekle</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1603503251433-28f321473216?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Tek Kullanımlık Peçete" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Tek Kullanımlık Peçete (2000 Adet)</h3>
+                    <div class="product-price">
+                        <span class="current-price" data-price="139.90">₺139,90</span>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <button class="add-to-cart" data-id="12" data-name="Tek Kullanımlık Peçete" data-price="139.90">Sepete Ekle</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+    
+<div id="cart-modal" class="cart-modal">
+    <div class="cart-content">
+        <span class="close-btn">&times;</span>
+        <h2><i class="fas fa-shopping-cart"></i> Sepetim</h2>
+        <div id="cart-items-list">
+            <p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
+        </div>
+        <p id="cart-total-price">Toplam: ₺0,00</p>
+        <button id="whatsapp-checkout"><i class="fab fa-whatsapp"></i> WhatsApp ile Sipariş Ver</button>
+    </div>
+</div>
+
+<footer>
+    <div class="container footer-content">
+        <div class="footer-column">
+            <h3>Moderra</h3>
+            <ul class="footer-links">
+                <li><a href="about.html">Hakkımızda</a></li>
+                <li><a href="sss.html">S.S.S.</a></li>
+                <li><a href="#">Kariyer</a></li>
+                <li><a href="#">Mağazalarımız</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Müşteri Hizmetleri</h3>
+            <ul class="footer-links">
+                <li>İletişim: 0850 300 0000</li>
+                <li><a href="#">İade Koşulları</a></li>
+                <li><a href="#">Kargo ve Teslimat</a></li>
+                <li><a href="#">Gizlilik Politikası</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Bizi Takip Edin</h3>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <p>Tüm Hakları Saklıdır &copy; 2025 Moderra. Kod, projenin ilk hazır versiyonu olarak 2025-10-21 tarihinde oluşturulmuştur.</p>
+    </div>
+</footer>
+
+<script>
+    // --- Slider İşlevi ---
+    const slides = document.querySelector('.slides');
+    const dots = document.querySelectorAll('.slider-dot');
+    let currentSlide = 0;
+
+    function updateSlider() {
+        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentSlide = index;
+            updateSlider();
+        });
+    });
+
+    // Otomatik kaydırma (opsiyonel)
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % dots.length;
+        updateSlider();
+    }, 5000);
+
+    // --- Hamburger Menü İşlevi ---
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+
+    // --- Sepet İşlevi (Basitleştirilmiş) ---
+    let cart = [];
+    const cartCount = document.getElementById('cart-count');
+    const cartModal = document.getElementById('cart-modal');
+    const openCartModal = document.getElementById('open-cart-modal');
+    const closeBtn = document.querySelector('.close-btn');
+    const cartItemsList = document.getElementById('cart-items-list');
+    const cartTotalPrice = document.getElementById('cart-total-price');
+    const whatsappCheckout = document.getElementById('whatsapp-checkout');
+
+    function updateCartDisplay() {
+        cartItemsList.innerHTML = '';
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
+            cartCount.style.display = 'none';
+            whatsappCheckout.style.display = 'none';
+        } else {
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('cart-item');
+                itemElement.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">${item.quantity} x ₺${item.price.toFixed(2).replace('.', ',')}</div>
+                    </div>
+                    <span>₺${itemTotal.toFixed(2).replace('.', ',')}</span>
+                    <i class="fas fa-trash-alt item-remove" data-id="${item.id}"></i>
+                `;
+                cartItemsList.appendChild(itemElement);
+            });
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.style.display = 'block';
+            whatsappCheckout.style.display = 'block';
+        }
+
+        cartTotalPrice.textContent = `Toplam: ₺${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function addToCart(productId, productName, productPrice) {
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
+        }
+        updateCartDisplay();
+        // Sepet eklendikten sonra modalı aç
+        cartModal.style.display = 'block';
+    }
+
+    function removeFromCart(productId) {
+        cart = cart.filter(item => item.id !== productId);
+        updateCartDisplay();
+    }
+
+    // Sepete Ekle butonlarına dinleyici ekleme
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const id = parseInt(e.target.dataset.id);
+            const name = e.target.dataset.name;
+            const price = parseFloat(e.target.dataset.price);
+            addToCart(id, name, price);
+        });
+    });
+
+    // Modal açma/kapama
+    openCartModal.onclick = () => { cartModal.style.display = 'block'; };
+    closeBtn.onclick = () => { cartModal.style.display = 'none'; };
+    window.onclick = (event) => {
+        if (event.target === cartModal) {
+            cartModal.style.display = 'none';
+        }
+    };
+
+    // Sepetten Çıkar butonu dinleyicisi (Delegation)
+    cartItemsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('item-remove')) {
+            const id = parseInt(e.target.dataset.id);
+            removeFromCart(id);
+        }
+    });
+
+    // WhatsApp Checkout
+    whatsappCheckout.onclick = () => {
+        let message = "Merhaba, sepetimdeki ürünlerle sipariş vermek istiyorum:\n\n";
+        let total = 0;
+
+        cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            message += `${item.quantity} adet - ${item.name} (₺${item.price.toFixed(2).replace('.', ',')})\n`;
+        });
+
+        message += `\nToplam Tutar: ₺${total.toFixed(2).replace('.', ',')}`;
+        message += "\n\nLütfen adres ve iletişim bilgilerinizi giriniz:";
+
+        const whatsappUrl = `https://wa.me/905xxxxxxxxx?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
+    // Başlangıçta sepeti güncelle
+    updateCartDisplay();
+
+</script>

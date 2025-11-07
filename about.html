@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakkımızda - Moderra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">Moderra</a>
+            
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="sss.html">S.S.S.</a></li> 
+                <li><a href="about.html">Hakkımızda</a></li> 
+            </ul>
+            
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count">0</span>
+                </i>
+                <i class="fas fa-user"></i>
+                <div class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="hakkimizda" class="container content-section">
+            <h2 class="section-title">✨ Moderra: Hikayemiz</h2>
+            
+            <div class="about-content">
+                <p>Moderra, modayı herkes için erişilebilir kılma vizyonuyla 2025 yılında kuruldu. Kurulduğu günden bu yana, kaliteyi şıklıkla birleştirerek müşterilerimize en yeni trendleri sunmayı amaçlıyoruz.</p>
+                
+                <h3>Misyonumuz</h3>
+                <p>Müşteri memnuniyetini merkeze alarak, sürdürülebilir ve etik üretim yöntemleriyle hazırlanmış, modern tasarımları en uygun fiyatlarla sunmaktır. Bizim için giyim sadece bir ihtiyaç değil, bir kendini ifade etme biçimidir.</p>
+
+                <h3>Vizyonumuz</h3>
+                <p>Türkiye'de e-ticaret alanında en çok tercih edilen, güvenilir ve trend belirleyici moda markası olmak.</p>
+
+                <h3>Kod Hakkında Kısa Not</h3>
+                <p style="color: var(--gray); font-style: italic; font-size: 14px; margin-top: 20px;">Bu projenin ilk hazır versiyonu, kod bazında, <strong>21 Ekim 2025</strong> tarihinde oluşturulmuştur.</p>
+            </div>
+        </section>
+    </main>
+    
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-content">
+            <span class="close-btn">&times;</span>
+            <h2><i class="fas fa-shopping-cart"></i> Sepetim</h2>
+            <div id="cart-items-list">
+                <p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
+            </div>
+            <p id="cart-total-price">Toplam: ₺0,00</p>
+            <button id="whatsapp-checkout"><i class="fab fa-whatsapp"></i> WhatsApp ile Sipariş Ver</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-column">
+                <h3>Moderra</h3>
+                <ul class="footer-links">
+                    <li><a href="about.html">Hakkımızda</a></li>
+                    <li><a href="sss.html">S.S.S.</a></li>
+                    <li><a href="#">Kariyer</a></li>
+                    <li><a href="#">Mağazalarımız</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Müşteri Hizmetleri</h3>
+                <ul class="footer-links">
+                    <li>İletişim: 0850 300 0000</li>
+                    <li><a href="#">İade Koşulları</a></li>
+                    <li><a href="#">Kargo ve Teslimat</a></li>
+                    <li><a href="#">Gizlilik Politikası</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Bizi Takip Edin</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>Tüm Hakları Saklıdır &copy; 2025 Moderra. Kod, projenin ilk hazır versiyonu olarak 2025-10-21 tarihinde oluşturulmuştur.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger Menü İşlevi
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.getElementById('nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Sepet Modal İşlevi
+        const cartModal = document.getElementById('cart-modal');
+        const openCartModal = document.getElementById('open-cart-modal');
+        const closeBtn = document.querySelector('.close-btn');
+
+        openCartModal.onclick = () => { cartModal.style.display = 'block'; };
+        closeBtn.onclick = () => { cartModal.style.display = 'none'; };
+        window.onclick = (event) => {
+            if (event.target === cartModal) {
+                cartModal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
