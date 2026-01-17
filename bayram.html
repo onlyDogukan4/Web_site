@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayram Konseptli Bardaklar | Moderra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">Moderra</a>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li class="dropdown">
+                    <a href="#">Konsept Bardaklar <i class="fas fa-chevron-down"></i></a>
+                    <ul class="dropdown-content">
+                        <li><a href="yilbasi.html">Yılbaşı</a></li>
+                        <li><a href="bayram.html">Bayram</a></li>
+                        <li><a href="dugun.html">Düğün</a></li>
+                        <li><a href="toplanti.html">Toplantı</a></li>
+                        <li><a href="dogum-gunu.html">Doğum Günü</a></li>
+                        <li><a href="fuar.html">Fuar</a></li>
+                    </ul>
+                </li>
+                <li><a href="sss.html">S.S.S.</a></li>
+                <li><a href="about.html">Hakkımızda</a></li>
+            </ul>
+
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'"></i>
+                <i class="fas fa-user"></i>
+                <div class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>Bayram Konseptli Bardaklar</h1>
+            <p style="opacity: 0.9; margin-top: 10px;">Bayram ziyaretlerinize şıklık katan özel tasarımlar.</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="container content-section">
+            <div style="text-align: center; padding: 50px 0;">
+                <i class="fas fa-moon" style="font-size: 64px; color: var(--primary); margin-bottom: 20px;"></i>
+                <h2>Bayrama Özel Koleksiyon Çok Yakında!</h2>
+                <p style="color: var(--gray); margin-top: 15px;">Bu kategori için özel tasarım bardaklarımız hazırlanmaktadır. Takipte kalın!</p>
+                <a href="index.html" class="btn" style="margin-top: 30px;">Anasayfaya Dön</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-column">
+              ... (same as others) ...
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.getElementById('nav-links');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

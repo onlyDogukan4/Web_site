@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sıkça Sorulan Sorular - Moderra</title>
+    <meta name="description" content="Moderra Sıkça Sorulan Sorular - Aklınıza takılan soruların cevapları.">
+    <title data-tr="Sıkça Sorulan Sorular | Moderra" data-en="F.A.Q. | Moderra">Sıkça Sorulan Sorular | Moderra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> </head>
-<body>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-scroll-container>
+    <!-- Modern Search UI -->
+    <div class="search-container" id="search-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--gray);"></i>
+            <input type="text" id="search-input" placeholder="Ara..." data-tr-placeholder="Ara..." data-en-placeholder="Search...">
+            <i class="fas fa-times search-close" id="close-search"></i>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo">Moderra</a>
-            
             <ul class="nav-links" id="nav-links">
-                <li><a href="index.html">Ana Sayfa</a></li>
-                <li><a href="sss.html">S.S.S.</a></li> 
-                <li><a href="about.html">Hakkımızda</a></li> 
+                <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li> 
+                <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            
             <div class="nav-icons">
-                <i class="fas fa-search"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal">
-                    <span id="cart-count">0</span>
-                </i>
-                <i class="fas fa-user"></i>
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
+                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'" style="margin-left: 20px;"></i>
+                <i class="fas fa-user" id="open-profile-modal" style="margin-left: 20px;"></i>
                 <div class="hamburger">
                     <i class="fas fa-bars"></i>
                 </div>
@@ -30,164 +40,222 @@
         </div>
     </nav>
 
-    <main>
-        <section id="sss" class="container content-section">
-            <h2 class="section-title">❓ Sıkça Sorulan Sorular</h2>
-            
-            <div id="faq-list">
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false">
-                        <span>1. Moderra projesinin ana hedefi nedir?</span>
-                        <span class="icon fas fa-plus"></span>
+    <header class="page-header-premium">
+        <div class="container">
+            <h1 data-tr="Sıkça Sorulan Sorular" data-en="Frequently Asked Questions">Sıkça Sorulan Sorular</h1>
+            <p style="opacity: 0.9; margin-top: 10px;" data-tr="Aklınıza takılan tüm soruların cevapları burada." data-en="All the answers to your questions are here.">Aklınıza takılan tüm soruların cevapları burada.</p>
+        </div>
+    </header>
+
+    <main style="padding: 100px 0;">
+        <section class="container">
+            <div class="faq-grid" style="max-width: 800px; margin: 0 auto;">
+                <!-- Soru 1 -->
+                <div class="faq-item" style="margin-bottom: 20px; border: 1px solid var(--border); border-radius: 15px; overflow: hidden;">
+                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false" style="padding: 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: var(--light); font-weight: 700;">
+                        <span data-tr="Kadın girişimci olarak ürünlerinizde nelere dikkat ediyorsunuz?" data-en="As a female entrepreneur, what do you focus on in your products?">Kadın girişimci olarak ürünlerinizde nelere dikkat ediyorsunuz?</span>
+                        <div class="icon"><i class="fas fa-plus"></i></div>
                     </div>
-                    <div class="faq-answer">
-                        Moderra, en trend ve kaliteli ürünleri kullanıcılarına hızlı ve güvenli bir şekilde ulaştırmayı hedeflemektedir. İlk temel kod versiyonumuzun <strong>[2025-10-21]</strong> tarihinde hazırlandığını hatırlatalım!
+                    <div class="faq-answer" style="padding: 25px; display: none; background: var(--light); line-height: 1.8;" 
+                         data-tr="Kadın girişimci vizyonumuzla her aşamada titizlik, hijyen ve kalite standartlarına en üst düzeyde önem veriyoruz. Ürünlerimizin çevre dostu ve gıda güvenliğine uygun olması birinci önceliğimizdir." 
+                         data-en="With our female entrepreneur vision, we attach the utmost importance to meticulousness, hygiene, and quality standards at every stage. It is our first priority that our products are environmentally friendly and compliant with food safety.">
+                        Her aşamada titizlik, hijyen ve kalite standartlarına en üst düzeyde önem veriyoruz.
                     </div>
                 </div>
 
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false">
-                        <span>2. İade ve değişim politikanız nedir?</span>
-                        <span class="icon fas fa-plus"></span>
+                <!-- Soru 2 -->
+                <div class="faq-item" style="margin-bottom: 20px; border: 1px solid var(--border); border-radius: 15px; overflow: hidden;">
+                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false" style="padding: 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: var(--light); font-weight: 700;">
+                        <span data-tr="Özel logolu baskı siparişi nasıl verebilirim?" data-en="How can I order custom logo printing?">Özel logolu baskı siparişi nasıl verebilirim?</span>
+                        <div class="icon"><i class="fas fa-plus"></i></div>
                     </div>
-                    <div class="faq-answer">
-                        Kullanılmamış ve etiketleri sökülmemiş ürünlerde 14 gün içinde koşulsuz iade ve değişim imkanı sunmaktayız. Detaylı bilgi için müşteri hizmetlerimizle iletişime geçebilirsiniz.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false">
-                        <span>3. Ödeme seçenekleriniz nelerdir?</span>
-                        <span class="icon fas fa-plus"></span>
-                    </div>
-                    <div class="faq-answer">
-                        Tüm kredi kartları, banka kartları, havale/EFT ve dilerseniz **WhatsApp üzerinden kapıda ödeme** seçenekleriyle sipariş verebilirsiniz.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false">
-                        <span>4. Teslimat süresi ve kargo ücretleri ne kadardır?</span>
-                        <span class="icon fas fa-plus"></span>
-                    </div>
-                    <div class="faq-answer">
-                        Türkiye içi standart teslimat süremiz 1-3 iş günüdür. 500 TL üzeri alışverişlerde kargo ücretsizdir, altındaki siparişler için standart kargo ücreti 49,90 TL'dir.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleAnswer(this)" aria-expanded="false">
-                        <span>5. WhatsApp üzerinden nasıl sipariş verebilirim?</span>
-                        <span class="icon fas fa-plus"></span>
-                    </div>
-                    <div class="faq-answer">
-                        Sepetinizi doldurduktan sonra, sepet modalının altındaki **"WhatsApp ile Sipariş Ver"** butonuna tıklayarak sepet içeriğinizi tek bir mesajla bize iletebilir, müşteri temsilcimizle hızlıca siparişinizi tamamlayabilirsiniz.
+                    <div class="faq-answer" style="padding: 25px; display: none; background: var(--light); line-height: 1.8;" 
+                         data-tr="'Konsept Bardaklar' sayfamızdan tasarımları inceleyebilir veya doğrudan WhatsApp hattımız üzerinden logonuzu göndererek teklif alabilirsiniz." 
+                         data-en="You can review the designs from our 'Concept Cups' page or get a quote by sending your logo directly via our WhatsApp line.">
+                        WhatsApp hattımız üzerinden logonuzu göndererek teklif alabilirsiniz.
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="cart-modal" class="cart-modal">
-        <div class="cart-content">
-            <span class="close-btn">&times;</span>
-            <h2><i class="fas fa-shopping-cart"></i> Sepetim</h2>
-            <div id="cart-items-list">
-                <p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
+    <!-- Modern Profil Modalı -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header-banner">
+                <span class="close-btn profile-close" style="color: white; top: 15px; right: 20px;">&times;</span>
+                <i class="fas fa-user-circle"></i>
+                <h2 data-tr="Profil Bilgilerim" data-en="My Profile" style="margin:0">Profil Bilgilerim</h2>
             </div>
-            <p id="cart-total-price">Toplam: ₺0,00</p>
-            <button id="whatsapp-checkout"><i class="fab fa-whatsapp"></i> WhatsApp ile Sipariş Ver</button>
+            <div class="modal-body-padding">
+                <form id="profile-form">
+                    <div class="profile-field-item">
+                        <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
+                        <input type="text" id="user-name" placeholder="Adınız Soyadınız" required>
+                    </div>
+                    <div class="profile-field-item">
+                        <label data-tr="Telefon Numarası" data-en="Phone Number">Telefon Numarası</label>
+                        <input type="tel" id="user-phone" placeholder="05xx xxx xx xx" required>
+                    </div>
+                    <div class="profile-field-item">
+                        <label data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</label>
+                        <textarea id="user-address" rows="3" placeholder="Siparişlerinizin ulaşacağı tam adres..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; padding: 15px; border-radius: 12px;" data-tr="DEĞİŞİKLİKLERİ KAYDET" data-en="SAVE CHANGES">DEĞİŞİKLİKLERİ KAYDET</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <footer>
         <div class="container footer-content">
             <div class="footer-column">
-                <h3>Moderra</h3>
+                <a href="index.html" class="footer-logo">Moderra</a>
+                <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 20px;" data-tr="Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz." data-en="Where quality and aesthetics meet in paper cup production. Shaping the future with a female entrepreneur vision.">
+                    Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz.
+                </p>
+                <div class="social-icons" style="gap: 20px;">
+                    <a href="#"><i class="fab fa-instagram" style="font-size: 24px;"></i></a>
+                    <a href="#"><i class="fab fa-linkedin" style="font-size: 24px;"></i></a>
+                    <a href="#"><i class="fab fa-facebook" style="font-size: 24px;"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3 data-tr="Hızlı Linkler" data-en="Quick Links">Hızlı Linkler</h3>
                 <ul class="footer-links">
-                    <li><a href="about.html">Hakkımızda</a></li>
-                    <li><a href="sss.html">S.S.S.</a></li>
-                    <li><a href="#">Kariyer</a></li>
-                    <li><a href="#">Mağazalarımız</a></li>
+                    <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                    <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                    <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                    <li><a href="konsept-bardaklar.html" data-tr="Konseptler" data-en="Concepts">Konseptler</a></li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h3>Müşteri Hizmetleri</h3>
-                <ul class="footer-links">
-                    <li>İletişim: 0850 300 0000</li>
-                    <li><a href="#">İade Koşulları</a></li>
-                    <li><a href="#">Kargo ve Teslimat</a></li>
-                    <li><a href="#">Gizlilik Politikası</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Bizi Takip Edin</h3>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <h3 data-tr="İletişim & Destek" data-en="Contact & Support">İletişim & Destek</h3>
+                <div class="footer-social-info">
+                    <a href="https://wa.me/905304640120" class="social-pill">
+                        <i class="fab fa-whatsapp" style="color: #25d366; font-size: 20px;"></i>
+                        <span>0530 464 01 20</span>
+                    </a>
+                    <div class="social-pill">
+                        <i class="fas fa-envelope" style="color: var(--primary); font-size: 18px;"></i>
+                        <span>info@moderra.com</span>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="container footer-bottom">
-            <p>Tüm Hakları Saklıdır &copy; 2025 Moderra. Kod, projenin ilk hazır versiyonu olarak 2025-10-21 tarihinde oluşturulmuştur.</p>
+            <p data-tr="&copy; 2025 Moderra. Tüm Hakları Saklıdır. Bir Kadın Girişimi Projesidir." data-en="&copy; 2025 Moderra. All Rights Reserved. A Female Entrepreneurship Project.">
+                &copy; 2025 Moderra. Tüm Hakları Saklıdır. Bir Kadın Girişimi Projesidir.
+            </p>
         </div>
     </footer>
 
     <script>
-        // SSS Accordion İşlevi
         function toggleAnswer(element) {
             const answer = element.nextElementSibling;
             const isExpanded = element.getAttribute('aria-expanded') === 'true';
+            
+            document.querySelectorAll('.faq-question[aria-expanded="true"]').forEach(q => {
+                q.nextElementSibling.style.display = 'none';
+                q.setAttribute('aria-expanded', 'false');
+                q.querySelector('.icon').style.transform = 'rotate(0deg)';
+                q.querySelector('.icon i').className = 'fas fa-plus';
+            });
 
-            // Mevcut durumu tersine çevir
-            if (isExpanded) {
-                answer.style.display = 'none';
-                element.setAttribute('aria-expanded', 'false');
-                element.querySelector('.icon').classList.replace('fa-minus', 'fa-plus');
-            } else {
-                // Diğer açık olanları kapat (Opsiyonel: Tek seferde sadece birini açar)
-                document.querySelectorAll('.faq-question[aria-expanded="true"]').forEach(q => {
-                    q.nextElementSibling.style.display = 'none';
-                    q.setAttribute('aria-expanded', 'false');
-                    q.querySelector('.icon').classList.replace('fa-minus', 'fa-plus');
-                });
-                
+            if (!isExpanded) {
                 answer.style.display = 'block';
                 element.setAttribute('aria-expanded', 'true');
-                element.querySelector('.icon').classList.replace('fa-plus', 'fa-minus');
+                element.querySelector('.icon i').className = 'fas fa-minus';
             }
         }
-        
-        // Başlangıçta CSS'te + iconu ayarlandığı için JS'te ikon düzeltildi.
-        document.querySelectorAll('.faq-question').forEach(q => {
-            q.querySelector('.icon').classList.add('fa-plus');
-        });
 
-
-        // Hamburger Menü İşlevi
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.getElementById('nav-links');
+        hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
 
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+        const langToggle = document.getElementById('lang-toggle');
+        let currentLang = localStorage.getItem('lang') || 'tr';
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-tr]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + currentLang);
+            });
+            langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
+            document.documentElement.lang = currentLang;
+        }
+
+        langToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            localStorage.setItem('lang', currentLang);
+            updateLanguage();
         });
 
-        // --- Sepet Modal İşlevi (Ana sayfadaki sepet state'ini koruyabilmek için LocalStorage kullanılması gerekir. Burada sadece modal açma/kapama işlevi eklendi.) ---
-        const cartModal = document.getElementById('cart-modal');
-        const openCartModal = document.getElementById('open-cart-modal');
-        const closeBtn = document.querySelector('.close-btn');
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.classList.replace('fa-moon', 'fa-sun');
+        }
 
-        openCartModal.onclick = () => { cartModal.style.display = 'block'; };
-        closeBtn.onclick = () => { cartModal.style.display = 'none'; };
-        window.onclick = (event) => {
-            if (event.target === cartModal) {
-                cartModal.style.display = 'none';
+        themeToggle.onclick = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.classList.replace('fa-moon', 'fa-sun');
             }
         };
-        // Not: Sepet içeriği, diğer sayfalarda da aynı olmasını istiyorsanız, Local Storage veya Session Storage kullanılmalıdır.
-        // index.html dosyasındaki sepet fonksiyonlarını buraya ekleyerek ve sepet verisini tarayıcıda saklayarak bu sağlanabilir.
+
+        updateLanguage();
+        // Search logic
+        const searchInput = document.getElementById('search-input');
+        const searchBar = document.getElementById('search-bar');
+        const openSearchBtn = document.getElementById('open-search');
+        const closeSearchBtn = document.getElementById('close-search');
+
+        openSearchBtn.onclick = () => { searchBar.classList.add('active'); searchInput.focus(); };
+        closeSearchBtn.onclick = () => { searchBar.classList.remove('active'); searchInput.value = ''; };
+
+        // Profile logic
+        const profileModal = document.getElementById('profile-modal');
+        const openProfileBtn = document.getElementById('open-profile-modal');
+        const profileCloseBtn = document.querySelector('.profile-close');
+        const profileForm = document.getElementById('profile-form');
+
+        openProfileBtn.onclick = () => {
+            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+            if (userData.name) document.getElementById('user-name').value = userData.name;
+            if (userData.phone) document.getElementById('user-phone').value = userData.phone;
+            if (userData.address) document.getElementById('user-address').value = userData.address;
+            profileModal.style.display = 'block';
+        };
+
+        profileCloseBtn.onclick = () => { profileModal.style.display = 'none'; };
+
+        profileForm.onsubmit = (e) => {
+            e.preventDefault();
+            const userData = {
+                name: document.getElementById('user-name').value,
+                phone: document.getElementById('user-phone').value,
+                address: document.getElementById('user-address').value
+            };
+            localStorage.setItem('moderra_user_data', JSON.stringify(userData));
+            alert(currentLang === 'tr' ? "Profil kaydedildi!" : "Profile saved!");
+            profileModal.style.display = 'none';
+        };
+
+        window.onclick = (e) => {
+            if (e.target === profileModal) profileModal.style.display = 'none';
+        };
+
+        updateLanguage();
     </script>
 </body>
 </html>

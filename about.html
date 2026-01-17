@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hakkımızda - Moderra</title>
+    <meta name="description" content="Moderra Karton Bardak Üreticisi - Kadın Girişimci Vizyonuyla Kalite ve Güven Odaklı Üretim.">
+    <title data-tr="Hakkımızda | Moderra" data-en="About Us | Moderra">Hakkımızda | Moderra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> </head>
-<body>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-scroll-container>
+    <!-- Modern Search UI -->
+    <div class="search-container" id="search-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--gray);"></i>
+            <input type="text" id="search-input" placeholder="Ara..." data-tr-placeholder="Ara..." data-en-placeholder="Search...">
+            <i class="fas fa-times search-close" id="close-search"></i>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo">Moderra</a>
-            
             <ul class="nav-links" id="nav-links">
-                <li><a href="index.html">Ana Sayfa</a></li>
-                <li><a href="sss.html">S.S.S.</a></li> 
-                <li><a href="about.html">Hakkımızda</a></li> 
+                <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li> 
+                <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            
             <div class="nav-icons">
-                <i class="fas fa-search"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal">
-                    <span id="cart-count">0</span>
-                </i>
-                <i class="fas fa-user"></i>
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
+                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'" style="margin-left: 20px;"></i>
+                <i class="fas fa-user" id="open-profile-modal" style="margin-left: 20px;"></i>
                 <div class="hamburger">
                     <i class="fas fa-bars"></i>
                 </div>
@@ -30,93 +40,232 @@
         </div>
     </nav>
 
-    <main>
-        <section id="hakkimizda" class="container content-section">
-            <h2 class="section-title">✨ Moderra: Hikayemiz</h2>
-            
-            <div class="about-content">
-                <p>Moderra, modayı herkes için erişilebilir kılma vizyonuyla 2025 yılında kuruldu. Kurulduğu günden bu yana, kaliteyi şıklıkla birleştirerek müşterilerimize en yeni trendleri sunmayı amaçlıyoruz.</p>
-                
-                <h3>Misyonumuz</h3>
-                <p>Müşteri memnuniyetini merkeze alarak, sürdürülebilir ve etik üretim yöntemleriyle hazırlanmış, modern tasarımları en uygun fiyatlarla sunmaktır. Bizim için giyim sadece bir ihtiyaç değil, bir kendini ifade etme biçimidir.</p>
+    <header class="page-header-premium">
+        <div class="container">
+            <h1 data-tr="Hakkımızda" data-en="About Us">Hakkımızda</h1>
+            <p style="opacity: 0.9; margin-top: 10px;" data-tr="Karton Bardak Üreticisi | Kadın Girişimci Vizyonu" data-en="Paper Cup Manufacturer | Female Entrepreneur Vision">Karton Bardak Üreticisi | Kadın Girişimci Vizyonu</p>
+        </div>
+    </header>
 
-                <h3>Vizyonumuz</h3>
-                <p>Türkiye'de e-ticaret alanında en çok tercih edilen, güvenilir ve trend belirleyici moda markası olmak.</p>
+    <main style="padding: 100px 0;">
+        <div class="container">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <section class="about-content-modern">
+                    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 30px;" data-tr="Karton Bardak Üretiminde Yeni Nesil Dokunuş" data-en="Next Generation Touch in Paper Cup Production">Karton Bardak Üretiminde Yeni Nesil Dokunuş</h2>
+                    
+                    <div style="font-size: 18px; line-height: 1.8; color: var(--text-main);">
+                        <p data-tr="Karton bardak üretimi alanında faaliyet gösteren firmamız, kadın girişimci vizyonuyla kurulmuş, kalite ve güven odaklı bir karton bardak üreticisi olarak sektörde hizmet vermektedir. Kurulduğumuz günden bu yana hijyen, sürdürülebilirlik ve müşteri memnuniyetini üretim anlayışımızın merkezinde tutuyoruz."
+                           data-en="Our company operating in the field of paper cup production was established with a female entrepreneur vision and serves the sector as a quality and trust-oriented paper cup manufacturer. Since our establishment, we have kept hygiene, sustainability, and customer satisfaction at the center of our production understanding.">
+                            Karton bardak üretimi alanında faaliyet gösteren firmamız, kadın girişimci vizyonuyla kurulmuş, kalite ve güven odaklı bir karton bardak üreticisi olarak sektörde hizmet vermektedir.
+                        </p>
+                        <br>
+                        <p data-tr="Gıda ile temasa uygun karton bardak üretiminde yüksek kalite standartlarını benimseyerek; çevreye duyarlı, dayanıklı ve estetik ürünler sunmaktayız. Özel logolu karton bardak, özel baskılı ve ihtiyaca yönelik üretim çözümlerimizle kafe, restoran, ofisler, organizasyonlar ve kurumsal firmalara profesyonel hizmet sağlamaktayız."
+                           data-en="By adopting high quality standards in the production of paper cups suitable for food contact; we offer environmentally sensitive, durable, and aesthetic products. We provide professional services to cafes, restaurants, offices, organizations, and corporate companies with our custom logo paper cups, custom printed, and need-oriented production solutions.">
+                            Gıda ile temasa uygun karton bardak üretiminde yüksek kalite standartlarını benimseyerek; çevreye duyarlı, dayanıklı ve estetik ürünler sunmaktayız.
+                        </p>
+                        <br>
+                        <p data-tr="Kadın girişimci olmanın getirdiği titizlik ve sorumluluk bilinciyle, üretimin her aşamasını özenle yönetiyor; uzun vadeli ve güvene dayalı iş birlikleri kurmayı hedefliyoruz. Yenilikçi yaklaşımımız ve sürekli gelişen üretim altyapımızla, karton bardak sektöründe değer üreten bir marka olmayı sürdürüyoruz."
+                           data-en="With the meticulousness and sense of responsibility brought by being a female entrepreneur, we manage every stage of production with care; we aim to establish long-term and trust-based collaborations. With our innovative approach and continuously developing production infrastructure, we continue to be a brand that produces value in the paper cup industry.">
+                            Kadın girişimci olmanın getirdiği titizlik ve sorumluluk bilinciyle, üretimin her aşamasını özenle yönetiyor; uzun vadeli ve güvene dayalı iş birlikleri kurmayı hedefliyoruz.
+                        </p>
+                    </div>
 
-                <h3>Kod Hakkında Kısa Not</h3>
-                <p style="color: var(--gray); font-style: italic; font-size: 14px; margin-top: 20px;">Bu projenin ilk hazır versiyonu, kod bazında, <strong>21 Ekim 2025</strong> tarihinde oluşturulmuştur.</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 60px;">
+                        <div style="background: var(--light); padding: 40px; border-radius: 20px; border: 1px solid var(--border-muted);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;" data-tr="Misyonumuz" data-en="Our Mission">Misyonumuz</h3>
+                            <p data-tr="Kaliteli, hijyenik ve çevre dostu karton bardak çözümleri sunarak; müşterilerimizin ihtiyaçlarına güvenilir, hızlı ve sürdürülebilir üretim anlayışıyla cevap vermek. Özel baskılı karton bardak üretiminde kalite standartlarından ödün vermeden müşteri memnuniyetini en üst seviyede tutmak."
+                               data-en="To respond to the needs of our customers with a reliable, fast, and sustainable production approach by providing quality, hygienic, and eco-friendly paper cup solutions. To keep customer satisfaction at the highest level without compromising quality standards in custom printed paper cup production.">
+                                Kaliteli, hijyenik ve çevre dostu karton bardak çözümleri sunarak müşteri memnuniyetini en üst seviyede tutmak.
+                            </p>
+                        </div>
+                        <div style="background: var(--light); padding: 40px; border-radius: 20px; border: 1px solid var(--border-muted);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;" data-tr="Vizyonumuz" data-en="Our Vision">Vizyonumuz</h3>
+                            <p data-tr="Karton bardak üretimi alanında tercih edilen, güvenilir ve yenilikçi bir marka olmak; kadın girişimciliğini destekleyen duruşumuzla sektörde fark yaratmak ve sürdürülebilir üretim anlayışıyla geleceğe değer katmak."
+                               data-en="To be a preferred, reliable, and innovative brand in the field of paper cup production; to make a difference in the sector with our stance supporting female entrepreneurship and to add value to the future with a sustainable production approach.">
+                                Karton bardak üretimi alanında tercih edilen, güvenilir ve yenilikçi bir marka olmak.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section style="margin-top: 80px;">
+                    <h2 style="text-align: center; margin-bottom: 40px;" data-tr="Üretim Merkezimiz" data-en="Our Production Center">Üretim Merkezimiz</h2>
+                    <div style="height: 400px; border-radius: 30px; overflow: hidden; box-shadow: var(--shadow);">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d50392.010870748985!2d34.5456825!3d37.8719722!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1529d9f0ba16cc3f%3A0x68c3b27ba17cc3c0!2sAsmali%20Ambalaj%20Karton%20Bardak%20ve%20Stick%20%C5%9Eeker%20%C4%B0malat%C4%B1!5e0!3m2!1str!2str!4v1768680914323!5m2!1str!2str" 
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <p style="text-align: center; margin-top: 20px; font-weight: 600;">Acıgöl, 187. Sk. Sanayi sitesi No:54, 51700 Bor/Niğde</p>
+                </section>
             </div>
-        </section>
+        </div>
     </main>
-    
-    <div id="cart-modal" class="cart-modal">
-        <div class="cart-content">
-            <span class="close-btn">&times;</span>
-            <h2><i class="fas fa-shopping-cart"></i> Sepetim</h2>
-            <div id="cart-items-list">
-                <p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
+
+    <!-- Modern Profil Modalı -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header-banner">
+                <span class="close-btn profile-close" style="color: white; top: 15px; right: 20px;">&times;</span>
+                <i class="fas fa-user-circle"></i>
+                <h2 data-tr="Profil Bilgilerim" data-en="My Profile" style="margin:0">Profil Bilgilerim</h2>
             </div>
-            <p id="cart-total-price">Toplam: ₺0,00</p>
-            <button id="whatsapp-checkout"><i class="fab fa-whatsapp"></i> WhatsApp ile Sipariş Ver</button>
+            <div class="modal-body-padding">
+                <form id="profile-form">
+                    <div class="profile-field-item">
+                        <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
+                        <input type="text" id="user-name" placeholder="Adınız Soyadınız" required>
+                    </div>
+                    <div class="profile-field-item">
+                        <label data-tr="Telefon Numarası" data-en="Phone Number">Telefon Numarası</label>
+                        <input type="tel" id="user-phone" placeholder="05xx xxx xx xx" required>
+                    </div>
+                    <div class="profile-field-item">
+                        <label data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</label>
+                        <textarea id="user-address" rows="3" placeholder="Siparişlerinizin ulaşacağı tam adres..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; padding: 15px; border-radius: 12px;" data-tr="DEĞİŞİKLİKLERİ KAYDET" data-en="SAVE CHANGES">DEĞİŞİKLİKLERİ KAYDET</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <footer>
         <div class="container footer-content">
             <div class="footer-column">
-                <h3>Moderra</h3>
+                <a href="index.html" class="footer-logo">Moderra</a>
+                <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 20px;" data-tr="Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz." data-en="Where quality and aesthetics meet in paper cup production. Shaping the future with a female entrepreneur vision.">
+                    Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz.
+                </p>
+                <div class="social-icons" style="gap: 20px;">
+                    <a href="#"><i class="fab fa-instagram" style="font-size: 24px;"></i></a>
+                    <a href="#"><i class="fab fa-linkedin" style="font-size: 24px;"></i></a>
+                    <a href="#"><i class="fab fa-facebook" style="font-size: 24px;"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3 data-tr="Hızlı Linkler" data-en="Quick Links">Hızlı Linkler</h3>
                 <ul class="footer-links">
-                    <li><a href="about.html">Hakkımızda</a></li>
-                    <li><a href="sss.html">S.S.S.</a></li>
-                    <li><a href="#">Kariyer</a></li>
-                    <li><a href="#">Mağazalarımız</a></li>
+                    <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                    <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                    <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                    <li><a href="konsept-bardaklar.html" data-tr="Konseptler" data-en="Concepts">Konseptler</a></li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h3>Müşteri Hizmetleri</h3>
-                <ul class="footer-links">
-                    <li>İletişim: 0850 300 0000</li>
-                    <li><a href="#">İade Koşulları</a></li>
-                    <li><a href="#">Kargo ve Teslimat</a></li>
-                    <li><a href="#">Gizlilik Politikası</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Bizi Takip Edin</h3>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <h3 data-tr="İletişim & Destek" data-en="Contact & Support">İletişim & Destek</h3>
+                <div class="footer-social-info">
+                    <a href="https://wa.me/905304640120" class="social-pill">
+                        <i class="fab fa-whatsapp" style="color: #25d366; font-size: 20px;"></i>
+                        <span>0530 464 01 20</span>
+                    </a>
+                    <div class="social-pill">
+                        <i class="fas fa-envelope" style="color: var(--primary); font-size: 18px;"></i>
+                        <span>info@moderra.com</span>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="container footer-bottom">
-            <p>Tüm Hakları Saklıdır &copy; 2025 Moderra. Kod, projenin ilk hazır versiyonu olarak 2025-10-21 tarihinde oluşturulmuştur.</p>
+            <p data-tr="&copy; 2025 Moderra. Tüm Hakları Saklıdır. Bir Kadın Girişimi Projesidir." data-en="&copy; 2025 Moderra. All Rights Reserved. A Female Entrepreneurship Project.">
+                &copy; 2025 Moderra. Tüm Hakları Saklıdır. Bir Kadın Girişimi Projesidir.
+            </p>
         </div>
     </footer>
 
     <script>
-        // Hamburger Menü İşlevi
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.getElementById('nav-links');
+        hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
 
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+        const langToggle = document.getElementById('lang-toggle');
+        let currentLang = localStorage.getItem('lang') || 'tr';
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-tr]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + currentLang);
+            });
+            langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
+            document.documentElement.lang = currentLang;
+
+            if(currentLang === 'en') {
+                document.title = "About Us | Moderra";
+            } else {
+                document.title = "Hakkımızda | Moderra";
+            }
+        }
+
+        langToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            localStorage.setItem('lang', currentLang);
+            updateLanguage();
         });
 
-        // Sepet Modal İşlevi
-        const cartModal = document.getElementById('cart-modal');
-        const openCartModal = document.getElementById('open-cart-modal');
-        const closeBtn = document.querySelector('.close-btn');
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.classList.replace('fa-moon', 'fa-sun');
+        }
 
-        openCartModal.onclick = () => { cartModal.style.display = 'block'; };
-        closeBtn.onclick = () => { cartModal.style.display = 'none'; };
-        window.onclick = (event) => {
-            if (event.target === cartModal) {
-                cartModal.style.display = 'none';
+        themeToggle.onclick = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.classList.replace('fa-moon', 'fa-sun');
             }
         };
+
+        updateLanguage();
+        // Search logic
+        const searchInput = document.getElementById('search-input');
+        const searchBar = document.getElementById('search-bar');
+        const openSearchBtn = document.getElementById('open-search');
+        const closeSearchBtn = document.getElementById('close-search');
+
+        openSearchBtn.onclick = () => { searchBar.classList.add('active'); searchInput.focus(); };
+        closeSearchBtn.onclick = () => { searchBar.classList.remove('active'); searchInput.value = ''; };
+
+        // Profile logic
+        const profileModal = document.getElementById('profile-modal');
+        const openProfileBtn = document.getElementById('open-profile-modal');
+        const profileCloseBtn = document.querySelector('.profile-close');
+        const profileForm = document.getElementById('profile-form');
+
+        openProfileBtn.onclick = () => {
+            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+            if (userData.name) document.getElementById('user-name').value = userData.name;
+            if (userData.phone) document.getElementById('user-phone').value = userData.phone;
+            if (userData.address) document.getElementById('user-address').value = userData.address;
+            profileModal.style.display = 'block';
+        };
+
+        profileCloseBtn.onclick = () => { profileModal.style.display = 'none'; };
+
+        profileForm.onsubmit = (e) => {
+            e.preventDefault();
+            const userData = {
+                name: document.getElementById('user-name').value,
+                phone: document.getElementById('user-phone').value,
+                address: document.getElementById('user-address').value
+            };
+            localStorage.setItem('moderra_user_data', JSON.stringify(userData));
+            alert(currentLang === 'tr' ? "Profil kaydedildi!" : "Profile saved!");
+            profileModal.style.display = 'none';
+        };
+
+        window.onclick = (e) => {
+            if (e.target === profileModal) profileModal.style.display = 'none';
+        };
+
+        updateLanguage();
     </script>
 </body>
 </html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-tr="Konsept Bardaklar | Moderra" data-en="Concept Cups | Moderra">Konsept Bardaklar | Moderra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --theme-color: #e74c3c;
+            --theme-bg: #fff;
+            --theme-text: #2c3e50;
+        }
+
+        body {
+            transition: background-color 0.8s ease, color 0.8s ease;
+            background-color: var(--theme-bg);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background-color: var(--glass-bg) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .concept-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+            position: relative;
+            scroll-snap-align: start;
+            color: var(--theme-text);
+        }
+
+        .concept-container {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .concept-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cup-preview {
+            width: 350px;
+            height: 450px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s ease;
+            border: 1px solid var(--border-muted);
+        }
+
+        .cup-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .concept-details h1 {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: var(--theme-color);
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .concept-details p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.8;
+            max-width: 500px;
+        }
+
+        .customize-group {
+            margin-bottom: 30px;
+        }
+
+        .customize-label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .option-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .size-btn, .lid-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--theme-color);
+            background: transparent;
+            color: var(--theme-text);
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .size-btn.active, .lid-btn.active {
+            background: var(--theme-color);
+            color: white;
+        }
+
+        .color-swatch {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 0 1px #ddd;
+            transition: 0.3s;
+        }
+
+        .color-swatch.active {
+            box-shadow: 0 0 0 2px var(--theme-color);
+            transform: scale(1.2);
+        }
+
+        .order-btn {
+            margin-top: 20px;
+            background: var(--theme-color);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--theme-color);
+            transform: scale(1.5);
+        }
+
+        @media (max-width: 968px) {
+            .concept-container { grid-template-columns: 1fr; text-align: center; }
+            .concept-visual { order: -1; }
+            .concept-details p { margin: 0 auto 40px; }
+            .option-list { justify-content: center; }
+            .concept-details h1 { font-size: 40px; }
+        }
+    </style>
+</head>
+<body data-scroll-container>
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">Moderra</a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
+            </ul>
+            <div class="nav-icons text-dark">
+                <i class="fas fa-search" id="open-search" style="color: var(--text-main);"></i>
+                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer; color: var(--text-main);"></i>
+                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'" style="color: var(--text-main); margin-left: 20px;"></i>
+                <i class="fas fa-user" id="open-profile-modal" style="color: var(--text-main); margin-left: 20px;"></i>
+                <div class="hamburger"><i class="fas fa-bars" style="color: var(--text-main);"></i></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="scroll-indicator">
+        <div class="dot active" data-target="yilbasi"></div>
+        <div class="dot" data-target="dugun"></div>
+        <div class="dot" data-target="dogumgunu"></div>
+    </div>
+
+    <!-- Yılbaşı Section -->
+    <section class="concept-section" id="yilbasi" data-color="#e74c3c" data-bg="#fff" data-text="#2c3e50">
+        <div class="concept-container">
+            <div class="concept-visual">
+                <div class="cup-preview">
+                    <img src="images/newyear.png" alt="Yılbaşı">
+                </div>
+            </div>
+            <div class="concept-details">
+                <h1 data-tr="YILBAŞI" data-en="NEW YEAR">Yılbaşı</h1>
+                <p data-tr="Yeni yılın ruhunu sofralarınıza taşıyın. Özel tasarım yılbaşı bardaklarımızla kutlamalarınızı renklendirin." data-en="Bring the spirit of the new year to your tables. Color your celebrations with our specially designed new year cups.">Yeni yılın ruhunu sofralarınıza taşıyın.</p>
+                
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
+                    <div class="option-list">
+                        <button class="size-btn active">4 oz</button>
+                        <button class="size-btn">7 oz</button>
+                        <button class="size-btn">8 oz</button>
+                        <button class="size-btn">12 oz</button>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
+                    <div class="option-list">
+                        <button class="lid-btn active" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
+                        <button class="lid-btn" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="AURA RENGİ" data-en="AURA COLOR">Aura Rengi</span>
+                    <div class="option-list">
+                        <div class="color-swatch active" style="background: #e74c3c;" data-bg="#fff" data-text="#2c3e50"></div>
+                        <div class="color-swatch" style="background: #27ae60;" data-bg="#f0fff4" data-text="#1b4332"></div>
+                        <div class="color-swatch" style="background: #2980b9;" data-bg="#ebf8ff" data-text="#2c5282"></div>
+                    </div>
+                </div>
+
+                <a href="https://wa.me/905304640120" class="order-btn"><i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Düğün Section -->
+    <section class="concept-section" id="dugun" data-color="#9b59b6" data-bg="#fdfaf3" data-text="#5d4037">
+        <div class="concept-container">
+            <div class="concept-visual">
+                <div class="cup-preview">
+                    <img src="images/wedding.png" alt="Düğün">
+                </div>
+            </div>
+            <div class="concept-details">
+                <h1 data-tr="DÜĞÜN" data-en="WEDDING">Düğün</h1>
+                <p data-tr="En özel gününüzde her detay kusursuz olsun. Şık ve zarif düğün konseptli bardaklarımızla fark yaratın." data-en="Let every detail be perfect on your most special day. Make a difference with our stylish and elegant wedding concept cups.">En özel gününüzde her detay kusursuz olsun.</p>
+                
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
+                    <div class="option-list">
+                        <button class="size-btn active">4 oz</button>
+                        <button class="size-btn">7 oz</button>
+                        <button class="size-btn">8 oz</button>
+                        <button class="size-btn">12 oz</button>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
+                    <div class="option-list">
+                        <button class="lid-btn active" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
+                        <button class="lid-btn" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="AURA RENGİ" data-en="AURA COLOR">Aura Rengi</span>
+                    <div class="option-list">
+                        <div class="color-swatch active" style="background: #9b59b6;" data-bg="#fdfaf3" data-text="#5d4037"></div>
+                        <div class="color-swatch" style="background: #e67e22;" data-bg="#fffaf0" data-text="#7b341e"></div>
+                        <div class="color-swatch" style="background: #ecf0f1;" data-bg="#fff" data-text="#2c3e50"></div>
+                    </div>
+                </div>
+
+                <a href="https://wa.me/905304640120" class="order-btn"><i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doğum Günü Section -->
+    <section class="concept-section" id="dogumgunu" data-color="#ff6b6b" data-bg="#fff" data-text="#2c3e50">
+        <div class="concept-container">
+            <div class="concept-visual">
+                <div class="cup-preview">
+                    <img src="images/birthday.png" alt="Doğum Günü">
+                </div>
+            </div>
+            <div class="concept-details">
+                <h1 data-tr="DOĞUM GÜNÜ" data-en="BIRTHDAY">Doğum Günü</h1>
+                <p data-tr="Rengarenk ve enerji dolu bir kutlama için... Doğum günü konseptli baskılı bardaklarımızla eğlenceyi katlayın." data-en="For a colorful and energetic celebration... Double the fun with our birthday concept printed cups.">Rengarenk ve enerji dolu bir kutlama için...</p>
+                
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
+                    <div class="option-list">
+                        <button class="size-btn active">4 oz</button>
+                        <button class="size-btn">7 oz</button>
+                        <button class="size-btn">8 oz</button>
+                        <button class="size-btn">12 oz</button>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
+                    <div class="option-list">
+                        <button class="lid-btn active" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
+                        <button class="lid-btn" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="AURA RENGİ" data-en="AURA COLOR">Aura Rengi</span>
+                    <div class="option-list">
+                        <div class="color-swatch active" style="background: #ff6b6b;" data-bg="#fff" data-text="#2c3e50"></div>
+                        <div class="color-swatch" style="background: #f1c40f;" data-bg="#fffdf0" data-text="#744210"></div>
+                        <div class="color-swatch" style="background: #3498db;" data-bg="#f0f9ff" data-text="#2a4365"></div>
+                    </div>
+                </div>
+
+                <a href="https://wa.me/905304640120" class="order-btn"><i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const sections = document.querySelectorAll('.concept-section');
+        const dots = document.querySelectorAll('.dot');
+        const root = document.documentElement;
+
+        function updateThemeColors(section) {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const themeColor = section.dataset.color;
+            const themeBg = isDark ? '#0a0f1e' : section.dataset.bg;
+            const themeText = isDark ? '#f1f5f9' : section.dataset.text;
+
+            root.style.setProperty('--theme-color', themeColor);
+            root.style.setProperty('--theme-bg', themeBg);
+            root.style.setProperty('--theme-text', themeText);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateThemeColors(entry.target);
+                    dots.forEach(dot => dot.classList.toggle('active', dot.dataset.target === entry.target.id));
+                }
+            });
+        }, { threshold: 0.6 });
+
+        sections.forEach(s => observer.observe(s));
+
+        // Options logic
+        document.querySelectorAll('.size-btn, .lid-btn').forEach(btn => {
+            btn.onclick = function() {
+                this.parentElement.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+            };
+        });
+
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.onclick = function() {
+                const section = this.closest('.concept-section');
+                section.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                
+                headingColor = this.style.backgroundColor;
+                section.dataset.color = headingColor;
+                section.dataset.bg = this.dataset.bg;
+                section.dataset.text = this.dataset.text;
+
+                updateThemeColors(section);
+            };
+        });
+
+        // Language & UI logic
+        const langToggle = document.getElementById('lang-toggle');
+        let currentLang = localStorage.getItem('lang') || 'tr';
+        function updateLanguage() {
+            document.querySelectorAll('[data-tr]').forEach(el => el.textContent = el.getAttribute('data-' + currentLang));
+            langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
+        }
+        langToggle.onclick = (e) => { e.preventDefault(); currentLang = (currentLang === 'tr' ? 'en' : 'tr'); localStorage.setItem('lang', currentLang); updateLanguage(); };
+        updateLanguage();
+
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.getElementById('nav-links');
+        hamburger.onclick = () => navLinks.classList.toggle('active');
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.onclick = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.classList.replace('fa-moon', 'fa-sun');
+            }
+            // Mevcut aktif section'ı bul ve renkleri güncelle
+            const activeEntry = Array.from(sections).find(s => {
+                const rect = s.getBoundingClientRect();
+                return rect.top >= -window.innerHeight/2 && rect.top <= window.innerHeight/2;
+            });
+            if (activeEntry) updateThemeColors(activeEntry);
+        };
+    </script>
+</body>
+</html>
