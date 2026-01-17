@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderra | Online Alışveriş</title>
+    <meta name="description" content="Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.">
+    <meta name="keywords" content="karton bardak, özel logolu bardak, baskılı bardak, ambalaj, moderra">
+    <title data-tr="Moderra | Premium Online Alışveriş" data-en="Moderra | Premium Online Shopping">Moderra | Premium Online Alışveriş</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-scroll-container>
+    <!-- Modern Search UI -->
+    <div class="search-container" id="search-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--gray);"></i>
+            <input type="text" id="search-input" placeholder="Ürün veya kategori ara..." data-tr-placeholder="Ürün veya kategori ara..." data-en-placeholder="Search products or categories...">
+            <i class="fas fa-times search-close" id="close-search"></i>
+        </div>
+    </div>
     <nav class="navbar">
         <div class="container navbar-container">
-
-        <a href="#" class="logo">
-            <img src="images/logo.png" alt="Moderra Logo" style="height: 100px; width: auto; display: block; padding: 5px 0;"></a>
+            <a href="index.html" class="logo">Moderra</a>
 
             <ul class="nav-links" id="nav-links">
-                <li><a href="index.html">Ana Sayfa</a></li>
-                <li><a href="sss.html">S.S.S.</a></li>
-                <li><a href="about.html">Hakkımızda</a></li>
+                <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
 
             <div class="nav-icons">
-                <i class="fas fa-search"></i>
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
                 <i class="fas fa-shopping-cart" id="open-cart-modal">
                     <span id="cart-count">0</span>
                 </i>
-                <i class="fas fa-user"></i>
+                <i class="fas fa-user" id="open-profile-modal"></i>
                 <div class="hamburger">
                     <i class="fas fa-bars"></i>
                 </div>
@@ -37,24 +46,33 @@
     <section class="slider container">
         <div class="slides">
             <div class="slide">
-                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="İndirim Kampanyası">
+                <img src="images/slider1.png" alt="Yeni Sezon" style="width: 100%; height: 600px; object-fit: cover;">
                 <div class="slide-content">
-                    <h2>Yaz İndirimleri Başladı!</h2>
-                    <p>Sezonun en trend ürünlerinde %50'ye varan indirimler</p>
-                    <a href="#urunler" class="btn">Hemen Alışverişe Başla</a>
+                    <h2 data-tr="Yeni Sezon Ürünleri" data-en="New Season Products">Yeni Sezon Ürünleri</h2>
+                    <p data-tr="En yüksek kalite standartlarında üretilen yeni nesil karton bardaklarımızla tanışın." data-en="Meet our next generation paper cups produced to the highest quality standards.">En yüksek kalite standartlarında üretilen yeni nesil karton bardaklarımızla tanışın.</p>
+                    <a href="#urunler" class="btn" data-tr="Fırsatı Gör" data-en="View Deals">Fırsatı Gör</a>
                 </div>
             </div>
             <div class="slide">
-                <img src="https://images.unsplash.com/photo-1558769132-cb25c5d11e85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB4MGhvcGhvby1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Haftanın Fırsatları">
+                <img src="images/slider2.png" alt="Haftanın Fırsatları" style="width: 100%; height: 600px; object-fit: cover;">
                 <div class="slide-content">
-                    <h2>Haftanın Fırsatları</h2>
-                    <p>Özel seçilmiş ürünlerde sınırlı süreli fırsatlar</p>
-                    <a href="#urunler" class="btn">Fırsatları Keşfet</a>
+                    <h2 data-tr="Haftanın Fırsatları" data-en="Deals of the Week">Haftanın Fırsatları</h2>
+                    <p data-tr="Stoklarla sınırlı özel fiyatlı ambalaj çözümlerini kaçırmayın." data-en="Don't miss out on special priced packaging solutions, limited stock.">Stoklarla sınırlı özel fiyatlı ambalaj çözümlerini kaçırmayın.</p>
+                    <a href="#urunler" class="btn" data-tr="Fırsatı Gör" data-en="View Deals">Fırsatı Gör</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="images/slider3.png" alt="Konsept Bardaklar" style="width: 100%; height: 600px; object-fit: cover;">
+                <div class="slide-content">
+                    <h2 data-tr="Konsept Tasarımlar" data-en="Concept Designs">Konsept Tasarımlar</h2>
+                    <p data-tr="Özel günleriniz için tasarlanmış birbirinden şık konsept bardak serilerimiz." data-en="Elegant concept cup series designed for your special days.">Özel günleriniz için tasarlanmış birbirinden şık konsept bardak serilerimiz.</p>
+                    <a href="konsept-bardaklar.html" class="btn" data-tr="Fırsatı Gör" data-en="View Deals">Fırsatı Gör</a>
                 </div>
             </div>
         </div>
         <div class="slider-nav">
             <div class="slider-dot active"></div>
+            <div class="slider-dot"></div>
             <div class="slider-dot"></div>
         </div>
     </section>
@@ -62,333 +80,678 @@
     <section class="container" id="urunler"> 
         <h2 class="section-title">Popüler Ürünler</h2>
         <div class="products">
+            
+            <!-- Ürün 1 -->
             <div class="product-card">
-                <img src="images/bardak.png" alt="6.5 oz Karton Bardak Moderra" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/bardak.png" alt="6.5 oz Karton Bardak" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">6.5 oz Karton Bardak (1000 adet)</h3>
+                    <h3 class="product-title" data-tr="6.5 oz Karton Bardak (1000 adet)" data-en="6.5 oz Paper Cup (1000 pcs)">6.5 oz Karton Bardak (1000 adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="750.00">₺1100,00</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
                     </div>
-                    <button class="add-to-cart" data-id="1" data-name="6.5 oz Karton Bardak" data-price="750.00">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="1" data-name="6.5 oz Karton Bardak" data-price="750.00" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
             
-
+            <!-- Ürün 2 -->
             <div class="product-card">
-                <img src="images/karistirici.jpeg" alt="Ahşap Karıştırıcı Moderra" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/karistirici.jpeg" alt="Ahşap Karıştırıcı" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Ahşap Karıştırıcı (1000'li Paket)</h3>
+                    <h3 class="product-title" data-tr="Ahşap Karıştırıcı (1000'li Paket)" data-en="Wooden Stirrers (1000 pcs)">Ahşap Karıştırıcı (1000'li Paket)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="129.90">₺129,90</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> (4.7)
                     </div>
-                    <button class="add-to-cart" data-id="3" data-name="Ahşap Karıştırıcı" data-price="129.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="3" data-name="Ahşap Karıştırıcı" data-price="129.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
 
+            <!-- Ürün 3 -->
             <div class="product-card">
-                <img src="images/pecete.png" alt="Peçete" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/pecete.png" alt="Peçete" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Kare Peçete (1000 Adet)</h3>
+                    <h3 class="product-title" data-tr="Kare Peçete (1000 Adet)" data-en="Square Napkin (1000 pcs)">Kare Peçete (1000 Adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="99.90">₺99,90</span>
-                        <span class="old-price">₺119,90</span>
-                        <span class="discount-badge">%16</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (4.9)
                     </div>
-                    <button class="add-to-cart" data-id="4" data-name="Stick Şeker Sade" data-price="99.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="4" data-name="Kare Peçete" data-price="99.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
 
+            <!-- Ürün 4 -->
             <div class="product-card">
-                <img src="images/kapak.png" alt="Sıcak İçecek Kapakları" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/kapak.png" alt="Sıcak İçecek Kapakları" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Sıcak İçecek Kapağı (1000 Adet)</h3>
+                    <h3 class="product-title" data-tr="Sıcak İçecek Kapağı (1000 Adet)" data-en="Hot Drink Lid (1000 pcs)">Sıcak İçecek Kapağı (1000 Adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="149.90">₺149,90</span>
-                        <span class="old-price">₺219,90</span>
-                        <span class="discount-badge">%32</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (4.8)
                     </div>
-                    <button class="add-to-cart" data-id="6" data-name="Sıcak İçecek Kapağı" data-price="149.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="6" data-name="Sıcak İçecek Kapağı" data-price="149.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
 
+            <!-- Ürün 5 -->
             <div class="product-card">
-                <img src="images/seker.png" alt="Stick Şeker" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/seker.png" alt="Stick Şeker" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Stick Şeker (1000 Adet)</h3>
+                    <h3 class="product-title" data-tr="Stick Şeker (1000 Adet)" data-en="Stick Sugar (1000 pcs)">Stick Şeker (1000 Adet)</h3>
                     <div class="product-price">
-                        <span class="current-price" data-price="820.00">₺449,50</span>
+                        <span class="current-price" data-price="449.50">₺449,50</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
                     </div>
-                    <button class="add-to-cart" data-id="7" data-name="Kraft Bardak 8 oz Logosuz" data-price="820.00">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="7" data-name="Stick Şeker" data-price="449.50" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
 
+            <!-- Ürün 6 -->
             <div class="product-card">
-                <img src="images/kalem.png" alt="Kalem" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/kalem.png" alt="Kalem" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Logolu Kalem (50 Adet)</h3>
+                    <h3 class="product-title" data-tr="Logolu Kalem (50 Adet)" data-en="Logo Pen (50 pcs)">Logolu Kalem (50 Adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="119.90">₺119,90</span>
-                        <span class="old-price">₺239,90</span>
-                        <span class="discount-badge">%14</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (4.6)
                     </div>
-                    <button class="add-to-cart" data-id="8" data-name="Stick Şeker Esmer" data-price="119.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="8" data-name="Logolu Kalem" data-price="119.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
 
+            <!-- Ürün 7 -->
             <div class="product-card">
-                <img src="images/çakmak.png" alt="Karton Bardak Manşeti" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/çakmak.png" alt="Çakmak" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Çakmak (10 Adet)</h3>
+                    <h3 class="product-title" data-tr="Çakmak (10 Adet)" data-en="Lighter (10 pcs)">Çakmak (10 Adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="219.90">₺219,90</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (4.7)
                     </div>
-                    <button class="add-to-cart" data-id="9" data-name="Karton Bardak Manşeti" data-price="219.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="9" data-name="Çakmak" data-price="219.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
 
+            <!-- Ürün 8 -->
             <div class="product-card">
-                <img src="images/pet.png" alt="Şeffaf Soğuk İçecek Bardağı" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/pet.png" alt="Soğuk İçecek Bardağı" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Soğuk İçecek Bardağı 12 oz (100 Adet)</h3>
+                    <h3 class="product-title" data-tr="Soğuk İçecek Bardağı 12 oz (100 Adet)" data-en="Cold Drink Cup 12 oz (100 pcs)">Soğuk İçecek Bardağı 12 oz (100 Adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="199.90">₺199,90</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (4.9)
                     </div>
-                    <button class="add-to-cart" data-id="10" data-name="Soğuk İçecek Bardağı 12 oz" data-price="199.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="10" data-name="Soğuk İçecek Bardağı" data-price="199.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
-
+            
+            <!-- Ürün 9 -->
             <div class="product-card">
-                <img src="images/mendil.png" alt="Tekli Paket Islak Mendil" class="product-img">
+                <div class="product-img-wrapper">
+                    <img src="images/mendil.png" alt="Islak Mendil" class="product-img" loading="lazy">
+                    <div class="view-details-overlay">
+                        <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                    </div>
+                </div>
                 <div class="product-info">
-                    <h3 class="product-title">Tekli Paket Islak Mendil (1000 Adet)</h3>
+                    <h3 class="product-title" data-tr="Tekli Paket Islak Mendil (1000 Adet)" data-en="Single Wet Wipes (1000 pcs)">Tekli Paket Islak Mendil (1000 Adet)</h3>
                     <div class="product-price">
                         <span class="current-price" data-price="279.90">₺279,90</span>
-                        <span class="old-price">₺349,90</span>
-                        <span class="discount-badge">%20</span>
                     </div>
                     <div class="product-rating">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (5.0)
                     </div>
-                    <button class="add-to-cart" data-id="11" data-name="Tekli Islak Mendil" data-price="279.90">Sepete Ekle</button>
+                    <button class="add-to-cart" data-id="11" data-name="Tekli Islak Mendil" data-price="279.90" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
                 </div>
             </div>
-
 
         </div>
     </section>
-</main>
+    </main>
     
-<div id="cart-modal" class="cart-modal">
-    <div class="cart-content">
-        <span class="close-btn">&times;</span>
-        <h2><i class="fas fa-shopping-cart"></i> Sepetim</h2>
-        <div id="cart-items-list">
-            <p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
-        </div>
-        <p id="cart-total-price">Toplam: ₺0,00</p>
-        <button id="whatsapp-checkout"><i class="fab fa-whatsapp"></i> WhatsApp ile Sipariş Ver</button>
-    </div>
-</div>
-
-<footer>
-    <div class="container footer-content">
-        <div class="footer-column">
-            <h3>Moderra</h3>
-            <ul class="footer-links">
-                <li><a href="about.html">Hakkımızda</a></li>
-                <li><a href="sss.html">S.S.S.</a></li>
-                <li><a href="#">Kariyer</a></li>
-                <li><a href="#">Mağazalarımız</a></li>
-            </ul>
-        </div>
-        <div class="footer-column">
-            <h3>Müşteri Hizmetleri</h3>
-            <ul class="footer-links">
-                <li>İletişim: 0850 300 0000</li>
-                <li><a href="#">İade Koşulları</a></li>
-                <li><a href="#">Kargo ve Teslimat</a></li>
-                <li><a href="#">Gizlilik Politikası</a></li>
-            </ul>
-        </div>
-        <div class="footer-column">
-            <h3>Bizi Takip Edin</h3>
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
+    <!-- Sepet Modalı -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content cart-modal-content">
+            <span class="close-btn cart-close">&times;</span>
+            <div class="cart-header"><i class="fas fa-shopping-cart"></i> <span data-tr="Sepetim" data-en="My Cart">Sepetim</span></div>
+            <div id="cart-items-list">
+                <p class="empty-cart-message" data-tr="Sepetinizde ürün bulunmamaktadır." data-en="Your cart is empty.">Sepetinizde ürün bulunmamaktadır.</p>
+            </div>
+            <div class="cart-footer">
+                <p id="cart-total-price" data-tr="Toplam: ₺0,00" data-en="Total: ₺0,00">Toplam: ₺0,00</p>
+                <button id="whatsapp-checkout"><i class="fab fa-whatsapp"></i> <span data-tr="WhatsApp ile Sipariş Ver" data-en="Order via WhatsApp">WhatsApp ile Sipariş Ver</span></button>
             </div>
         </div>
     </div>
-    <div class="container footer-bottom">
-        <p>Tüm Hakları Saklıdır &copy; 2025 Moderra. Kod, projenin ilk hazır versiyonu olarak 2025-10-21 tarihinde oluşturulmuştur.</p>
-    </div>
-</footer>
 
-<script>
-    // --- Slider İşlevi ---
-    const slides = document.querySelector('.slides');
-    const dots = document.querySelectorAll('.slider-dot');
-    let currentSlide = 0;
-
-    function updateSlider() {
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === currentSlide);
-        });
-    }
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            currentSlide = index;
-            updateSlider();
-        });
-    });
-
-    // Otomatik kaydırma (opsiyonel)
-    setInterval(() => {
-        currentSlide = (currentSlide + 1) % dots.length;
-        updateSlider();
-    }, 5000);
-
-    // --- Hamburger Menü İşlevi ---
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.getElementById('nav-links');
-
-    hamburger.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-    });
-
-    // --- Sepet İşlevi (Basitleştirilmiş) ---
-    let cart = [];
-    const cartCount = document.getElementById('cart-count');
-    const cartModal = document.getElementById('cart-modal');
-    const openCartModal = document.getElementById('open-cart-modal');
-    const closeBtn = document.querySelector('.close-btn');
-    const cartItemsList = document.getElementById('cart-items-list');
-    const cartTotalPrice = document.getElementById('cart-total-price');
-    const whatsappCheckout = document.getElementById('whatsapp-checkout');
-
-    function updateCartDisplay() {
-        cartItemsList.innerHTML = '';
-        let total = 0;
-
-        if (cart.length === 0) {
-            cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
-            cartCount.style.display = 'none';
-            whatsappCheckout.style.display = 'none';
-        } else {
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
-
-                const itemElement = document.createElement('div');
-                itemElement.classList.add('cart-item');
-                itemElement.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-name">${item.name}</div>
-                        <div class="item-details">${item.quantity} x ₺${item.price.toFixed(2).replace('.', ',')}</div>
+    <!-- Modern Profil Modalı -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header-banner">
+                <span class="close-btn profile-close" style="color: white; top: 15px; right: 20px;">&times;</span>
+                <i class="fas fa-user-circle"></i>
+                <h2 data-tr="Profil Bilgilerim" data-en="My Profile" style="margin:0">Profil Bilgilerim</h2>
+            </div>
+            <div class="modal-body-padding">
+                <form id="profile-form">
+                    <div class="profile-field-item">
+                        <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
+                        <input type="text" id="user-name" placeholder="Adınız Soyadınız" required>
                     </div>
-                    <span>₺${itemTotal.toFixed(2).replace('.', ',')}</span>
-                    <i class="fas fa-trash-alt item-remove" data-id="${item.id}"></i>
-                `;
-                cartItemsList.appendChild(itemElement);
+                    <div class="profile-field-item">
+                        <label data-tr="Telefon Numarası" data-en="Phone Number">Telefon Numarası</label>
+                        <input type="tel" id="user-phone" placeholder="05xx xxx xx xx" required>
+                    </div>
+                    <div class="profile-field-item">
+                        <label data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</label>
+                        <textarea id="user-address" rows="3" placeholder="Siparişlerinizin ulaşacağı tam adres..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; padding: 15px; border-radius: 12px;" data-tr="DEĞİŞİKLİKLERİ KAYDET" data-en="SAVE CHANGES">DEĞİŞİKLİKLERİ KAYDET</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ürün Detay Modalı (Lightbox) -->
+    <div id="product-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn detail-close">&times;</span>
+            <div class="product-detail-container">
+                <div class="product-detail-image">
+                    <img id="detail-img" src="" alt="Ürün Detayı">
+                </div>
+                <div class="product-detail-info">
+                    <h2 id="detail-title" class="detail-title">Ürün Adı</h2>
+                    <div id="detail-rating" class="product-rating" style="margin-bottom: 20px; font-size: 18px;"></div>
+                    <div id="detail-price" class="detail-price">₺0,00</div>
+                    <p id="detail-desc" class="detail-description" data-tr="Bu ürün en yüksek kalite standartlarında üretilmiştir. Dayanıklı yapısı ve şık tasarımı ile hem günlük kullanım hem de özel ihtiyaçlarınız için mükemmel bir seçimdir. Moderra güvencesi ile kapınıza kadar gelir." 
+                       data-en="This product is manufactured to the highest quality standards. With its durable structure and stylish design, it is a perfect choice for both daily use and special needs. Delivered to your door with Moderra assurance.">
+                        Bu ürün en yüksek kalite standartlarında üretilmiştir. Dayanıklı yapısı ve şık tasarımı ile hem günlük kullanım hem de özel ihtiyaçlarınız için mükemmel bir seçimdir. Moderra güvencesi ile kapınıza kadar gelir.
+                    </p>
+                    <button id="detail-add-btn" class="add-to-cart" data-tr="Sepete Ekle" data-en="Add to Cart">Sepete Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-column">
+                <a href="index.html" class="footer-logo">Moderra</a>
+                <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 20px;" data-tr="Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz." data-en="Where quality and aesthetics meet in paper cup production. Shaping the future with a female entrepreneur vision.">
+                    Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz.
+                </p>
+                <div class="social-icons" style="gap: 20px;">
+                    <a href="#"><i class="fab fa-instagram" style="font-size: 24px;"></i></a>
+                    <a href="#"><i class="fab fa-linkedin" style="font-size: 24px;"></i></a>
+                    <a href="#"><i class="fab fa-facebook" style="font-size: 24px;"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3 data-tr="Hızlı Linkler" data-en="Quick Links">Hızlı Linkler</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                    <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                    <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                    <li><a href="konsept-bardaklar.html" data-tr="Konseptler" data-en="Concepts">Konseptler</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3 data-tr="İletişim & Destek" data-en="Contact & Support">İletişim & Destek</h3>
+                <div class="footer-social-info">
+                    <a href="https://wa.me/905304640120" class="social-pill">
+                        <i class="fab fa-whatsapp" style="color: #25d366; font-size: 20px;"></i>
+                        <span>0530 464 01 20</span>
+                    </a>
+                    <div class="social-pill">
+                        <i class="fas fa-envelope" style="color: var(--primary); font-size: 18px;"></i>
+                        <span>info@moderra.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p data-tr="&copy; 2025 Moderra. Tüm Hakları Saklıdır. Bir Kadın Girişimi Projesidir." data-en="&copy; 2025 Moderra. All Rights Reserved. A Female Entrepreneurship Project.">
+                &copy; 2025 Moderra. Tüm Hakları Saklıdır. Bir Kadın Girişimi Projesidir.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Slider İşlevi ---
+        const slides = document.querySelector('.slides');
+        const dots = document.querySelectorAll('.slider-dot');
+        let currentSlide = 0;
+
+        function updateSlider() {
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
             });
-            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.style.display = 'block';
-            whatsappCheckout.style.display = 'block';
         }
 
-        cartTotalPrice.textContent = `Toplam: ₺${total.toFixed(2).replace('.', ',')}`;
-    }
-
-    function addToCart(productId, productName, productPrice) {
-        const existingItem = cart.find(item => item.id === productId);
-        if (existingItem) {
-            existingItem.quantity++;
-        } else {
-            cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
-        }
-        updateCartDisplay();
-        // Sepet eklendikten sonra modalı aç
-        cartModal.style.display = 'block';
-    }
-
-    function removeFromCart(productId) {
-        cart = cart.filter(item => item.id !== productId);
-        updateCartDisplay();
-    }
-
-    // Sepete Ekle butonlarına dinleyici ekleme
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const id = parseInt(e.target.dataset.id);
-            const name = e.target.dataset.name;
-            const price = parseFloat(e.target.dataset.price);
-            addToCart(id, name, price);
-        });
-    });
-
-    // Modal açma/kapama
-    openCartModal.onclick = () => { cartModal.style.display = 'block'; };
-    closeBtn.onclick = () => { cartModal.style.display = 'none'; };
-    window.onclick = (event) => {
-        if (event.target === cartModal) {
-            cartModal.style.display = 'none';
-        }
-    };
-
-    // Sepetten Çıkar butonu dinleyicisi (Delegation)
-    cartItemsList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('item-remove')) {
-            const id = parseInt(e.target.dataset.id);
-            removeFromCart(id);
-        }
-    });
-
-    // WhatsApp Checkout
-    whatsappCheckout.onclick = () => {
-        let message = "Merhaba, sepetimdeki ürünlerle sipariş vermek istiyorum:\n\n";
-        let total = 0;
-
-        cart.forEach(item => {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            message += `${item.quantity} adet - ${item.name} (₺${item.price.toFixed(2).replace('.', ',')})\n`;
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlider();
+            });
         });
 
-        message += `\nToplam Tutar: ₺${total.toFixed(2).replace('.', ',')}`;
-        message += "\n\nLütfen adres ve iletişim bilgilerinizi giriniz:";
+        // Otomatik kaydırma
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % dots.length;
+            updateSlider();
+        }, 5000);
 
-        const whatsappUrl = `https://wa.me/905xxxxxxxxx?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-    };
+        // --- Hamburger Menü ---
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.getElementById('nav-links');
 
-    // Başlangıçta sepeti güncelle
-    updateCartDisplay();
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
 
-</script>
+        // --- Sepet İşlevi ---
+        let cart = [];
+        const cartCount = document.getElementById('cart-count');
+        const cartModal = document.getElementById('cart-modal');
+        const openCartModal = document.getElementById('open-cart-modal');
+        const cartCloseBtn = document.querySelector('.cart-close');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const whatsappCheckout = document.getElementById('whatsapp-checkout');
+
+        function updateCartDisplay() {
+            cartItemsList.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
+                cartCount.style.display = 'none';
+                whatsappCheckout.style.display = 'none';
+            } else {
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('cart-item');
+                    itemElement.innerHTML = `
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-details">${item.quantity} x ₺${item.price.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                        <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
+                        <i class="fas fa-trash-alt item-remove" data-id="${item.id}"></i>
+                    `;
+                    cartItemsList.appendChild(itemElement);
+                });
+                cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.style.display = 'block';
+                whatsappCheckout.style.display = 'block';
+            }
+
+            cartTotalPrice.textContent = `Toplam: ₺${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function addToCart(productId, productName, productPrice) {
+            const price = parseFloat(productPrice);
+            if (isNaN(price)) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ id: productId, name: productName, price: price, quantity: 1 });
+            }
+            updateCartDisplay();
+            cartModal.style.display = 'block'; 
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+        }
+
+        // Sepete Ekle Butonları
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // Kart tıklamasını engelle
+                const id = parseInt(e.target.dataset.id);
+                const name = e.target.dataset.name;
+                const price = parseFloat(e.target.dataset.price);
+                addToCart(id, name, price);
+            });
+        });
+
+        // WhatsApp Checkout
+        whatsappCheckout.onclick = (e) => {
+            e.preventDefault();
+            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+            
+            // Profil kontrolü
+            if (!userData.name || !userData.phone || !userData.address) {
+                alert(currentLang === 'tr' ? "Lütfen sipariş vermeden önce profil bilgilerinizi (Ad, Tel, Adres) doldurunuz." : "Please fill in your profile details (Name, Tel, Address) before ordering.");
+                profileModal.style.display = 'block';
+                return;
+            }
+
+            let message = "";
+            let total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            if (currentLang === 'tr') {
+                message = "*Moderra - Yeni Sipariş*\n\n";
+                message += "*Ürünler:*\n";
+                cart.forEach(item => {
+                    message += `📦 ${item.quantity} Adet - ${item.name} (₺${(item.price * item.quantity).toFixed(2).replace('.', ',')})\n`;
+                });
+                message += `\n*💰 Toplam Tutar: ₺${total.toFixed(2).replace('.', ',')}*\n\n`;
+                message += "*📍 Müşteri Bilgileri:*\n";
+                message += `👤 İsim: ${userData.name}\n`;
+                message += `📞 Tel: ${userData.phone}\n`;
+                message += `🏠 Adres: ${userData.address}`;
+            } else {
+                message = "*Moderra - New Order*\n\n";
+                message += "*Products:*\n";
+                cart.forEach(item => {
+                    message += `📦 ${item.quantity} Qty - ${item.name} (₺${(item.price * item.quantity).toFixed(2).replace('.', ',')})\n`;
+                });
+                message += `\n*💰 Total Amount: ₺${total.toFixed(2).replace('.', ',')}*\n\n`;
+                message += "*📍 Customer Information:*\n";
+                message += `👤 Name: ${userData.name}\n`;
+                message += `📞 Phone: ${userData.phone}\n`;
+                message += `🏠 Address: ${userData.address}`;
+            }
+
+            const whatsappUrl = `https://wa.me/905304640120?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        };
+
+        // --- Arama İşlemleri ---
+        const searchInput = document.getElementById('search-input');
+        const searchBar = document.getElementById('search-bar');
+        const openSearchBtn = document.getElementById('open-search');
+        const closeSearchBtn = document.getElementById('close-search');
+
+        openSearchBtn.onclick = () => {
+            searchBar.classList.add('active');
+            searchInput.focus();
+        };
+
+        closeSearchBtn.onclick = () => {
+            searchBar.classList.remove('active');
+            searchInput.value = '';
+            filterProducts('');
+        };
+
+        searchInput.oninput = (e) => {
+            filterProducts(e.target.value.toLowerCase());
+        };
+
+        function filterProducts(query) {
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const title = card.querySelector('.product-title').textContent.toLowerCase();
+                const desc = card.querySelector('.add-to-cart').dataset.name.toLowerCase();
+                if (title.includes(query) || desc.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Profil İşlemleri ---
+        const profileModal = document.getElementById('profile-modal');
+        const openProfileBtn = document.getElementById('open-profile-modal');
+        const profileCloseBtn = document.querySelector('.profile-close');
+        const profileForm = document.getElementById('profile-form');
+        
+        function loadProfile() {
+            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+            if (userData.name) document.getElementById('user-name').value = userData.name;
+            if (userData.phone) document.getElementById('user-phone').value = userData.phone;
+            if (userData.address) document.getElementById('user-address').value = userData.address;
+        }
+
+        openProfileBtn.onclick = () => {
+            loadProfile();
+            profileModal.style.display = 'block';
+        };
+
+        profileCloseBtn.onclick = () => { profileModal.style.display = 'none'; };
+
+        profileForm.onsubmit = (e) => {
+            e.preventDefault();
+            const userData = {
+                name: document.getElementById('user-name').value,
+                phone: document.getElementById('user-phone').value,
+                address: document.getElementById('user-address').value
+            };
+            localStorage.setItem('moderra_user_data', JSON.stringify(userData));
+            alert(currentLang === 'tr' ? "Profil bilgileriniz kaydedildi!" : "Profile information saved!");
+            profileModal.style.display = 'none';
+        };
+
+        // --- Sepet Modal Kontrolleri ---
+        openCartModal.onclick = () => { cartModal.style.display = 'block'; };
+        cartCloseBtn.onclick = () => { cartModal.style.display = 'none'; };
+        
+        // --- Ürün Detay Modalı (Lightbox) İşlemleri ---
+        const detailModal = document.getElementById('product-detail-modal');
+        const detailCloseBtn = document.querySelector('.detail-close');
+        const detailImg = document.getElementById('detail-img');
+        const detailTitle = document.getElementById('detail-title');
+        const detailPrice = document.getElementById('detail-price');
+        const detailAddBtn = document.getElementById('detail-add-btn');
+        const detailRating = document.getElementById('detail-rating');
+
+        // Ürün kartına tıklama işlevi
+        document.querySelectorAll('.view-btn, .product-img-wrapper, .product-title').forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const card = e.target.closest('.product-card');
+                
+                // Verileri kart üzerinden çek
+                const imgSrc = card.querySelector('.product-img').src;
+                const title = card.querySelector('.product-title').textContent;
+                const priceText = card.querySelector('.current-price').textContent;
+                const addToCartBtn = card.querySelector('.add-to-cart');
+                const priceVal = parseFloat(addToCartBtn.dataset.price);
+                const id = parseInt(addToCartBtn.dataset.id);
+                const ratingHTML = card.querySelector('.product-rating').innerHTML;
+                
+                // Modale doldur
+                detailImg.src = imgSrc;
+                detailTitle.textContent = title;
+                detailPrice.textContent = priceText;
+                detailRating.innerHTML = ratingHTML;
+                
+                // Detay modalındaki "Sepete Ekle" butonunu ayarla
+                detailAddBtn.onclick = () => {
+                    addToCart(id, title, priceVal);
+                    detailModal.style.display = 'none';
+                };
+
+                detailModal.style.display = 'block';
+            });
+        });
+
+        detailCloseBtn.onclick = () => { detailModal.style.display = 'none'; };
+
+        // Pencere dışına tıklama (Her iki modal için)
+        window.onclick = (event) => {
+            if (event.target === cartModal) {
+                cartModal.style.display = 'none';
+            }
+            if (event.target === profileModal) {
+                profileModal.style.display = 'none';
+            }
+            if (event.target === detailModal) {
+                detailModal.style.display = 'none';
+            }
+        };
+
+        // Sepetten Çıkar (Delegation)
+        cartItemsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('item-remove')) {
+                const id = parseInt(e.target.dataset.id);
+                removeFromCart(id);
+            }
+        });
+
+        // --- Dil Değiştirme Sistemi ---
+        const langToggle = document.getElementById('lang-toggle');
+        let currentLang = localStorage.getItem('lang') || 'tr';
+
+        const translations = {
+            'slider-h1': { tr: 'Yaz İndirimleri Başladı!', en: 'Summer Sales Started!' },
+            'slider-p1': { tr: 'Sezonun en trend ürünlerinde %50\'ye varan indirimler.', en: 'Up to 50% discount on the trendiest items of the season.' },
+            'slider-h2': { tr: 'Haftanın Fırsatları', en: 'Deals of the Week' },
+            'slider-p2': { tr: 'Özel seçilmiş ürünlerde sınırlı süreli fırsatlar.', en: 'Limited time offers on specially selected products.' },
+            'popular-title': { tr: 'Popüler Ürünler', en: 'Popular Products' },
+            'cart-title': { tr: 'Sepetim', en: 'My Cart' },
+            'empty-cart': { tr: 'Sepetinizde ürün bulunmamaktadır.', en: 'Your cart is empty.' },
+            'whatsapp-btn': { tr: 'WhatsApp ile Sipariş Ver', en: 'Order via WhatsApp' }
+        };
+
+        function updateLanguage() {
+            // Navbar ve Menü Linkleri
+            document.querySelectorAll('[data-tr]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + currentLang);
+            });
+
+            // Sayfa Başlığı ve Meta Açıklama (SEO)
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if(currentLang === 'en') {
+                document.title = "Moderra | Premium Online Shopping";
+                if(metaDesc) metaDesc.setAttribute('content', "Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.");
+            } else {
+                document.title = "Moderra | Premium Online Alışveriş";
+                if(metaDesc) metaDesc.setAttribute('content', "Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.");
+            }
+
+            // Slider İçerikleri
+            const slides = document.querySelectorAll('.slide-content');
+            if(slides[0]) {
+                slides[0].querySelector('h2').textContent = translations['slider-h1'][currentLang];
+                slides[0].querySelector('p').textContent = translations['slider-p1'][currentLang];
+                slides[0].querySelector('.btn').textContent = currentLang === 'tr' ? 'Hemen Alışverişe Başla' : 'Start Shopping Now';
+            }
+            if(slides[1]) {
+                slides[1].querySelector('h2').textContent = translations['slider-h2'][currentLang];
+                slides[1].querySelector('p').textContent = translations['slider-p2'][currentLang];
+                slides[1].querySelector('.btn').textContent = currentLang === 'tr' ? 'Fırsatları Keşfet' : 'Discover Deals';
+            }
+            if(slides[2]) {
+                slides[2].querySelector('h2').textContent = currentLang === 'tr' ? 'Konsept Tasarımlar' : 'Concept Designs';
+                slides[2].querySelector('p').textContent = currentLang === 'tr' ? 'Özel günleriniz için tasarlanmış birbirinden şık konsept bardak serilerimiz.' : 'Elegant concept cup series designed for your special days.';
+                slides[2].querySelector('.btn').textContent = currentLang === 'tr' ? 'Fırsatı Gör' : 'View Deals';
+            }
+
+            // Başlıklar
+            const sectionTitle = document.querySelector('.section-title');
+            if(sectionTitle) sectionTitle.textContent = translations['popular-title'][currentLang];
+
+            // Alt Bilgi ve Diğer Statik Olmayan Alanlar
+            langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
+            document.documentElement.lang = currentLang;
+
+            // Update placeholders
+            document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
+                const tr = el.getAttribute('data-tr-placeholder');
+                const en = el.getAttribute('data-en-placeholder');
+                el.placeholder = currentLang === 'tr' ? tr : en;
+            });
+        }
+
+        langToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            localStorage.setItem('lang', currentLang);
+            updateLanguage();
+        });
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.onclick = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.classList.replace('fa-moon', 'fa-sun');
+            }
+        };
+
+        updateLanguage();
+        updateCartDisplay();
+    </script>
+</body>
+</html>
