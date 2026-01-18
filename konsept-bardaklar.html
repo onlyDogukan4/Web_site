@@ -6,6 +6,7 @@
     <title data-tr="Konsept Bardaklar | Moderra" data-en="Concept Cups | Moderra">Konsept Bardaklar | Moderra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chatbot.css">
     <style>
         :root {
             --theme-color: #e74c3c;
@@ -68,10 +69,46 @@
             border: 1px solid var(--border-muted);
         }
 
-        .cup-preview img {
+        #design-overlay {
+            position: absolute;
+            top: 53.5%; 
+            left: 53%; 
+            transform: translate(-50%, -50%) perspective(1000px) rotateY(15deg) rotateZ(-1deg);
+            width: 145px;
+            height: 165px;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            mask-image: radial-gradient(ellipse at center, black 70%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 70%, transparent 100%);
+        }
+
+        .cup-highlight {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.3) 35%, rgba(255,255,255,0.1) 45%, transparent 60%);
+            pointer-events: none;
+            z-index: 5;
+            mix-blend-mode: screen;
+        }
+
+        #user-design-preview {
+            width: 80%;
+            height: auto;
+            max-height: 80%;
+            object-fit: contain;
+            filter: contrast(1.1) brightness(0.95) saturate(1.1);
+        }
+
+        .dynamic-cup {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .concept-details h1 {
@@ -214,6 +251,7 @@
         <div class="dot active" data-target="yilbasi"></div>
         <div class="dot" data-target="dugun"></div>
         <div class="dot" data-target="dogumgunu"></div>
+        <div class="dot" data-target="ozeltasarim"></div>
     </div>
 
     <!-- Yılbaşı Section -->
@@ -221,7 +259,7 @@
         <div class="concept-container">
             <div class="concept-visual">
                 <div class="cup-preview">
-                    <img src="images/newyear.png" alt="Yılbaşı">
+                    <img src="images/newyear.png" alt="Yılbaşı" class="dynamic-cup">
                 </div>
             </div>
             <div class="concept-details">
@@ -231,10 +269,10 @@
                 <div class="customize-group">
                     <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
                     <div class="option-list">
-                        <button class="size-btn active">4 oz</button>
-                        <button class="size-btn">7 oz</button>
-                        <button class="size-btn">8 oz</button>
-                        <button class="size-btn">12 oz</button>
+                        <button class="size-btn active" data-scale="0.8">4 oz</button>
+                        <button class="size-btn" data-scale="0.9">7 oz</button>
+                        <button class="size-btn" data-scale="1.0">8 oz</button>
+                        <button class="size-btn" data-scale="1.2">12 oz</button>
                     </div>
                 </div>
 
@@ -265,7 +303,7 @@
         <div class="concept-container">
             <div class="concept-visual">
                 <div class="cup-preview">
-                    <img src="images/wedding.png" alt="Düğün">
+                    <img src="images/wedding.png" alt="Düğün" class="dynamic-cup">
                 </div>
             </div>
             <div class="concept-details">
@@ -275,10 +313,10 @@
                 <div class="customize-group">
                     <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
                     <div class="option-list">
-                        <button class="size-btn active">4 oz</button>
-                        <button class="size-btn">7 oz</button>
-                        <button class="size-btn">8 oz</button>
-                        <button class="size-btn">12 oz</button>
+                        <button class="size-btn active" data-scale="0.8">4 oz</button>
+                        <button class="size-btn" data-scale="0.9">7 oz</button>
+                        <button class="size-btn" data-scale="1.0">8 oz</button>
+                        <button class="size-btn" data-scale="1.2">12 oz</button>
                     </div>
                 </div>
 
@@ -309,7 +347,7 @@
         <div class="concept-container">
             <div class="concept-visual">
                 <div class="cup-preview">
-                    <img src="images/birthday.png" alt="Doğum Günü">
+                    <img src="images/birthday.png" alt="Doğum Günü" class="dynamic-cup">
                 </div>
             </div>
             <div class="concept-details">
@@ -319,10 +357,10 @@
                 <div class="customize-group">
                     <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
                     <div class="option-list">
-                        <button class="size-btn active">4 oz</button>
-                        <button class="size-btn">7 oz</button>
-                        <button class="size-btn">8 oz</button>
-                        <button class="size-btn">12 oz</button>
+                        <button class="size-btn active" data-scale="0.8">4 oz</button>
+                        <button class="size-btn" data-scale="0.9">7 oz</button>
+                        <button class="size-btn" data-scale="1.0">8 oz</button>
+                        <button class="size-btn" data-scale="1.2">12 oz</button>
                     </div>
                 </div>
 
@@ -348,6 +386,63 @@
         </div>
     </section>
 
+    <!-- Özel Tasarım Section -->
+    <section class="concept-section" id="ozeltasarim" data-color="#10b981" data-bg="#f0fdf4" data-text="#064e3b">
+        <div class="concept-container">
+            <div class="concept-visual">
+                <div class="cup-preview">
+                    <!-- Sabit bardak şablonu -->
+                    <img src="images/special.png" alt="Özel Tasarım" class="dynamic-cup" id="base-cup-img" style="cursor: zoom-in;" onclick="openZoomModal()">
+                    <!-- Kullanıcının tasarımı buraya gelecek -->
+                    <div id="design-overlay">
+                        <!-- Parlama efekti -->
+                        <div class="cup-highlight"></div>
+                        <!-- Tasarım Resmi -->
+                        <img id="user-design-preview" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <div class="concept-details">
+                <h1 data-tr="ÖZEL TASARIM" data-en="CUSTOM DESIGN">Özel Tasarım</h1>
+                <p data-tr="Kendi tasarımınızı yükleyin, bardağın üzerinde nasıl duracağını görün. PDF veya Resim formatında yükleyebilirsiniz." data-en="Upload your own design and see how it looks on the cup. You can upload in PDF or Image format.">Kendi tasarımınızı yükleyin!</p>
+                
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="TASARIMINIZI YÜKLEYİN" data-en="UPLOAD YOUR DESIGN">Tasarımınızı Yükleyin</span>
+                    <div style="margin-top: 10px;">
+                        <input type="file" id="design-upload" accept="image/*,application/pdf" style="display: none;">
+                        <label for="design-upload" class="size-btn" style="display: inline-block; cursor: pointer; border-style: dashed;">
+                            <i class="fas fa-file-upload"></i> <span data-tr="Dosya Seç" data-en="Choose File">Dosya Seç</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="customize-group">
+                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
+                    <div class="option-list">
+                        <button class="size-btn active" data-scale="0.8">4 oz</button>
+                        <button class="size-btn" data-scale="1.1">8 oz</button>
+                        <button class="size-btn" data-scale="1.3">12 oz</button>
+                    </div>
+                </div>
+
+                <a href="https://wa.me/905304640120" class="order-btn" id="custom-design-order"><i class="fab fa-whatsapp"></i><span data-tr="TASARIMLA SİPARİŞ VER" data-en="ORDER WITH DESIGN">SİPARİŞ VER</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zoom Modal -->
+    <div id="zoom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center; cursor: zoom-out;" onclick="closeZoomModal()">
+        <div id="zoom-card" style="position: relative; width: 550px; height: 700px; background: white; border-radius: 40px; overflow: hidden; transform: scale(1.1);">
+            <img id="zoom-base" src="images/special.png" style="width: 100%; height: 100%; object-fit: contain;">
+            <div id="zoom-design-overlay" style="position: absolute; top: 53.5%; left: 53%; transform: translate(-50%, -50%) perspective(1000px) rotateY(15deg) rotateZ(-1deg); width: 230px; height: 260px; mix-blend-mode: multiply; opacity: 0.9; mask-image: radial-gradient(ellipse at center, black 70%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse at center, black 70%, transparent 100%);">
+                <div class="cup-highlight"></div>
+                <img id="zoom-user-img" src="" style="width: 80%; height: auto; display: none; margin: 0 auto; filter: contrast(1.1) brightness(0.95);">
+            </div>
+        </div>
+        <div style="position: absolute; top: 30px; right: 40px; color: white; font-size: 50px; cursor: pointer;">&times;</div>
+    </div>
+
+
     <script>
         const sections = document.querySelectorAll('.concept-section');
         const dots = document.querySelectorAll('.dot');
@@ -364,6 +459,25 @@
             root.style.setProperty('--theme-text', themeText);
         }
 
+        function openZoomModal() {
+            const modal = document.getElementById('zoom-modal');
+            const mainDesign = document.getElementById('user-design-preview');
+            const zoomDesign = document.getElementById('zoom-user-img');
+            
+            if (mainDesign.style.display !== 'none' && mainDesign.src) {
+                zoomDesign.src = mainDesign.src;
+                zoomDesign.style.display = 'block';
+            } else {
+                zoomDesign.style.display = 'none';
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeZoomModal() {
+            document.getElementById('zoom-modal').style.display = 'none';
+        }
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -376,12 +490,68 @@
         sections.forEach(s => observer.observe(s));
 
         // Options logic
-        document.querySelectorAll('.size-btn, .lid-btn').forEach(btn => {
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.onclick = function() {
+                const section = this.closest('.concept-section');
+                section.querySelectorAll('.size-btn.active').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Dinamik Boyutlandırma (Scale)
+                const scale = this.dataset.scale || 1.0;
+                const cupImg = section.querySelector('.dynamic-cup');
+                if (cupImg) {
+                    cupImg.style.transform = `scale(${scale})`;
+                }
+            };
+        });
+
+        document.querySelectorAll('.lid-btn').forEach(btn => {
             btn.onclick = function() {
                 this.parentElement.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
                 this.classList.add('active');
             };
         });
+
+        // Özel Tasarım Yükleme Mantığı
+        const designUpload = document.getElementById('design-upload');
+        const designPreview = document.getElementById('user-design-preview');
+        
+        designUpload.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    if (file.type === 'application/pdf') {
+                        // PDF ise basit bir ikon yerine canvas ile ilk sayfayı render edebiliriz 
+                        // ama şimdilik kullanıcıya yükleme yapıldığını hissettireni şık bir görsel sunalım
+                        designPreview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+                    } else {
+                        designPreview.src = event.target.result;
+                    }
+                    designPreview.style.display = 'block';
+                    
+                    // Görsel yüklendikten sonra mock-up efektini güçlendir
+                    const overlay = document.getElementById('design-overlay');
+                    overlay.style.opacity = "0.9";
+                    overlay.style.filter = "drop-shadow(0 5px 15px rgba(0,0,0,0.1))";
+                }
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // WhatsApp Sipariş Butonu (Özel Tasarım İçin)
+        document.getElementById('custom-design-order').onclick = function(e) {
+            e.preventDefault();
+            const section = document.getElementById('ozeltasarim');
+            const size = section.querySelector('.size-btn.active').textContent;
+            let message = `*Moderra - Özel Tasarım Siparişi*\n\n`;
+            message += `📏 Boyut: ${size}\n`;
+            message += `🎨 Kendi tasarımımı yükledim.\n`;
+            message += `İsim/Tel bilgilerime profilden ulaşabilirsiniz.`;
+            
+            const whatsappUrl = `https://wa.me/905304640120?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        };
 
         document.querySelectorAll('.color-swatch').forEach(swatch => {
             swatch.onclick = function() {
@@ -440,5 +610,6 @@
             if (activeEntry) updateThemeColors(activeEntry);
         };
     </script>
+    <script src="chatbot.js"></script>
 </body>
 </html>
