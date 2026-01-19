@@ -212,7 +212,7 @@ class ModerraAI {
         const typingIndicator = document.getElementById('ai-typing-indicator');
         if (typingIndicator) typingIndicator.style.display = 'block';
 
-        const modelName = "gemini-1.5-flash"; // Fixed model identifier
+        const modelName = "gemini-2.0-flash"; // Updated to newest 2.0 version
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
         const body = {
             system_instruction: { parts: [{ text: this.siteContext }] },
