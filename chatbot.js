@@ -3,7 +3,8 @@
  * Dr. Karton yaslanma pozu, devasa boyut ve dinamik ikon değişimi ile.
  */
 
-const GEMINI_API_KEY = "AIzaSyBz9CAf6CjLWrdTxtHWK9kg9jbWt6NCIqY";
+// API Key moved to env.js for security
+const GEMINI_API_KEY = window.ENV?.GEMINI_API_KEY || "";
 
 class ModerraAI {
     constructor() {
@@ -211,7 +212,8 @@ class ModerraAI {
         const typingIndicator = document.getElementById('ai-typing-indicator');
         if (typingIndicator) typingIndicator.style.display = 'block';
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+        const modelName = "gemini-1.5-flash"; // Fixed model identifier
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
         const body = {
             system_instruction: { parts: [{ text: this.siteContext }] },
             contents: [

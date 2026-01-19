@@ -1,5 +1,5 @@
-1 | 6.5 oz Karton Bardak (1000 adet) | 1100.00
-3 | Ahşap Karıştırıcı (1000'li Paket) | 389.90
+1 | 6.5 oz Karton Bardak (1000 adet) | 1000.00
+3 | Ahşap Karıştırıcı (1000'li Paket) | 189.90
 4 | Kare Peçete (1000 Adet) | 99.90
 6 | Sıcak İçecek Kapağı (1000 Adet) | 149.90
 7 | Stick Şeker (1000 Adet) | 449.50
