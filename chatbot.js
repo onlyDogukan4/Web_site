@@ -1,10 +1,4 @@
-/**
- * Moderra AIv8 - Dr. Karton (Perfect Pro Persona)
- * Dr. Karton yaslanma pozu, devasa boyut ve dinamik ikon değişimi ile.
- */
-
-// API Key moved to env.js for security
-const GEMINI_API_KEY = window.ENV?.GEMINI_API_KEY || "";
+// API Key is now securely handled by Vercel Serverless Function (/api/chat.js)
 
 class ModerraAI {
     constructor() {
@@ -212,29 +206,29 @@ class ModerraAI {
         const typingIndicator = document.getElementById('ai-typing-indicator');
         if (typingIndicator) typingIndicator.style.display = 'block';
 
-        const modelName = "gemini-2.0-flash"; // Updated to newest 2.0 version
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
-        const body = {
-            system_instruction: { parts: [{ text: this.siteContext }] },
-            contents: [
-                ...this.chatHistory,
-                { role: "user", parts: [{ text: prompt }] }
-            ],
-            generationConfig: { temperature: 0.9, maxOutputTokens: 2048 }
-        };
-
         try {
-            const response = await fetch(url, {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify({
+                    prompt,
+                    chatHistory: this.chatHistory,
+                    siteContext: this.siteContext
+                })
             });
+
             const data = await response.json();
-            const botText = data.candidates[0].content.parts[0].text;
-            this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-            this.chatHistory.push({ role: "model", parts: [{ text: botText }] });
-            this.addBotMessage(botText);
+
+            if (data.candidates && data.candidates[0]) {
+                const botText = data.candidates[0].content.parts[0].text;
+                this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                this.chatHistory.push({ role: "model", parts: [{ text: botText }] });
+                this.addBotMessage(botText);
+            } else {
+                throw new Error("Invalid response");
+            }
         } catch (e) {
+            console.error("Chat Error:", e);
             this.addBotMessage("Ufak bir aksaklık oldu, lütfen tekrar deneyin!");
         } finally {
             this.isThinking = false;
