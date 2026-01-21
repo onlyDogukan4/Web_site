@@ -10,16 +10,22 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'API key not configured on server' });
     }
 
-    const modelName = "gemini-2.0-flash";
+    const modelName = "gemma-3-4b-it";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
 
     const body = {
-        system_instruction: { parts: [{ text: siteContext }] },
         contents: [
             ...chatHistory,
-            { role: "user", parts: [{ text: prompt }] }
+            {
+                role: "user",
+                parts: [{ text: "TALİMATLAR VE BİLGİLER:\n" + siteContext + "\n\nSORU: " + prompt }]
+            }
         ],
-        generationConfig: { temperature: 0.9, maxOutputTokens: 2048 }
+        generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 800,
+            topP: 0.95
+        }
     };
 
     try {
@@ -28,9 +34,17 @@ export default async function handler(req, res) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
+
         const data = await response.json();
+
+        if (data.error) {
+            console.error("Gemini API Error:", data.error);
+            return res.status(response.status).json({ error: data.error.message });
+        }
+
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch from Gemini' });
+        console.error("Fetch error:", error);
+        res.status(500).json({ error: 'Failed to connect to Gemini API' });
     }
 }
