@@ -1,9 +1,9 @@
 
+import 'dotenv/config';
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 import { Redis } from '@upstash/redis';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,9 +13,11 @@ const PORT = 3000;
 
 // Initialize Upstash Redis
 const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL || 'https://stable-bug-37497.upstash.io',
-    token: process.env.UPSTASH_REDIS_REST_TOKEN || 'AZJ5AAIncDJhYWY3ZTMzZmI0NDc0MmJiOTA4ZWJiY2I4OGZlN2Q3MnAyMzc0OTc',
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
+
+console.log("Redis connecting to:", process.env.UPSTASH_REDIS_REST_URL);
 
 // Helper: Seed initial data if database is empty
 async function seedData() {
@@ -52,12 +54,14 @@ function getApiKey() {
 
 const server = http.createServer(async (req, res) => {
     // --- DATA ROUTES (UPSTASH REDIS) ---
-    if (req.url.startsWith('/products.json')) {
+    if (req.url.startsWith('/products.json') || req.url.startsWith('/api/products')) {
         if (req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', async () => {
-                await redis.set('products', JSON.parse(body));
+                const data = JSON.parse(body);
+                await redis.set('products', data);
+                console.log("DB: Products updated.");
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ success: true }));
             });
@@ -70,12 +74,14 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
-    if (req.url.startsWith('/orders.json')) {
+    if (req.url.startsWith('/orders.json') || req.url.startsWith('/api/orders')) {
         if (req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', async () => {
-                await redis.set('orders', JSON.parse(body));
+                const data = JSON.parse(body);
+                await redis.set('orders', data);
+                console.log("DB: Orders updated.");
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ success: true }));
             });
@@ -84,6 +90,24 @@ const server = http.createServer(async (req, res) => {
             const data = await redis.get('orders');
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data));
+            return;
+        }
+    }
+
+    if (req.url === '/api/last-update') {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                await redis.set('last_update', JSON.parse(body));
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else {
+            const data = await redis.get('last_update');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data || { time: 'Henüz güncellenmedi' }));
             return;
         }
     }

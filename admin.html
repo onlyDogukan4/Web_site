@@ -322,7 +322,10 @@
         <section id="products-section">
             <div class="stats-grid">
                 <div class="stat-card"><p class="label">Toplam Ürün</p><p class="value" id="total-products">0</p></div>
-                <div class="stat-card"><p class="label">Sistem Durumu</p><p class="value" style="font-size: 18px; color:#10b981">Yayında</p></div>
+                <div class="stat-card">
+                    <p class="label">Son Güncelleme</p>
+                    <p class="value" id="last-update-time" style="font-size: 18px;">Yükleniyor...</p>
+                </div>
             </div>
 
             <div class="section-card">
@@ -487,9 +490,28 @@
 
         async function saveData() {
             document.getElementById('loading').style.display = 'flex';
+            const now = new Date().toLocaleString('tr-TR');
             try {
-                await fetch('products.json', { method: 'POST', body: JSON.stringify(products) });
-                await fetch('orders.json', { method: 'POST', body: JSON.stringify(orders) });
+                await fetch('/api/products', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(products) 
+                });
+                await fetch('/api/orders', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orders) 
+                });
+                
+                // Güncelleme vaktini kaydet
+                await fetch('/api/last-update', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ time: now }) 
+                });
+
+                document.getElementById('last-update-time').textContent = now;
+
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3000);

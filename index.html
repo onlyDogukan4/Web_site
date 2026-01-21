@@ -650,6 +650,11 @@
         }
 
         renderProducts();
+        
+        // Verimlilik için: Sadece sayfa odağa geldiğinde veya her 60 saniyede bir güncelle
+        window.addEventListener('focus', renderProducts);
+        setInterval(renderProducts, 60000); 
+
         updateLanguage();
         updateCartDisplay();
     </script>
