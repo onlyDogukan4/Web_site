@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/products.json",
+            "destination": "/api/products"
+        },
+        {
+            "source": "/orders.json",
+            "destination": "/api/orders"
+        }
+    ]
+}

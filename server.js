@@ -1,12 +1,46 @@
 
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import { Redis } from '@upstash/redis';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = 3000;
 
-// .env dosyasından API anahtarını manuel oku
+// Initialize Upstash Redis
+const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL || 'https://stable-bug-37497.upstash.io',
+    token: process.env.UPSTASH_REDIS_REST_TOKEN || 'AZJ5AAIncDJhYWY3ZTMzZmI0NDc0MmJiOTA4ZWJiY2I4OGZlN2Q3MnAyMzc0OTc',
+});
+
+// Helper: Seed initial data if database is empty
+async function seedData() {
+    try {
+        const prodCheck = await redis.get('products');
+        if (!prodCheck) {
+            const initialProducts = JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json'), 'utf-8'));
+            await redis.set('products', initialProducts);
+            console.log("DB: Products seeded.");
+        }
+        const orderCheck = await redis.get('orders');
+        if (!orderCheck) {
+            const initialOrders = JSON.parse(fs.readFileSync(path.join(__dirname, 'orders.json'), 'utf-8'));
+            await redis.set('orders', initialOrders);
+            console.log("DB: Orders seeded.");
+        }
+    } catch (e) {
+        console.error("DB Seed Error:", e);
+    }
+}
+seedData();
+
+// .env dosyasından API anahtarını manuel oku (Vercel'de process.env kullanılır)
 function getApiKey() {
+    if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
     try {
         const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf-8');
         const match = envContent.match(/GEMINI_API_KEY=(.*)/);
@@ -17,6 +51,43 @@ function getApiKey() {
 }
 
 const server = http.createServer(async (req, res) => {
+    // --- DATA ROUTES (UPSTASH REDIS) ---
+    if (req.url.startsWith('/products.json')) {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                await redis.set('products', JSON.parse(body));
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else if (req.method === 'GET') {
+            const data = await redis.get('products');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data));
+            return;
+        }
+    }
+
+    if (req.url.startsWith('/orders.json')) {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                await redis.set('orders', JSON.parse(body));
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else if (req.method === 'GET') {
+            const data = await redis.get('orders');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data));
+            return;
+        }
+    }
+
     // API Route'u simüle et
     if (req.url === '/api/chat' && req.method === 'POST') {
         let body = '';
@@ -31,7 +102,7 @@ const server = http.createServer(async (req, res) => {
                     return res.end(JSON.stringify({ error: 'API key not found in .env' }));
                 }
 
-                const modelName = "gemma-3-4b-it";
+                const modelName = "gemini-1.5-flash";
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
 
                 const apiRes = await fetch(url, {

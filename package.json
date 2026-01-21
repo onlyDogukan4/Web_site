@@ -1,0 +1,12 @@
+{
+  "name": "moderra-web",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.36.1"
+  }
+}

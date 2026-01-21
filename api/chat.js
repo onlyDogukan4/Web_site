@@ -4,13 +4,14 @@ export default async function handler(req, res) {
     }
 
     const { prompt, chatHistory, siteContext } = req.body;
-    const API_KEY = process.env.GEMINI_API_KEY;
+    const API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (!API_KEY) {
-        return res.status(500).json({ error: 'API key not configured on server' });
+        console.error('API Key Missing');
+        return res.status(500).json({ error: 'API key not configured on Vercel. Please add GEMINI_API_KEY to Environment Variables.' });
     }
 
-    const modelName = "gemma-3-4b-it";
+    const modelName = "gemini-1.5-flash"; // More stable for overall use, you can change back to gemma-3-4b-it if preferred
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
 
     const body = {
