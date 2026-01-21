@@ -281,7 +281,7 @@
             document.getElementById('not-found').style.display = 'none';
 
             try {
-                const response = await fetch('orders.json');
+                const response = await fetch('/api/orders');
                 const orders = await response.json();
                 const order = orders.find(o => o.orderId.toUpperCase() === id);
 
@@ -299,7 +299,11 @@
             const container = document.getElementById('result-container');
             container.style.display = 'block';
 
-            document.getElementById('display-order-id').textContent = '#' + order.orderId;
+            // Requested dynamic heading
+            document.getElementById('display-order-id').innerHTML = `
+                <span style="color:var(--text-muted); font-size:14px; display:block; margin-bottom:5px;">Sipariş Bilgileri</span>
+                ${order.orderId} nolu ${order.customerName} kullanıcısının siparişi hakkında:
+            `;
             document.getElementById('display-customer').textContent = order.customerName;
             document.getElementById('display-delivery').textContent = order.estimatedDelivery;
             document.getElementById('display-items').textContent = order.items;

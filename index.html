@@ -584,14 +584,14 @@
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     card.innerHTML = `
-                        <div class="product-img-wrapper" onclick="openProductDetail(${p.id})">
-                            <img src="${p.image || 'images/bardak.png'}" alt="${p.name}" class="product-img" loading="lazy">
+                        <div class="product-img-wrapper" onclick="openProductDetail('${p.id}')">
+                            <img src="${p.image || 'images/bardak.png'}" alt="${p.name_tr}" class="product-img" loading="lazy">
                             <div class="view-details-overlay">
                                 <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
                             </div>
                         </div>
                         <div class="product-info">
-                            <h3 class="product-title" data-tr="${p.name}" data-en="${p.name}" onclick="openProductDetail(${p.id})">${p.name}</h3>
+                            <h3 class="product-title" data-tr="${p.name_tr}" data-en="${p.name_en || p.name_tr}" onclick="openProductDetail('${p.id}')">${p.name_tr}</h3>
                             <div class="product-price">
                                 <span class="current-price" data-price="${p.price}">₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
                             </div>
@@ -600,11 +600,11 @@
                             </div>
                             <button class="add-to-cart" 
                                 data-id="${p.id}" 
-                                data-name="${p.name}" 
+                                data-name="${p.name_tr}" 
                                 data-price="${p.price}" 
                                 data-tr="Sepete Ekle" 
                                 data-en="Add to Cart"
-                                onclick="addToCart('${p.id}', '${p.name}', ${p.price})">
+                                onclick="addToCart('${p.id}', '${p.name_tr}', ${p.price})">
                                 Sepete Ekle
                             </button>
                         </div>
@@ -628,21 +628,22 @@
         }
 
         async function openProductDetail(id) {
-            const response = await fetch('products.json');
+            const response = await fetch('/api/products');
             const products = await response.json();
             const p = products.find(prod => prod.id == id);
             if (!p) return;
 
+            const isEn = localStorage.getItem('lang') === 'en';
             const detailModal = document.getElementById('product-detail-modal');
             document.getElementById('detail-img').src = p.image || 'images/bardak.png';
-            document.getElementById('detail-title').textContent = p.name;
+            document.getElementById('detail-title').textContent = isEn ? (p.name_en || p.name_tr) : p.name_tr;
             document.getElementById('detail-price').textContent = '₺' + parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 });
             document.getElementById('detail-rating').innerHTML = generateRatingStars(p.rating || 5);
-            document.getElementById('detail-desc').textContent = p.description || "";
+            document.getElementById('detail-desc').textContent = isEn ? (p.description_en || p.description_tr) : p.description_tr;
             
             const addBtn = document.getElementById('detail-add-btn');
             addBtn.onclick = () => {
-                addToCart(p.id, p.name, p.price);
+                addToCart(p.id, p.name_tr, p.price);
                 detailModal.style.display = 'none';
             };
 
