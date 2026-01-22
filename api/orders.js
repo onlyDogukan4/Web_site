@@ -14,6 +14,7 @@ const INITIAL_ORDERS = [
 ];
 
 export default async function handler(req, res) {
+    console.log(">>> V5-CLEAN-FINAL START <<<");
     const url = (process.env.UPSTASH_REDIS_REST_URL || "").trim();
     const token = (process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
 
@@ -46,6 +47,6 @@ export default async function handler(req, res) {
             return res.status(200).json(data);
         }
     } catch (error) {
-        return res.status(500).json({ error: error.message, version: "REST-V3" });
+        return res.status(500).json({ error: error.message, version: "V5-CLEAN-FINAL" });
     }
 }

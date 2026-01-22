@@ -97,6 +97,7 @@ const INITIAL_PRODUCTS = [
 // Upstash SDK tamamen kaldırıldı, doğrudan REST API kullanılıyor.
 
 export default async function handler(req, res) {
+    console.log(">>> V5-CLEAN-FINAL START <<<");
     // Vercel uzerindeki degiskenleri cek
     const url = (process.env.UPSTASH_REDIS_REST_URL || "").trim();
     const token = (process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
@@ -163,7 +164,7 @@ export default async function handler(req, res) {
         return res.status(500).json({
             error: "Veritabanı API Hatası",
             details: error.message,
-            version: "REST-V3"
+            version: "V5-CLEAN-FINAL"
         });
     }
 }

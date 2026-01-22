@@ -1,9 +1,10 @@
 // Native Fetch REST implementation
 export default async function handler(req, res) {
+    console.log(">>> V5-CLEAN-FINAL START <<<");
     const url = (process.env.UPSTASH_REDIS_REST_URL || "").trim();
     const token = (process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
 
-    if (!url || !token) return res.status(500).json({ error: "Missing Config", version: "REST-V3" });
+    if (!url || !token) return res.status(500).json({ error: "Missing Config", version: "V5-CLEAN-FINAL" });
 
     try {
         if (req.method === 'POST') {
@@ -26,6 +27,6 @@ export default async function handler(req, res) {
             return res.status(200).json(data || { time: 'Henüz güncellenmedi' });
         }
     } catch (e) {
-        return res.status(500).json({ error: e.message, version: "REST-V3" });
+        return res.status(500).json({ error: e.message, version: "V5-CLEAN-FINAL" });
     }
 }
