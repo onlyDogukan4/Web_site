@@ -207,13 +207,6 @@ class ModerraAI {
         if (typingIndicator) typingIndicator.style.display = 'block';
 
         try {
-            if (window.location.protocol === 'file:') {
-                this.addBotMessage("⚠️ **Uyarı:** Chatbot'un çalışması için bir sunucu gereklidir. Lütfen projeyi Vercel'e yükleyin veya yerel bir sunucuda (Live Server vb.) çalıştırın.");
-                this.isThinking = false;
-                if (typingIndicator) typingIndicator.style.display = 'none';
-                return;
-            }
-
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -224,6 +217,14 @@ class ModerraAI {
                 })
             });
 
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                if (response.status === 404) {
+                    throw new Error("Chat servisi bulunamadı (404). Lütfen Vercel deployment'ı kontrol edin.");
+                }
+                throw new Error(errorData.error || `Bağlantı Hatası (${response.status})`);
+            }
+
             const data = await response.json();
 
             if (data.candidates && data.candidates[0]) {
@@ -231,16 +232,12 @@ class ModerraAI {
                 this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                 this.chatHistory.push({ role: "model", parts: [{ text: botText }] });
                 this.addBotMessage(botText);
-            } else if (response.status === 429 || (data.error && data.error.toString().toLowerCase().includes("quota"))) {
-                this.addBotMessage("Dr. Karton şu an çok yoğun! (Günlük limit dolmuş olabilir). Lütfen biraz sonra tekrar deneyin.");
-            } else if (response.status === 404) {
-                this.addBotMessage("Sunucu bağlantısı kurulamadı. Lütfen bu sayfayı bir sunucu (Vercel vb.) üzerinden açtığınızdan emin olun.");
             } else {
-                throw new Error(data.error || "Invalid response");
+                throw new Error("Geçersiz yanıt formatı.");
             }
         } catch (e) {
             console.error("Chat Error:", e);
-            this.addBotMessage("Ufak bir aksaklık oldu, lütfen tekrar deneyin!");
+            this.addBotMessage(`⚠️ **Hata:** ${e.message}`);
         } finally {
             this.isThinking = false;
             if (typingIndicator) typingIndicator.style.display = 'none';

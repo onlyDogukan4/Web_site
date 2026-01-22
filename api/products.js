@@ -5,17 +5,58 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-// Initial data if Redis is empty
+// Güncel Dil Destekli Başlangıç Verileri
 const INITIAL_PRODUCTS = [
-    { "id": "1", "name": "6.5 oz Karton Bardak (1000 adet)", "price": 1100, "image": "images/bardak.png", "description": "En yüksek kalite standartlarında üretilmiştir.", "rating": "5.0" },
-    { "id": "3", "name": "Ahşap Karıştırıcı (1000'li Paket)", "price": 189.9, "image": "images/karistirici.jpeg", "description": "Doğal ahşaptan üretilmiş karıştırıcı.", "rating": "4.7" },
-    { "id": "4", "name": "Kare Peçete (1000 Adet)", "price": 99.9, "image": "images/pecete.png", "description": "Yumuşak dokulu kare peçeteler.", "rating": "4.9" },
-    { "id": "6", "name": "Sıcak İçecek Kapağı (1000 Adet)", "price": 149.9, "image": "images/kapak.png", "description": "Sızdırmaz kapaklar.", "rating": "4.8" },
-    { "id": "7", "name": "Stick Şeker (1000 Adet)", "price": 449.5, "image": "images/seker.png", "description": "Hijyenik beyaz stick şeker.", "rating": "5.0" },
-    { "id": "8", "name": "Logolu Kalem (50 Adet)", "price": 119.9, "image": "images/kalem.png", "description": "Markanıza özel tükenmez kalem.", "rating": "4.6" },
-    { "id": "9", "name": "Çakmak (10 Adet)", "price": 219.9, "image": "images/çakmak.png", "description": "Güvenilir mekanizmalı çakmaklar.", "rating": "4.7" },
-    { "id": "10", "name": "Soğuk İçecek Bardağı 12 oz (100 Adet)", "price": 199.9, "image": "images/pet.png", "description": "Şeffaf pet bardaklar.", "rating": "4.9" },
-    { "id": "11", "name": "Tekli Paket Islak Mendil (1000 Adet)", "price": 279.9, "image": "images/mendil.png", "description": "Hijyenik ıslak mendil.", "rating": "5.0" }
+    {
+        "id": "1",
+        "name_tr": "8.5 oz Karton Bardak (1000 adet)",
+        "name_en": "8.5 oz Paper Cup (1000 pcs)",
+        "price": 1453,
+        "image": "images/bardak.png",
+        "description_tr": "En yüksek kalite standartlarında üretilmiştir.",
+        "description_en": "Produced with the highest quality standards.",
+        "rating": "5.0"
+    },
+    {
+        "id": "3",
+        "name_tr": "Ahşap Karıştırıcı (100'lü Paket)",
+        "name_en": "Wooden Stirrer (100 pcs)",
+        "price": 189.9,
+        "image": "images/karistirici.jpeg",
+        "description_tr": "Doğal ahşaptan üretilmiş karıştırıcı.",
+        "description_en": "Stirrer made from natural wood.",
+        "rating": "4.7"
+    },
+    {
+        "id": "4",
+        "name_tr": "Kare Peçete (1000 Adet)",
+        "name_en": "Square Napkin (1000 pcs)",
+        "price": 99.9,
+        "image": "images/pecete.png",
+        "description_tr": "Yumuşak dokulu kare peçeteler.",
+        "description_en": "Soft textured square napkins.",
+        "rating": "4.9"
+    },
+    {
+        "id": "6",
+        "name_tr": "Sıcak İçecek Kapağı (1000 Adet)",
+        "name_en": "Hot Drink Lid (1000 pcs)",
+        "price": 149.9,
+        "image": "images/kapak.png",
+        "description_tr": "Sızdırmaz kapaklar.",
+        "description_en": "Leak-proof lids.",
+        "rating": "4.8"
+    },
+    {
+        "id": "11",
+        "name_tr": "Tekli Paket Islak Mendil (1000 Adet)",
+        "name_en": "Single Pack Wet Wipe (1000 pcs)",
+        "price": 279.9,
+        "image": "images/mendil.png",
+        "description_tr": "Hijyenik ıslak mendil.",
+        "description_en": "Hygienic wet wipe.",
+        "rating": "5.0"
+    }
 ];
 
 export default async function handler(req, res) {
@@ -23,9 +64,7 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
+    if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
         if (req.method === 'POST') {
@@ -34,14 +73,14 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true });
         } else {
             let data = await redis.get('products');
-            if (!data) {
+            // Eğer veritabanı boşsa veya eski formatta ise INITIAL_PRODUCTS ile başlat
+            if (!data || !Array.isArray(data) || (data.length > 0 && !data[0].name_tr)) {
                 await redis.set('products', INITIAL_PRODUCTS);
                 data = INITIAL_PRODUCTS;
             }
             return res.status(200).json(data);
         }
     } catch (error) {
-        console.error("Redis Error:", error);
         return res.status(500).json({ error: error.message });
     }
 }

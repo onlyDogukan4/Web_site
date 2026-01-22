@@ -549,6 +549,7 @@
             currentLang = currentLang === 'tr' ? 'en' : 'tr';
             localStorage.setItem('lang', currentLang);
             updateLanguage();
+            renderProducts(); // İsimlerin anında değişmesi için ürünleri tekrar çiz
         });
 
         // Theme Toggle Logic
@@ -575,43 +576,44 @@
 
         async function renderProducts() {
             const container = document.getElementById('products-dynamic-container');
+            if (!container) return;
             try {
-                const response = await fetch('products.json?t=' + new Date().getTime());
+                const response = await fetch('/api/products?t=' + Date.now());
                 const products = await response.json();
+                if (!Array.isArray(products)) throw new Error("Not array");
+                
                 container.innerHTML = '';
+                const isEn = localStorage.getItem('lang') === 'en';
 
                 products.forEach(p => {
+                    const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
+                    const desc = isEn ? (p.description_en || p.description_tr) : p.description_tr;
+                    
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     card.innerHTML = `
                         <div class="product-img-wrapper" onclick="openProductDetail('${p.id}')">
-                            <img src="${p.image || 'images/bardak.png'}" alt="${p.name_tr}" class="product-img" loading="lazy">
+                            <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy">
                             <div class="view-details-overlay">
-                                <button class="view-btn" data-tr="İncele" data-en="View Detail">İncele</button>
+                                <button class="view-btn" data-tr="İncele" data-en="View Detail">${isEn?'View Detail':'İncele'}</button>
                             </div>
                         </div>
                         <div class="product-info">
-                            <h3 class="product-title" data-tr="${p.name_tr}" data-en="${p.name_en || p.name_tr}" onclick="openProductDetail('${p.id}')">${p.name_tr}</h3>
+                            <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
                             <div class="product-price">
-                                <span class="current-price" data-price="${p.price}">₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+                                <span class="current-price">₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
                             </div>
                             <div class="product-rating">
                                 ${generateRatingStars(p.rating || 5)} (${p.rating || '5.0'})
                             </div>
                             <button class="add-to-cart" 
-                                data-id="${p.id}" 
-                                data-name="${p.name_tr}" 
-                                data-price="${p.price}" 
-                                data-tr="Sepete Ekle" 
-                                data-en="Add to Cart"
                                 onclick="addToCart('${p.id}', '${p.name_tr}', ${p.price})">
-                                Sepete Ekle
+                                ${isEn?'Add to Cart':'Sepete Ekle'}
                             </button>
                         </div>
                     `;
                     container.appendChild(card);
                 });
-                updateLanguage(); // Dil çevirilerini uygula
             } catch (e) {
                 console.error("Ürünler yüklenemedi", e);
             }
