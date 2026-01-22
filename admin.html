@@ -369,10 +369,11 @@
             await syncData('products'); // Otomatik sync
         }
         
-        function deleteProduct(i) { 
+        async function deleteProduct(i) { 
             if(confirm("Bu ürünü silmek istediğinize emin misiniz?")) { 
                 products.splice(i,1); 
                 renderAll(); 
+                await syncData('products'); // Silme sonrası veritabanını güncelle
             } 
         }
 

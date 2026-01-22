@@ -5,52 +5,32 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-// Güncel Dil Destekli Başlangıç Verileri
+// Senin orijinal ürün kataloğun ve doğru dosya yolları
 const INITIAL_PRODUCTS = [
     {
         "id": "1",
-        "name_tr": "4 oz Karton Bardak (1000 adet)",
-        "name_en": "4 oz Paper Cup (1000 pcs)",
-        "price": 850,
+        "name_tr": "8.5 oz Karton Bardak (1000 adet)",
+        "name_en": "8.5 oz Paper Cup (1000 pcs)",
+        "price": 1453,
         "image": "images/bardak.png",
-        "description_tr": "Espresso ve tadım için ideal.",
-        "description_en": "Ideal for espresso and tasting.",
+        "description_tr": "En yüksek kalite standartlarında üretilmiştir.",
+        "description_en": "Produced with the highest quality standards.",
         "rating": "5.0"
     },
     {
         "id": "2",
         "name_tr": "7 oz Karton Bardak (1000 adet)",
         "name_en": "7 oz Paper Cup (1000 pcs)",
-        "price": 1200,
+        "price": 950,
         "image": "images/bardak.png",
-        "description_tr": "Çay ve kahve için en çok tercih edilen boy.",
-        "description_en": "Most preferred size for tea and coffee.",
+        "description_tr": "Sıcak içecekler için ideal sızdırmaz yapı.",
+        "description_en": "Leak-proof structure ideal for hot drinks.",
         "rating": "4.9"
     },
     {
         "id": "3",
-        "name_tr": "8.5 oz Karton Bardak (1000 adet)",
-        "name_en": "8.5 oz Paper Cup (1000 pcs)",
-        "price": 1453,
-        "image": "images/bardak.png",
-        "description_tr": "Standard sıcak içecek bardağı.",
-        "description_en": "Standard hot drink cup.",
-        "rating": "5.0"
-    },
-    {
-        "id": "4",
-        "name_tr": "12 oz Karton Bardak (1000 adet)",
-        "name_en": "12 oz Paper Cup (1000 pcs)",
-        "price": 1850,
-        "image": "images/bardak.png",
-        "description_tr": "Büyük boy içecekler için ideal.",
-        "description_en": "Ideal for large size drinks.",
-        "rating": "4.8"
-    },
-    {
-        "id": "5",
-        "name_tr": "Ahşap Karıştırıcı (1000'li Paket)",
-        "name_en": "Wooden Stirrer (1000 pcs)",
+        "name_tr": "Ahşap Karıştırıcı (100'lü Paket)",
+        "name_en": "Wooden Stirrer (100 pcs)",
         "price": 189.9,
         "image": "images/karistirici.jpeg",
         "description_tr": "Doğal ahşaptan üretilmiş karıştırıcı.",
@@ -58,44 +38,44 @@ const INITIAL_PRODUCTS = [
         "rating": "4.7"
     },
     {
-        "id": "6",
-        "name_tr": "Kare Peçete (2000 Adet)",
-        "name_en": "Square Napkin (2000 pcs)",
-        "price": 240,
+        "id": "4",
+        "name_tr": "Kare Peçete (1000 Adet)",
+        "name_en": "Square Napkin (1000 pcs)",
+        "price": 99.9,
         "image": "images/pecete.png",
         "description_tr": "Yumuşak dokulu kare peçeteler.",
         "description_en": "Soft textured square napkins.",
         "rating": "4.9"
     },
     {
-        "id": "7",
-        "name_tr": "Sıcak İçecek Kapağı (1000 Adet)",
-        "name_en": "Hot Drink Lid (1000 pcs)",
-        "price": 650,
-        "image": "images/kapak.png",
-        "description_tr": "Sızdırmaz ve ısıya dayanıklı kapaklar.",
-        "description_en": "Leak-proof and heat resistant lids.",
+        "id": "5",
+        "name_tr": "Karton Bardak Tutucu",
+        "name_en": "Paper Cup Sleeve",
+        "price": 120,
+        "image": "images/bardak.png",
+        "description_tr": "Elinizi sıcaktan koruyan ergonomik tasarım.",
+        "description_en": "Ergonomic design protecting your hand from heat.",
         "rating": "4.8"
     },
     {
-        "id": "8",
-        "name_tr": "Islak Mendil (1000 Adet)",
-        "name_en": "Wet Wipe (1000 pcs)",
-        "price": 320,
-        "image": "images/mendil.png",
-        "description_tr": "Hijyenik ve hoş kokulu ıslak mendil.",
-        "description_en": "Hygienic and pleasantly scented wet wipe.",
-        "rating": "5.0"
+        "id": "6",
+        "name_tr": "Sıcak İçecek Kapağı (1000 Adet)",
+        "name_en": "Hot Drink Lid (1000 pcs)",
+        "price": 149.9,
+        "image": "images/kapak.png",
+        "description_tr": "Sızdırmaz kapaklar.",
+        "description_en": "Leak-proof lids.",
+        "rating": "4.8"
     },
     {
-        "id": "9",
-        "name_tr": "Karton Bardak Taşıyıcı (500 Adet)",
-        "name_en": "Paper Cup Carrier (500 pcs)",
-        "price": 450,
-        "image": "images/bardak.png",
-        "description_tr": "2'li güvenli taşıma aparatı.",
-        "description_en": "Secure 2-pack carrier.",
-        "rating": "4.6"
+        "id": "11",
+        "name_tr": "Tekli Paket Islak Mendil (1000 Adet)",
+        "name_en": "Single Pack Wet Wipe (1000 pcs)",
+        "price": 279.9,
+        "image": "images/mendil.png",
+        "description_tr": "Hijyenik ıslak mendil.",
+        "description_en": "Hygienic wet wipe.",
+        "rating": "5.0"
     }
 ];
 
@@ -113,8 +93,8 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true });
         } else {
             let data = await redis.get('products');
-            // Eğer veritabanı boşsa veya eski formatta ise INITIAL_PRODUCTS ile başlat
-            if (!data || !Array.isArray(data) || (data.length > 0 && !data[0].name_tr)) {
+            // Eğer veritabanı boşsa veya hatalıysa INITIAL_PRODUCTS ile başlat
+            if (!data || !Array.isArray(data) || data.length === 0) {
                 await redis.set('products', INITIAL_PRODUCTS);
                 data = INITIAL_PRODUCTS;
             }
@@ -122,8 +102,6 @@ export default async function handler(req, res) {
         }
     } catch (error) {
         console.error("Redis Products Error:", error);
-        // ÖNEMLİ: Veritabanı (Redis) bağlantısı kopsa bile ürün kataloğunun silinmemesi için 
-        // ana sayfaya başlangıç verilerini (INITIAL_PRODUCTS) geri döndürüyoruz.
         return res.status(200).json(INITIAL_PRODUCTS);
     }
 }
