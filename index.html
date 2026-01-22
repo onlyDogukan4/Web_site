@@ -112,27 +112,32 @@
 
     <!-- Modern Profil Modalı -->
     <div id="profile-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header-banner">
-                <span class="close-btn profile-close" style="color: white; top: 15px; right: 20px;">&times;</span>
-                <i class="fas fa-user-circle"></i>
-                <h2 data-tr="Profil Bilgilerim" data-en="My Profile" style="margin:0">Profil Bilgilerim</h2>
+                <span class="close-btn profile-close" style="color: white;">&times;</span>
+                <i class="fas fa-user-circle" style="font-size: 64px; margin-bottom: 15px;"></i>
+                <h2 data-tr="Profilim" data-en="My Profile">Profilim</h2>
+                <p style="font-size: 14px; opacity: 0.8;" data-tr="Bilgilerinizi buradan yönetebilirsiniz." data-en="You can manage your information here.">Bilgilerinizi buradan yönetebilirsiniz.</p>
             </div>
             <div class="modal-body-padding">
                 <form id="profile-form">
-                    <div class="profile-field-item">
-                        <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
-                        <input type="text" id="user-name" placeholder="Adınız Soyadınız" required>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                        <div class="profile-field-item">
+                            <label><i class="fas fa-id-card"></i> <span data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</span></label>
+                            <input type="text" id="user-name" placeholder="Örn: Doğan Aydın" required>
+                        </div>
+                        <div class="profile-field-item">
+                            <label><i class="fas fa-phone-alt"></i> <span data-tr="Telefon" data-en="Phone">Telefon</span></label>
+                            <input type="tel" id="user-phone" placeholder="05XX XXX XX XX" required>
+                        </div>
+                        <div class="profile-field-item">
+                            <label><i class="fas fa-map-marker-alt"></i> <span data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</span></label>
+                            <textarea id="user-address" rows="3" placeholder="Siparişleriniz için açık adres giriniz..." required></textarea>
+                        </div>
                     </div>
-                    <div class="profile-field-item">
-                        <label data-tr="Telefon Numarası" data-en="Phone Number">Telefon Numarası</label>
-                        <input type="tel" id="user-phone" placeholder="05xx xxx xx xx" required>
-                    </div>
-                    <div class="profile-field-item">
-                        <label data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</label>
-                        <textarea id="user-address" rows="3" placeholder="Siparişlerinizin ulaşacağı tam adres..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%; padding: 15px; border-radius: 12px;" data-tr="DEĞİŞİKLİKLERİ KAYDET" data-en="SAVE CHANGES">DEĞİŞİKLİKLERİ KAYDET</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; padding: 18px;">
+                        <i class="fas fa-save"></i> <span data-tr="GÜNCELLE" data-en="UPDATE">GÜNCELLE</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -630,6 +635,13 @@
                 });
             } catch (e) {
                 console.error("Ürünler yüklenemedi", e);
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
+                        <h3 data-tr="Veritabanı Bağlantı Hatası" data-en="Database Connection Error">Veritabanı Bağlantı Hatası</h3>
+                        <p style="color: var(--text-muted); margin-top: 10px;" data-tr="Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin." data-en="Please check your Vercel settings or refresh the page.">Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin.</p>
+                    </div>
+                `;
             }
         }
 

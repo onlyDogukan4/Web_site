@@ -48,6 +48,16 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     transition: background 0.3s ease;
+    user-select: none;
+    /* Site genelinde kopyalamayı/seçmeyi engelle */
+}
+
+/* Admin panelinde seçime izin ver */
+.main-content,
+.sidebar,
+#login-overlay,
+.modal-card {
+    user-select: auto !important;
 }
 
 .container {
@@ -477,4 +487,143 @@ body {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(78, 84, 200, 0.4);
+}
+
+/* --- FOOTER PREMIUM --- */
+footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    padding: 80px 0 40px;
+    margin-top: 100px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 60px;
+}
+
+@media (max-width: 900px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+}
+
+.footer-logo {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+    margin-bottom: 24px;
+    display: block;
+}
+
+.footer-column h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: var(--primary);
+    padding-left: 5px;
+}
+
+.footer-social-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.social-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--bg-main);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.social-pill:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.social-pill i {
+    font-size: 18px;
+}
+
+.footer-bottom {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* --- PROFILE MODAL MODERN --- */
+.profile-field-item {
+    margin-bottom: 24px;
+}
+
+.profile-field-item label {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.profile-field-item input,
+.profile-field-item textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.profile-field-item input:focus,
+.profile-field-item textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(78, 84, 200, 0.1);
+}
+
+.close-btn {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    font-size: 32px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    color: var(--danger);
+    transform: rotate(90deg);
 }
