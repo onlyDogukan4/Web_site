@@ -97,34 +97,72 @@ const INITIAL_PRODUCTS = [
 import { Redis } from '@upstash/redis';
 
 export default async function handler(req, res) {
-    const url = process.env.UPSTASH_REDIS_REST_URL;
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    // Vercel uzerindeki degiskenleri cek
+    const url = (process.env.UPSTASH_REDIS_REST_URL || "").trim();
+    const token = (process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
+
+    // Derinlemesine loglama (Sifreler gozukmez, sadece varlik kontrolu)
+    console.log("Product Sync - DB Check:", {
+        urlExists: !!url,
+        tokenExists: !!token,
+        urlStart: url.substring(0, 10) + "..."
+    });
 
     if (!url || !token) {
-        return res.status(500).json({ error: "UPSTASH_REDIS_REST_URL veya TOKEN eksik! Vercel'den Environment Variables ayarlarını kontrol edin." });
+        return res.status(500).json({
+            error: "VERITABANI AYARLARI EKSIK!",
+            details: "Vercel -> Settings -> Environment Variables kısmına UPSTASH_REDIS_REST_URL ve TOKEN eklenmemiş veya Redeploy yapılmamış."
+        });
     }
-
-    const redis = new Redis({ url, token });
 
     try {
         if (req.method === 'POST') {
             const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            if (!Array.isArray(data)) throw new Error("Gönderilen veri bir liste (array) olmalı.");
-            await redis.set('products', data);
+
+            // SET islemi (REST API)
+            const response = await fetch(`${url}/set/products`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error("Upstash SET error: " + errText);
+            }
+
             return res.status(200).json({ success: true });
         } else {
-            let data = await redis.get('products');
+            // GET islemi (REST API)
+            const response = await fetch(`${url}/get/products`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error("Upstash GET error: " + errText);
+            }
+
+            const body = await response.json();
+
+            // Upstash JSON string olarak sakladigi icin parse etmemiz gerekebilir
+            let data = body.result;
             if (data === null || data === undefined) {
                 return res.status(200).json(INITIAL_PRODUCTS);
             }
+
+            // String donerse objeye cevir
+            if (typeof data === 'string') {
+                try { data = JSON.parse(data); } catch (e) { }
+            }
+
             return res.status(200).json(data);
         }
     } catch (error) {
-        console.error("Redis Products Error:", error);
+        console.error("Vercel Product Handler Error:", error);
         return res.status(500).json({
-            error: "Veritabanı bağlantı hatası!",
-            details: error.message,
-            tip: "Upstash şifrelerinizi ve URL'nizi tekrar kontrol edin."
+            error: "Veritabanı API Hatası",
+            details: error.message
         });
     }
 }

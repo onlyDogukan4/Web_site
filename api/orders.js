@@ -14,33 +14,38 @@ const INITIAL_ORDERS = [
 ];
 
 export default async function handler(req, res) {
-    const url = process.env.UPSTASH_REDIS_REST_URL;
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    const url = (process.env.UPSTASH_REDIS_REST_URL || "").trim();
+    const token = (process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
 
     if (!url || !token) {
-        return res.status(500).json({ error: "UPSTASH_REDIS_REST_URL veya TOKEN eksik!" });
+        return res.status(500).json({ error: "Upstash config missing" });
     }
-
-    const redis = new Redis({ url, token });
 
     try {
         if (req.method === 'POST') {
             const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            if (!Array.isArray(data)) throw new Error("Veri array olmalı");
-            await redis.set('orders', data);
+            const response = await fetch(`${url}/set/orders`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
             return res.status(200).json({ success: true });
         } else {
-            let data = await redis.get('orders');
+            const response = await fetch(`${url}/get/orders`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const body = await response.json();
+            let data = body.result;
+
             if (data === null || data === undefined) {
                 return res.status(200).json(INITIAL_ORDERS);
+            }
+            if (typeof data === 'string') {
+                try { data = JSON.parse(data); } catch (e) { }
             }
             return res.status(200).json(data);
         }
     } catch (error) {
-        console.error("Redis Orders Error:", error);
-        return res.status(500).json({
-            error: "Sipariş veritabanı bağlantı hatası!",
-            details: error.message
-        });
+        return res.status(500).json({ error: error.message });
     }
 }
