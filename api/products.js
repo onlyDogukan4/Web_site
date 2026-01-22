@@ -109,19 +109,19 @@ export default async function handler(req, res) {
     try {
         if (req.method === 'POST') {
             const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+            if (!Array.isArray(data)) throw new Error("Data must be an array");
             await redis.set('products', data);
             return res.status(200).json({ success: true });
         } else {
             let data = await redis.get('products');
-            // Force reset: Eğer veri gelmiyorsa veya eksikse INITIAL_PRODUCTS kullan
-            if (!data || !Array.isArray(data) || data.length < 3) {
-                await redis.set('products', INITIAL_PRODUCTS);
-                data = INITIAL_PRODUCTS;
+            // Eğer veritabanı tamamen boşsa INITIAL_PRODUCTS ver
+            if (data === null || data === undefined) {
+                return res.status(200).json(INITIAL_PRODUCTS);
             }
             return res.status(200).json(data);
         }
     } catch (error) {
         console.error("Redis Products Error:", error);
-        return res.status(200).json(INITIAL_PRODUCTS);
+        return res.status(500).json({ error: "Veritabanı bağlantı hatası: " + error.message });
     }
 }

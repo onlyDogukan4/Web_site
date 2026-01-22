@@ -149,6 +149,10 @@
             <li class="nav-link active" id="link-p" onclick="switchSection('p')"><i class="fas fa-layer-group"></i> Ürün Listesi</li>
             <li class="nav-link" id="link-o" onclick="switchSection('o')"><i class="fas fa-truck-loading"></i> Sipariş Takibi</li>
             <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-home"></i> Siteye Git</li>
+            <li style="margin-top: 20px; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.05); font-size: 12px; display: flex; align-items: center; gap: 8px;">
+                <span id="db-status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: #94a3b8;"></span>
+                <span id="db-status-text">Veritabanı kontrol ediliyor...</span>
+            </li>
         </ul>
         <button class="btn btn-danger" style="margin-top:auto; width:100%; justify-content: center;" onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> Güvenli Çıkış
@@ -248,7 +252,30 @@
             init(); 
         }
 
+        async function checkDBStatus() {
+            const dot = document.getElementById('db-status-dot');
+            const text = document.getElementById('db-status-text');
+            try {
+                const res = await fetch('/api/products?t=' + Date.now());
+                if (res.ok) {
+                    dot.style.background = '#10b981';
+                    text.textContent = 'Veritabanı Bağlı';
+                } else {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Bağlantı Hatası');
+                }
+            } catch (e) {
+                dot.style.background = '#ef4444';
+                text.textContent = 'Bağlantı Kesik!';
+                console.error("DB Status Error:", e);
+                if (e.message.includes('UPSTASH')) {
+                    alert("KRİTİK HATA: Vercel üzerinde UPSTASH anahtarlarınız eksik veya hatalı!");
+                }
+            }
+        }
+
         async function init() {
+            await checkDBStatus();
             try {
                 // Her seferinde taze veri çekelim
                 const [resP, resO] = await Promise.all([
