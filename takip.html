@@ -283,7 +283,7 @@
             try {
                 const response = await fetch('/api/orders');
                 const orders = await response.json();
-                const order = orders.find(o => o.orderId.toUpperCase() === id);
+                const order = orders.find(o => o.orderId.trim().toUpperCase() === id);
 
                 if (order) {
                     showOrder(order);
@@ -292,6 +292,7 @@
                 }
             } catch (e) {
                 console.error("Tracking error", e);
+                alert("Sipariş verileri alınamadı. Lütfen daha sonra tekrar deneyiniz.");
             }
         }
 
@@ -301,13 +302,20 @@
 
             // Requested dynamic heading
             document.getElementById('display-order-id').innerHTML = `
-                <span style="color:var(--text-muted); font-size:14px; display:block; margin-bottom:5px;">Sipariş Bilgileri</span>
-                ${order.orderId} nolu ${order.customerName} kullanıcısının siparişi hakkında:
+                <span style="color:var(--text-muted); font-size:14px; display:block; margin-bottom:5px;">Sipariş Sorgulama Sonucu</span>
+                #${order.orderId} nolu ${order.customerName} siparişi:
             `;
             document.getElementById('display-customer').textContent = order.customerName;
-            document.getElementById('display-delivery').textContent = order.estimatedDelivery;
+            document.getElementById('display-delivery').textContent = order.estimatedDelivery || "Bilgi Bekleniyor";
             document.getElementById('display-items').textContent = order.items;
-            document.getElementById('status-text').textContent = order.status.toUpperCase();
+            
+            const statusMap = {
+                'alindi': 'SİPARİŞ ALINDI',
+                'hazirlaniyor': 'HAZIRLANIYOR',
+                'kargoda': 'KARGODA',
+                'teslim': 'TESLİM EDİLDİ'
+            };
+            document.getElementById('status-text').textContent = statusMap[order.status] || order.status.toUpperCase();
 
             // Progress Logic
             const steps = {

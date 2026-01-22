@@ -16,7 +16,7 @@
         body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; }
 
         /* Sidebar */
-        .sidebar { width: 280px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 30px; position: fixed; inset-y: 0; display: flex; flex-direction: column; }
+        .sidebar { width: 280px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 30px; position: fixed; inset-y: 0; display: flex; flex-direction: column; z-index: 100; }
         .logo { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 40px; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: var(--radius); color: var(--text-muted); text-decoration: none; font-weight: 600; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
         .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
@@ -27,52 +27,68 @@
         .section-card { background: var(--card-bg); border-radius: 24px; padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow); }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
-        /* Modals (Her biri kendine özel) */
+        /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-card { background: var(--card-bg); border-radius: 28px; width: 100%; max-width: 600px; padding: 35px; box-shadow: var(--shadow); }
+        .modal-card { background: var(--card-bg); border-radius: 28px; width: 100%; max-width: 600px; padding: 35px; box-shadow: var(--shadow); position: relative; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 14px; }
-        .editable-input { background: var(--bg); border: 2px solid var(--border); padding: 12px; border-radius: 12px; width: 100%; outline: none; }
+        .editable-input { background: var(--bg); border: 2px solid var(--border); padding: 12px; border-radius: 12px; width: 100%; outline: none; transition: 0.2s; color: var(--text-main); }
+        .editable-input:focus { border-color: var(--primary); }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        .btn { padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn { padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-size: 14px; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn-danger { background: var(--danger); color: white; }
         .btn-secondary { background: var(--secondary); color: white; }
 
         /* Tables */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 15px; color: var(--text-muted); border-bottom: 2px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); }
+        th { text-align: left; padding: 15px; color: var(--text-muted); border-bottom: 2px solid var(--border); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
 
         /* Sürükle Bırak */
-        .drop-zone { width: 100%; height: 140px; background: var(--bg); border: 2px dashed var(--border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin-bottom: 10px; }
+        .drop-zone { width: 100%; height: 140px; background: var(--bg); border: 2px dashed var(--border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin-bottom: 10px; transition: 0.3s; }
+        .drop-zone.hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
         .drop-zone img { height: 100%; object-fit: contain; }
 
         #login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 15px 30px; border-radius: 12px; transform: translateY(100px); transition: 0.5s; z-index: 3000; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 15px 30px; border-radius: 12px; transform: translateY(100px); transition: 0.5s; z-index: 3000; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .toast.show { transform: translateY(0); }
+
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .status-alindi { background: #e0e7ff; color: #4338ca; }
+        .status-hazirlaniyor { background: #fef3c7; color: #92400e; }
+        .status-kargoda { background: #dcfce7; color: #166534; }
+        .status-teslim { background: #fce7f3; color: #9d174d; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div class="section-card" style="width: 350px; text-align: center;">
-            <div class="logo">Moderra Admin</div>
+        <div class="section-card" style="width: 380px; text-align: center; border: 1px solid var(--border);">
+            <div class="logo">Moderra Yönetim</div>
+            <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 14px;">Panele erişmek için şifrenizi girin.</p>
             <input type="password" id="admin-pass" class="editable-input" placeholder="Şifre" style="text-align: center; margin-bottom: 15px;">
-            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkLogin()">Giriş</button>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkLogin()">Giriş Yap</button>
         </div>
     </div>
 
-    <!-- ÜRÜN MODALI -->
+    <!-- PRODUCT MODAL -->
     <div class="modal-overlay" id="product-modal">
         <div class="modal-card">
-            <h2 id="p-modal-title" style="margin-bottom:20px">Ürün İşlemi</h2>
+            <h2 id="p-modal-title" style="margin-bottom:20px">Ürün Detayları</h2>
             <div class="form-group">
-                <label>Ürün Resmi (Sürükle-Bırak veya Tıkla)</label>
+                <label>Görsel (Sürükle-Bırak)</label>
                 <div class="drop-zone" id="p-drop-zone">
-                    <div id="p-drop-text"><i class="fas fa-image fa-2x"></i><br>Görsel Seç</div>
+                    <div id="p-drop-text" style="text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-cloud-upload-alt fa-3x"></i><br>
+                        <span style="font-size: 12px;">Resim bırakın veya tıklayın</span>
+                    </div>
                     <img id="p-preview" src="" style="display:none">
                 </div>
                 <input type="file" id="p-file" accept="image/*" style="display:none">
@@ -88,31 +104,41 @@
             <div class="form-group"><label>Açıklama (TR)</label><textarea id="p-desc-tr" class="editable-input" rows="2"></textarea></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
                 <button class="btn btn-secondary" onclick="closeModal('product-modal')">İptal</button>
-                <button class="btn btn-primary" onclick="handleProductSave()">Kaydet</button>
+                <button class="btn btn-primary" onclick="handleProductSave()">Değişiklikleri Kaydet</button>
             </div>
         </div>
     </div>
 
-    <!-- SİPARİŞ MODALI (YENİ - SADECE SİPARİŞE ÖZEL) -->
+    <!-- ORDER MODAL (SADECE SİPARİŞE ÖZEL) -->
     <div class="modal-overlay" id="order-modal">
-        <div class="modal-card" style="max-width: 450px;">
-            <h2 style="margin-bottom:20px">Yeni Manuel Sipariş</h2>
-            <div class="form-group"><label>Müşteri Ad Soyad</label><input type="text" id="o-customer" class="editable-input" placeholder="Örn: Ahmet Yılmaz"></div>
-            <div class="form-group"><label>Sipariş İçeriği</label><textarea id="o-items" class="editable-input" rows="3" placeholder="Örn: 1000 Adet Baskılı Bardak"></textarea></div>
+        <div class="modal-card" style="max-width: 500px;">
+            <h2 style="margin-bottom:20px">Manuel Sipariş Oluştur</h2>
+            <div class="form-group">
+                <label>Müşteri Ad Soyad</label>
+                <input type="text" id="o-customer" class="editable-input" placeholder="Ahmet Yılmaz">
+            </div>
+            <div class="form-group">
+                <label>Sipariş İçeriği (Ürünler)</label>
+                <textarea id="o-items" class="editable-input" rows="3" placeholder="2000 adet 8.5 oz karton bardak"></textarea>
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Durum</label>
                     <select id="o-status" class="editable-input">
+                        <option value="alindi">Sipariş Alındı</option>
                         <option value="hazirlaniyor">Hazırlanıyor</option>
                         <option value="kargoda">Kargoda</option>
                         <option value="teslim">Teslim Edildi</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Teslim Tarihi</label><input type="date" id="o-delivery" class="editable-input"></div>
+                <div class="form-group">
+                    <label>Tahmini Teslim Günü</label>
+                    <input type="date" id="o-delivery" class="editable-input">
+                </div>
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
-                <button class="btn btn-secondary" onclick="closeModal('order-modal')">İptal</button>
-                <button class="btn btn-primary" onclick="createManualOrder()">Siparişi Oluştur</button>
+                <button class="btn btn-secondary" onclick="closeModal('order-modal')">Vazgeç</button>
+                <button class="btn btn-primary" onclick="createManualOrder()">Kaydet ve Kod Üret</button>
             </div>
         </div>
     </div>
@@ -120,47 +146,83 @@
     <aside class="sidebar">
         <div class="logo"><i class="fas fa-cube"></i> MODERRA</div>
         <ul class="nav-menu">
-            <li class="nav-link active" id="link-p" onclick="switchSection('p')"><i class="fas fa-box"></i> Ürün Yönetimi</li>
-            <li class="nav-link" id="link-o" onclick="switchSection('o')"><i class="fas fa-receipt"></i> Sipariş Yönetimi</li>
-            <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-external-link-alt"></i> Siteye Git</li>
+            <li class="nav-link active" id="link-p" onclick="switchSection('p')"><i class="fas fa-layer-group"></i> Ürün Listesi</li>
+            <li class="nav-link" id="link-o" onclick="switchSection('o')"><i class="fas fa-truck-loading"></i> Sipariş Takibi</li>
+            <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-home"></i> Siteye Git</li>
         </ul>
-        <button class="btn btn-danger" style="margin-top:auto; width:100%" onclick="logout()">Çıkış Yap</button>
+        <button class="btn btn-danger" style="margin-top:auto; width:100%; justify-content: center;" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Güvenli Çıkış
+        </button>
     </aside>
 
     <main class="main-content">
-        <!-- Ürünler -->
+        <!-- Ürünler Bölümü -->
         <section id="sec-p">
             <div class="section-header">
-                <h1>Ürün Listesi</h1>
+                <div>
+                    <h1>Mevcut Ürünler</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Mağazanızda yayında olan tüm ürünler.</p>
+                </div>
                 <button class="btn btn-primary" onclick="openAddProduct()"><i class="fas fa-plus"></i> Yeni Ürün Ekle</button>
             </div>
             <div class="section-card">
-                <table>
-                    <thead><tr><th>Görsel</th><th>Ürün Adı</th><th>Fiyat</th><th>İşlem</th></tr></thead>
-                    <tbody id="p-table"></tbody>
-                </table>
-                <div style="text-align:right; margin-top:25px;">
-                    <button class="btn btn-primary" style="padding:15px 40px" onclick="syncData()">Tümünü Kaydet ve Yayına Al</button>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Görsel</th>
+                                <th>Ürün Adı</th>
+                                <th>Birim Fiyat</th>
+                                <th>Durum</th>
+                                <th style="text-align: right;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p-table">
+                            <!-- JS ile dolacak -->
+                            <tr><td colspan="5" style="text-align:center; padding: 40px;">Yükleniyor...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align:right; margin-top:25px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">* Yapılan tüm değişiklikleri canlıya yansıtmak için basın.</p>
+                    <button class="btn btn-primary" style="padding:15px 40px" onclick="syncData('all')">
+                        <i class="fas fa-cloud-upload-alt"></i> TÜMÜNÜ KAYDET VE YAYINLA
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- Siparişler -->
+        <!-- Siparişler Bölümü -->
         <section id="sec-o" style="display:none">
             <div class="section-header">
-                <h1>Siparişler</h1>
-                <button class="btn btn-primary" onclick="document.getElementById('order-modal').style.display='flex'"><i class="fas fa-plus"></i> Manuel Sipariş</button>
+                <div>
+                    <h1>Sipariş Yönetimi</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Manuel eklenen ve aktif siparişlerin takibi.</p>
+                </div>
+                <button class="btn btn-primary" onclick="document.getElementById('order-modal').style.display='flex'"><i class="fas fa-plus"></i> Yeni Sipariş</button>
             </div>
             <div class="section-card">
-                <table>
-                    <thead><tr><th>Kod</th><th>Müşteri</th><th>Ürünler</th><th>Durum</th><th>#</th></tr></thead>
-                    <tbody id="o-table"></tbody>
-                </table>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kod</th>
+                                <th>Müşteri</th>
+                                <th style="width: 30%;">Ürünler</th>
+                                <th>Aşama</th>
+                                <th style="text-align: right;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody id="o-table">
+                            <!-- JS ile dolacak -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>
 
-    <div id="toast" class="toast">Veritabanı Başarıyla Güncellendi!</div>
+    <div id="toast" class="toast">✔️ Başarıyla Aktarıldı!</div>
 
     <script>
         const PASS = "123456";
@@ -169,48 +231,83 @@
         let curIdx = -1;
         let curImg = "";
 
-        function checkLogin() { if(document.getElementById('admin-pass').value===PASS) { sessionStorage.setItem('adm','1'); document.getElementById('login-overlay').style.display='none'; init(); } }
-        function logout() { sessionStorage.clear(); location.reload(); }
-        if(sessionStorage.getItem('adm')) { document.getElementById('login-overlay').style.display='none'; init(); }
+        function checkLogin() { 
+            if(document.getElementById('admin-pass').value === PASS) { 
+                sessionStorage.setItem('adm_logged','1'); 
+                document.getElementById('login-overlay').style.display='none'; 
+                init(); 
+            } else {
+                alert("Hatalı şifre!");
+            }
+        }
+        
+        function logout() { sessionStorage.removeItem('adm_logged'); location.reload(); }
+        
+        if(sessionStorage.getItem('adm_logged')) { 
+            document.getElementById('login-overlay').style.display='none'; 
+            init(); 
+        }
 
         async function init() {
             try {
-                const [p, o] = await Promise.all([
-                    fetch('/api/products?t='+Date.now()).then(r=>r.json()),
-                    fetch('/api/orders?t='+Date.now()).then(r=>r.json())
+                // Her seferinde taze veri çekelim
+                const [resP, resO] = await Promise.all([
+                    fetch('/api/products?t=' + Date.now()),
+                    fetch('/api/orders?t=' + Date.now())
                 ]);
-                products = Array.isArray(p) ? p : [];
-                orders = Array.isArray(o) ? o : [];
+                
+                if (!resP.ok || !resO.ok) throw new Error("API Hatası!");
+                
+                products = await resP.json();
+                orders = await resO.json();
+                
+                if (!Array.isArray(products)) products = [];
+                if (!Array.isArray(orders)) orders = [];
+                
                 renderAll();
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error("Yükleme hatası:", e); 
+                document.getElementById('p-table').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red">Ürünler Yüklenemedi!</td></tr>`;
+            }
         }
 
         function renderAll() {
-            // Ürünler
-            const pt = document.getElementById('p-table'); pt.innerHTML='';
-            products.forEach((p, i) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><img src="${p.image}" style="width:50px; border-radius:8px"></td>
-                    <td><b>${p.name_tr}</b></td>
-                    <td>₺${parseFloat(p.price).toLocaleString()}</td>
-                    <td>
-                        <button class="btn btn-secondary" style="padding:8px" onclick="openEditProduct(${i})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" style="padding:8px" onclick="deleteProduct(${i})"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                pt.appendChild(tr);
-            });
-            // Siparişler
-            const ot = document.getElementById('o-table'); ot.innerHTML='';
-            orders.sort((a,b)=>new Date(b.lastUpdate)-new Date(a.lastUpdate)).forEach((o, i) => {
+            // Ürünleri Çiz
+            const pt = document.getElementById('p-table');
+            pt.innerHTML = '';
+            if (products.length === 0) {
+                pt.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">Hiç ürün bulunamadı.</td></tr>`;
+            } else {
+                products.forEach((p, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><img src="${p.image || 'images/bardak.png'}" style="width:50px; height:50px; border-radius:10px; object-fit: cover; border: 1px solid var(--border);"></td>
+                        <td>
+                            <div style="font-weight:800; color:var(--text-main)">${p.name_tr}</div>
+                            <div style="font-size:11px; color:var(--text-muted)">${p.name_en || '-'}</div>
+                        </td>
+                        <td><b style="color:var(--primary)">₺${parseFloat(p.price || 0).toLocaleString('tr-TR')}</b></td>
+                        <td><span style="color:var(--success); font-weight:700">Aktif</span></td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-secondary" style="padding:8px" onclick="openEditProduct(${i})"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-danger" style="padding:8px" onclick="deleteProduct(${i})"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    `;
+                    pt.appendChild(tr);
+                });
+            }
+
+            // Siparişleri Çiz
+            const ot = document.getElementById('o-table');
+            ot.innerHTML = '';
+            orders.sort((a,b) => new Date(b.lastUpdate) - new Date(a.lastUpdate)).forEach((o, i) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><b style="color:var(--primary)">#${o.orderId}</b></td>
-                    <td>${o.customerName}</td>
-                    <td><small>${o.items}</small></td>
-                    <td><span style="font-size:12px; font-weight:bold; color:var(--primary)">${o.status.toUpperCase()}</span></td>
-                    <td><button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-trash"></i></button></td>
+                    <td><b>${o.customerName}</b></td>
+                    <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${o.items}</div></td>
+                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                    <td style="text-align:right;"><button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-times"></i></button></td>
                 `;
                 ot.appendChild(tr);
             });
@@ -223,24 +320,34 @@
             document.getElementById('link-o').classList.toggle('active', s==='o');
         }
 
-        // Ürün Fonksiyonları
-        function openAddProduct() { curIdx=-1; curImg=""; resetPModal(); document.getElementById('p-modal-title').innerText="Yeni Ürün Ekle"; document.getElementById('product-modal').style.display='flex'; }
+        // --- PRODUCT ACTIONS ---
+        function openAddProduct() { 
+            curIdx = -1; curImg = ""; 
+            resetPModal(); 
+            document.getElementById('p-modal-title').innerText = "Yeni Ürün Ekle"; 
+            document.getElementById('product-modal').style.display = 'flex'; 
+        }
+        
         function openEditProduct(i) {
-            curIdx=i; const p=products[i];
-            document.getElementById('p-modal-title').innerText="Ürünü Düzenle";
-            document.getElementById('p-name-tr').value = p.name_tr;
+            curIdx = i; const p = products[i];
+            document.getElementById('p-modal-title').innerText = "Ürünü Düzenle";
+            document.getElementById('p-name-tr').value = p.name_tr || "";
             document.getElementById('p-name-en').value = p.name_en || "";
-            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-price').value = p.price || 0;
             document.getElementById('p-rating').value = p.rating || "5.0";
             document.getElementById('p-desc-tr').value = p.description_tr || "";
-            curImg = p.image;
-            document.getElementById('p-preview').src=curImg; document.getElementById('p-preview').style.display='block';
-            document.getElementById('p-drop-text').style.display='none';
-            document.getElementById('product-modal').style.display='flex';
+            curImg = p.image || "";
+            if (curImg) {
+                document.getElementById('p-preview').src = curImg; 
+                document.getElementById('p-preview').style.display = 'block';
+                document.getElementById('p-drop-text').style.display = 'none';
+            }
+            document.getElementById('product-modal').style.display = 'flex';
         }
-        function handleProductSave() {
+        
+        async function handleProductSave() {
             const p = {
-                id: curIdx>-1?products[curIdx].id:Date.now().toString(),
+                id: curIdx > -1 ? products[curIdx].id : Date.now().toString(),
                 name_tr: document.getElementById('p-name-tr').value,
                 name_en: document.getElementById('p-name-en').value,
                 price: parseFloat(document.getElementById('p-price').value),
@@ -248,64 +355,117 @@
                 rating: document.getElementById('p-rating').value,
                 description_tr: document.getElementById('p-desc-tr').value
             };
-            if(!p.name_tr || isNaN(p.price)) return alert("Eksik bilgi!");
-            if(curIdx>-1) products[curIdx]=p; else products.push(p);
-            renderAll(); closeModal('product-modal');
+            if(!p.name_tr || isNaN(p.price)) return alert("Lütfen Ürün Adı ve Fiyat girin!");
+            if(curIdx > -1) products[curIdx] = p; else products.push(p);
+            renderAll(); 
+            closeModal('product-modal');
+            await syncData('products'); // Otomatik sync
         }
-        function deleteProduct(i) { if(confirm("Ürün silinsin mi?")) { products.splice(i,1); renderAll(); } }
+        
+        function deleteProduct(i) { 
+            if(confirm("Bu ürünü silmek istediğinize emin misiniz?")) { 
+                products.splice(i,1); 
+                renderAll(); 
+            } 
+        }
 
-        // Sipariş Fonksiyonları
-        function createManualOrder() {
-            const name = document.getElementById('o-customer').value;
-            const items = document.getElementById('o-items').value;
+        // --- ORDER ACTIONS ---
+        async function createManualOrder() {
+            const name = document.getElementById('o-customer').value.trim();
+            const items = document.getElementById('o-items').value.trim();
+            const status = document.getElementById('o-status').value;
+            const delivery = document.getElementById('o-delivery').value;
+            
             if(!name || !items) return alert("Müşteri ve ürün bilgisi girilmeli!");
-            const code = "MOD-" + Math.floor(10000 + Math.random()*90000);
-            orders.push({ orderId: code, customerName: name, items, status: document.getElementById('o-status').value, lastUpdate: new Date().toISOString() });
-            renderAll(); closeModal('order-modal'); syncData();
-            alert("Sipariş Oluşturuldu! Kod: " + code);
+            
+            const randomID = Math.floor(1000 + Math.random() * 9000);
+            const code = "MOD-" + randomID;
+            
+            const newOrder = { 
+                orderId: code, 
+                customerName: name, 
+                items, 
+                status, 
+                lastUpdate: new Date().toISOString(),
+                estimatedDelivery: delivery || "Bilgi Bekleniyor"
+            };
+            
+            orders.push(newOrder);
+            renderAll(); 
+            closeModal('order-modal'); 
+            await syncData('orders'); // Kaydet
+            
+            alert(`SİPARİŞ OLUŞTU!\nKod: ${code}\nMüşteri No: ${randomID}`);
         }
-        function deleteOrder(id) { if(confirm("Sil?")) { orders=orders.filter(x=>x.orderId!==id); renderAll(); syncData(); } }
+        
+        function deleteOrder(id) { 
+            if(confirm("Bu siparişi listeden kaldırmak istiyor musunuz?")) { 
+                orders = orders.filter(x => x.orderId !== id); 
+                renderAll(); 
+                syncData('orders'); 
+            } 
+        }
 
-        async function syncData() {
+        async function syncData(type = 'all') {
+            const saveBtn = document.querySelector('.btn-primary[onclick*="syncData"]');
+            const originalText = saveBtn ? saveBtn.innerHTML : "";
+            if (saveBtn) saveBtn.innerHTML = `<span class="loading-spinner"></span> Aktarılıyor...`;
+
             try {
-                await Promise.all([
+                const results = await Promise.all([
                     fetch('/api/products', {method:'POST', body:JSON.stringify(products), headers:{'Content-Type':'application/json'}}),
                     fetch('/api/orders', {method:'POST', body:JSON.stringify(orders), headers:{'Content-Type':'application/json'}}),
                     fetch('/api/last-update', {method:'POST', body:JSON.stringify({time:new Date().toLocaleString('tr-TR')}), headers:{'Content-Type':'application/json'}})
                 ]);
-                const t = document.getElementById('toast'); t.classList.add('show');
-                setTimeout(()=>t.classList.remove('show'), 3000);
-            } catch(e) { alert("Hata!"); }
+                
+                if (results.every(r => r.ok)) {
+                    const t = document.getElementById('toast'); 
+                    t.classList.add('show');
+                    setTimeout(() => t.classList.remove('show'), 3000);
+                } else {
+                    throw new Error("Yükleme başarısız!");
+                }
+            } catch(e) { 
+                alert("Bağlantı hatası! Güncelleme yapılamadı."); 
+            } finally {
+                if (saveBtn) saveBtn.innerHTML = originalText;
+            }
         }
 
         function closeModal(id) { document.getElementById(id).style.display='none'; }
+        
         function resetPModal() {
-            document.getElementById('p-name-tr').value=''; document.getElementById('p-name-en').value='';
-            document.getElementById('p-price').value=''; document.getElementById('p-preview').style.display='none';
+            document.getElementById('p-name-tr').value=''; 
+            document.getElementById('p-name-en').value='';
+            document.getElementById('p-price').value=''; 
+            document.getElementById('p-desc-tr').value=''; 
+            document.getElementById('p-preview').style.display='none';
             document.getElementById('p-drop-text').style.display='block';
         }
 
-        // Drag Drop
-        const dz = document.getElementById('p-drop-zone'); const fi = document.getElementById('p-file');
-        dz.onclick=()=>fi.click();
-        dz.ondragover=(e)=>{e.preventDefault(); dz.style.borderColor='var(--primary)';};
-        dz.ondragleave=()=>dz.style.borderColor='var(--border)';
-        dz.ondrop=(e)=>{
-            e.preventDefault(); dz.style.borderColor='var(--border)';
-            const f = e.dataTransfer.files[0];
-            if(f) {
-                const r = new FileReader();
-                r.onload=(ev)=>{ curImg=ev.target.result; document.getElementById('p-preview').src=curImg; document.getElementById('p-preview').style.display='block'; document.getElementById('p-drop-text').style.display='none'; };
-                r.readAsDataURL(f);
-            }
+        // Drag & Drop Gelişmiş
+        const dz = document.getElementById('p-drop-zone'); 
+        const fi = document.getElementById('p-file');
+        dz.onclick = () => fi.click();
+        dz.ondragover = (e) => { e.preventDefault(); dz.classList.add('hover'); };
+        dz.ondragleave = () => dz.classList.remove('hover');
+        dz.ondrop = (e) => {
+            e.preventDefault(); dz.classList.remove('hover');
+            const file = e.dataTransfer.files[0];
+            if(file) loadImg(file);
         };
-        fi.onchange=(e)=>{
-            if(fi.files[0]) {
-                const r = new FileReader();
-                r.onload=(ev)=>{ curImg=ev.target.result; document.getElementById('p-preview').src=curImg; document.getElementById('p-preview').style.display='block'; document.getElementById('p-drop-text').style.display='none'; };
-                r.readAsDataURL(fi.files[0]);
-            }
-        };
+        fi.onchange = (e) => { if(fi.files[0]) loadImg(fi.files[0]); };
+
+        function loadImg(file) {
+            const r = new FileReader();
+            r.onload = (ev) => { 
+                curImg = ev.target.result; 
+                document.getElementById('p-preview').src = curImg; 
+                document.getElementById('p-preview').style.display = 'block'; 
+                document.getElementById('p-drop-text').style.display = 'none'; 
+            };
+            r.readAsDataURL(file);
+        }
     </script>
 </body>
 </html>
