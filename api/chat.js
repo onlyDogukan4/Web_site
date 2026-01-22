@@ -23,11 +23,15 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    const API_KEY = process.env.GEMINI_API_KEY;
+    // Hem GEMINI_API_KEY hem de NEXT_PUBLIC_ sürümünü kontrol et
+    const API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (!API_KEY) {
-        console.error('API Key Missing from Vercel Environment Variables');
-        return res.status(500).json({ error: 'GEMINI_API_KEY eksik. Vercel dashboarddan ekleyiniz.' });
+        console.error('Chat Error: GEMINI_API_KEY is missing in environment variables.');
+        return res.status(500).json({
+            error: 'AI Anahtarı Eksik!',
+            details: 'Lütfen Vercel ayarlarından GEMINI_API_KEY eklediğinizden ve Redeploy yaptığınızdan emin olun.'
+        });
     }
 
     const modelName = "gemini-1.5-flash-latest";

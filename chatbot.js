@@ -237,7 +237,7 @@ class ModerraAI {
             }
         } catch (e) {
             console.error("Chat Error:", e);
-            this.addBotMessage(`⚠️ **Hata:** ${e.message}`);
+            this.addBotMessage(`⚠️ **Hata:** ${e.message}\n\n*Not: Eğer bu hata devam ediyorsa Vercel dashboard üzerinden GEMINI_API_KEY ayarlarını ve deployment durumunu kontrol edin.*`);
         } finally {
             this.isThinking = false;
             if (typingIndicator) typingIndicator.style.display = 'none';
