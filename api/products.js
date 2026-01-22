@@ -1,9 +1,4 @@
-import { Redis } from '@upstash/redis';
-
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+// Top-level initialization removed to prevent ERR_INVALID_URL on Vercel
 
 // Senin orijinal ve eksiksiz ürün kataloğun
 const INITIAL_PRODUCTS = [
@@ -98,6 +93,8 @@ const INITIAL_PRODUCTS = [
         "rating": "4.6"
     }
 ];
+
+import { Redis } from '@upstash/redis';
 
 export default async function handler(req, res) {
     const url = process.env.UPSTASH_REDIS_REST_URL;
