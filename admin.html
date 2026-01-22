@@ -16,7 +16,7 @@
             --text-main: #1e293b;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --radius: 16px;
             --danger: #ef4444;
             --success: #10b981;
@@ -34,126 +34,99 @@
         body { background-color: var(--bg); color: var(--text-main); transition: 0.3s; min-height: 100vh; display: flex; }
 
         /* Sidebar */
-        .sidebar { width: 280px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 30px; position: fixed; inset-y: 0; display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar { width: 280px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 30px; position: fixed; inset-y: 0; display: flex; flex-direction: column; }
         .logo { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
         .nav-menu { list-style: none; flex: 1; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: var(--radius); color: var(--text-muted); text-decoration: none; font-weight: 600; transition: 0.3s; margin-bottom: 8px; cursor: pointer; }
         .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-        .nav-link:hover:not(.active) { background: var(--bg); color: var(--primary); }
 
-        /* Content */
+        /* Content Area */
         .main-content { margin-left: 280px; flex: 1; padding: 40px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        header h1 { font-size: 32px; font-weight: 800; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--card-bg); padding: 24px; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .stat-card .label { color: var(--text-muted); font-weight: 600; font-size: 14px; }
-        .stat-card .value { font-size: 24px; font-weight: 800; margin-top: 10px; color: var(--primary); }
-
-        .section-card { background: var(--card-bg); border-radius: 24px; padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .section-card { background: var(--card-bg); border-radius: 24px; padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 30px; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
-        /* Forms */
-        .editable-input { background: var(--bg); border: 2px solid var(--border); padding: 12px 16px; border-radius: 12px; color: var(--text-main); width: 100%; outline: none; transition: 0.2s; font-size: 15px; }
+        /* Forms & Inputs */
+        .editable-input { background: var(--bg); border: 2px solid var(--border); padding: 12px 16px; border-radius: 12px; color: var(--text-main); width: 100%; outline: none; transition: 0.2s; }
         .editable-input:focus { border-color: var(--primary); }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* Tables */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 18px; color: var(--text-muted); border-bottom: 2px solid var(--border); font-size: 14px; }
-        td { padding: 18px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-
         /* Buttons */
-        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; }
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn-danger { background: var(--danger); color: white; }
         .btn-secondary { background: var(--secondary); color: white; }
 
+        /* Tables */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); }
+
         /* Drag & Drop */
-        .drop-zone { width: 100%; height: 180px; background: var(--bg); border: 3px dashed var(--border); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; margin-bottom: 15px; }
+        .drop-zone { width: 100%; height: 200px; background: var(--bg); border: 3px dashed var(--border); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
         .drop-zone.hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
-        .drop-zone img { width: 100%; height: 100%; object-fit: contain; }
-        .drop-text { text-align: center; }
+        .drop-zone img { height: 100%; object-fit: contain; }
         .drop-zone.has-image .drop-text { display: none; }
 
-        /* Modal */
+        /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-card { background: var(--card-bg); border-radius: 28px; width: 100%; max-width: 800px; padding: 40px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); }
+        .modal-card { background: var(--card-bg); border-radius: 28px; width: 100%; max-width: 700px; padding: 40px; box-shadow: var(--shadow); }
 
-        /* Login */
-        #login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: var(--card-bg); padding: 40px; border-radius: 32px; width: 400px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
-
-        .toast { position: fixed; bottom: 40px; right: 40px; background: var(--success); color: white; padding: 16px 32px; border-radius: 16px; font-weight: 700; transform: translateY(150px); transition: 0.5s; z-index: 10001; }
-        .toast.show { transform: translateY(0); }
-        
-        .badge { padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+        /* Badge */
+        .badge { padding: 5px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
         .badge-hazirlaniyor { background: #fef3c7; color: #92400e; }
         .badge-kargoda { background: #dcfce7; color: #166534; }
         .badge-teslim { background: #e0e7ff; color: #3730a3; }
-        
-        .loading-screen { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 10000; display: none; align-items: center; justify-content: center; }
+
+        #login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 15px 30px; border-radius: 12px; transform: translateY(100px); transition: 0.5s; z-index: 10001; }
+        .toast.show { transform: translateY(0); }
     </style>
 </head>
 <body>
 
-    <div id="loading" class="loading-screen"><i class="fas fa-spinner fa-spin fa-4x" style="color:var(--primary)"></i></div>
-
     <div id="login-overlay">
-        <div class="login-box">
-            <div class="logo"><i class="fas fa-shield-halved"></i> Moderra Admin</div>
-            <h2 style="margin-bottom: 30px;">Hoş Geldiniz</h2>
-            <input type="password" id="admin-pass" class="editable-input" placeholder="Yönetici Şifresi" style="text-align: center;">
-            <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;" onclick="checkPin()">Giriş Yap</button>
-            <p id="login-err" style="color: var(--danger); margin-top: 15px; display: none; font-weight: 700;">Hatalı Şifre!</p>
+        <div class="section-card" style="width: 400px; text-align: center;">
+            <div class="logo" style="justify-content: center;"><i class="fas fa-shield-halved"></i> Moderra Admin</div>
+            <input type="password" id="admin-pass" class="editable-input" placeholder="Şifre" style="text-align: center; margin-bottom: 20px;">
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkLogin()">Giriş Yap</button>
         </div>
     </div>
 
-    <!-- Product Modal -->
+    <!-- Modals -->
     <div class="modal-overlay" id="product-modal">
         <div class="modal-card">
-            <h2 id="p-modal-title" style="margin-bottom: 30px;">Ürün Ekle/Düzenle</h2>
-            
-            <div class="drop-zone" id="p-drop-zone">
-                <div class="drop-text">
-                    <i class="fas fa-image fa-3x" style="color:var(--primary); margin-bottom: 10px;"></i><br>
-                    <b>Görseli Sürükle Bırak</b><br><small>veya Seçmek için Tıkla</small>
+            <h2 id="modal-title" style="margin-bottom: 25px;">Ürün Düzenle</h2>
+            <div class="form-group">
+                <label>Görsel (Sürükle-Bırak)</label>
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-text"><i class="fas fa-cloud-upload-alt fa-3x"></i><br>Bırak veya Seç</div>
+                    <img id="p-preview" src="" style="display:none">
                 </div>
-                <img id="p-preview" src="" style="display:none">
+                <input type="file" id="p-file" accept="image/*" style="display:none">
             </div>
-            <input type="file" id="p-file" accept="image/*" style="display:none">
-
             <div class="form-row">
-                <div class="form-group"><label>Ürün Adı (Türkçe)</label><input type="text" id="p-name-tr" class="editable-input" placeholder="Örn: 8.5 oz Karton Bardak"></div>
-                <div class="form-group"><label>Product Name (English)</label><input type="text" id="p-name-en" class="editable-input" placeholder="Ex: 8.5 oz Paper Cup"></div>
+                <div class="form-group"><label>Başlık (TR)</label><input type="text" id="p-name-tr" class="editable-input"></div>
+                <div class="form-group"><label>Title (EN)</label><input type="text" id="p-name-en" class="editable-input"></div>
             </div>
-
             <div class="form-row">
-                <div class="form-group"><label>Fiyat (₺)</label><input type="number" id="p-price" class="editable-input" placeholder="0.00"></div>
-                <div class="form-group"><label>Puan / Derecelendirme</label><input type="text" id="p-rating" class="editable-input" value="5.0"></div>
+                <div class="form-group"><label>Fiyat (₺)</label><input type="number" id="p-price" class="editable-input"></div>
+                <div class="form-group"><label>Puan</label><input type="text" id="p-rating" class="editable-input" value="5.0"></div>
             </div>
-
-            <div class="form-group"><label>Açıklama (Türkçe)</label><textarea id="p-desc-tr" class="editable-input" rows="2"></textarea></div>
-            <div class="form-group"><label>Description (English)</label><textarea id="p-desc-en" class="editable-input" rows="2"></textarea></div>
-
-            <div style="display:flex; justify-content:flex-end; gap:15px; margin-top:10px;">
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn btn-secondary" onclick="closeModal('product-modal')">İptal</button>
-                <button class="btn btn-primary" onclick="handleProductSave()">Kaydet</button>
+                <button class="btn btn-primary" onclick="saveProduct()">Ürünü Kaydet</button>
             </div>
         </div>
     </div>
 
-    <!-- Manual Order Modal -->
     <div class="modal-overlay" id="order-modal">
         <div class="modal-card" style="max-width: 500px;">
-            <h2 style="margin-bottom: 30px;">Yeni Sipariş Oluştur</h2>
-            <div class="form-group"><label>Müşteri Adı</label><input type="text" id="o-customer" class="editable-input" placeholder="Örn: Mehmet Can"></div>
-            <div class="form-group"><label>Ürünler ve Detaylar</label><textarea id="o-items" class="editable-input" rows="3" placeholder="Örn: 2000 Adet Logolu Bardak"></textarea></div>
+            <h2 style="margin-bottom: 25px;">Yeni Sipariş Oluştur</h2>
+            <div class="form-group"><label>Müşteri Adı</label><input type="text" id="o-customer" class="editable-input"></div>
+            <div class="form-group"><label>Sipariş Detayı</label><textarea id="o-items" class="editable-input" rows="3"></textarea></div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Durum</label>
@@ -163,280 +136,207 @@
                         <option value="teslim">Teslim Edildi</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Tahmini Teslim</label><input type="date" id="o-delivery" class="editable-input"></div>
+                <div class="form-group"><label>Söz Edilen Teslimat</label><input type="date" id="o-delivery" class="editable-input"></div>
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:15px; margin-top:10px;">
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn btn-secondary" onclick="closeModal('order-modal')">İptal</button>
-                <button class="btn btn-primary" onclick="createManualOrder()">Siparişi Onayla</button>
+                <button class="btn btn-primary" onclick="createManualOrder()">Onayla ve Kod Oluştur</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="success-modal">
-        <div class="modal-card" style="max-width: 400px; text-align: center;">
-            <i class="fas fa-check-circle fa-5x" style="color:var(--success); margin-bottom: 20px;"></i>
-            <h3>Sipariş Onaylandı!</h3>
-            <p style="margin: 20px 0; color:var(--text-muted);">Müşteriye ileteceğiniz takip kodu:</p>
-            <div id="final-order-code" style="font-size:32px; font-weight:900; color:var(--primary); background:var(--bg); padding:20px; border-radius:20px; letter-spacing:3px;">MOD-00000</div>
-            <button class="btn btn-primary" style="width:100%; margin-top:25px; justify-content:center;" onclick="closeModal('success-modal')">Tamam</button>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="logo"><i class="fas fa-cube"></i> MODERRA</div>
         <ul class="nav-menu">
-            <li class="nav-link active" id="nav-products" onclick="switchTab('products')"><i class="fas fa-boxes-stacked"></i> Ürün Listesi</li>
-            <li class="nav-link" id="nav-orders" onclick="switchTab('orders')"><i class="fas fa-receipt"></i> Sipariş Yönetimi</li>
-            <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-globe"></i> Siteyi Görüntüle</li>
+            <li class="nav-link active" id="nav-p" onclick="showTab('p')"><i class="fas fa-boxes-stacked"></i> Ürünler</li>
+            <li class="nav-link" id="nav-o" onclick="showTab('o')"><i class="fas fa-receipt"></i> Siparişler</li>
+            <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-eye"></i> Siteyi Gör</li>
         </ul>
-        <div style="border-top: 1px solid var(--border); padding-top: 20px;">
-            <div class="nav-link" style="color:var(--danger)" onclick="logout()"><i class="fas fa-power-off"></i> Çıkış Yap</div>
-        </div>
+        <button class="btn btn-danger" style="margin-top: 50px; width: 100%;" onclick="logout()">Çıkış Yap</button>
     </aside>
 
     <main class="main-content">
-        <header>
-            <h1 id="tab-title">Ürün Listesi</h1>
-            <button class="btn btn-primary" id="add-btn" onclick="openAddModal()"><i class="fas fa-plus"></i> Yeni Ekle</button>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card"><div class="label">Aktif Ürün Sayısı</div><div class="value" id="stat-products">0</div></div>
-            <div class="stat-card"><div class="label">Bekleyen Sipariş</div><div class="value" id="stat-orders">0</div></div>
-            <div class="stat-card"><div class="label">Son Yayınlanma</div><div class="value" id="stat-update" style="font-size:14px; color:var(--text-muted)">Henüz yok</div></div>
-        </div>
-
-        <section id="products-view" class="section-card">
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>Görsel</th><th>Ürün (TR)</th><th>Product (EN)</th><th>Fiyat</th><th>İşlem</th></tr></thead>
-                    <tbody id="p-table"></tbody>
-                </table>
+        <!-- Ürünler Sekmesi -->
+        <section id="p-section">
+            <div class="section-header">
+                <h1>Ürün Yönetimi</h1>
+                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Yeni Ürün</button>
             </div>
-            <div style="margin-top:40px; text-align:right;">
-                <button class="btn btn-primary" style="padding:15px 50px; font-size:18px;" onclick="syncToDatabase()"><i class="fas fa-cloud-arrow-up"></i> Değişiklikleri Canlıya Gönder</button>
+            <div class="section-card">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Görsel</th><th>İsim</th><th>Fiyat</th><th>İşlem</th></tr></thead>
+                        <tbody id="p-tbody"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 30px; text-align: right;">
+                    <button class="btn btn-primary" style="padding: 15px 40px;" onclick="syncAll()">Tümünü Veritabanına Yaz</button>
+                </div>
             </div>
         </section>
 
-        <section id="orders-view" class="section-card" style="display:none;">
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>Kod</th><th>Müşteri</th><th>Ürünler</th><th>Durum</th><th>İşlem</th></tr></thead>
-                    <tbody id="o-table"></tbody>
-                </table>
+        <!-- Siparişler Sekmesi -->
+        <section id="o-section" style="display:none;">
+            <div class="section-header">
+                <h1>Sipariş Yönetimi</h1>
+                <button class="btn btn-primary" onclick="document.getElementById('order-modal').style.display='flex'"><i class="fas fa-plus"></i> Manuel Sipariş Oluştur</button>
+            </div>
+            <div class="section-card">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Kod</th><th>Müşteri</th><th>Ürünler</th><th>Durum</th><th>#</th></tr></thead>
+                        <tbody id="o-tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>
 
-    <div id="toast" class="toast">Canlı veriler güncellendi!</div>
+    <div id="toast" class="toast">Canlıya aktarıldı!</div>
 
     <script>
-        const PIN = "123456";
+        const PASS = "123456";
         let products = [];
         let orders = [];
-        let curEditIdx = -1;
-        let curImgData = "";
+        let curIdx = -1;
+        let pImg = "";
 
-        // Auth
-        function checkPin() {
-            if(document.getElementById('admin-pass').value === PIN) {
-                sessionStorage.setItem('adm_ok', '1');
-                document.getElementById('login-overlay').style.display='none';
-                initData();
-            } else { document.getElementById('login-err').style.display='block'; }
-        }
-        function checkAuth() { if(sessionStorage.getItem('adm_ok')) { document.getElementById('login-overlay').style.display='none'; initData(); } }
+        function checkLogin() { if(document.getElementById('admin-pass').value===PASS) { sessionStorage.setItem('auth','1'); document.getElementById('login-overlay').style.display='none'; init(); } }
         function logout() { sessionStorage.clear(); location.reload(); }
+        if(sessionStorage.getItem('auth')) { document.getElementById('login-overlay').style.display='none'; init(); }
 
-        // Data
-        async function initData() {
-            showLoading(true);
+        async function init() {
             try {
-                const [p, o, u] = await Promise.all([
+                const [p, o] = await Promise.all([
                     fetch('/api/products?t='+Date.now()).then(r=>r.json()),
-                    fetch('/api/orders?t='+Date.now()).then(r=>r.json()),
-                    fetch('/api/last-update').then(r=>r.json())
+                    fetch('/api/orders?t='+Date.now()).then(r=>r.json())
                 ]);
                 products = Array.isArray(p) ? p : [];
                 orders = Array.isArray(o) ? o : [];
-                document.getElementById('stat-update').textContent = u.time || "Henüz yok";
-                renderAll();
+                renderP(); renderO();
             } catch(e) { console.error(e); }
-            showLoading(false);
         }
 
-        function renderAll() {
-            renderPTable();
-            renderOTable();
-            document.getElementById('stat-products').textContent = products.length;
-            document.getElementById('stat-orders').textContent = orders.filter(o=>o.status!=='teslim').length;
+        function showTab(t) {
+            document.getElementById('p-section').style.display = t==='p'?'block':'none';
+            document.getElementById('o-section').style.display = t==='o'?'block':'none';
+            document.getElementById('nav-p').classList.toggle('active', t==='p');
+            document.getElementById('nav-o').classList.toggle('active', t==='o');
         }
 
-        function renderPTable() {
-            const b = document.getElementById('p-table'); b.innerHTML='';
+        function renderP() {
+            const b = document.getElementById('p-tbody'); b.innerHTML='';
             products.forEach((p, i) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><img src="${p.image}" style="width:60px; height:60px; object-fit:cover; border-radius:12px;"></td>
+                    <td><img src="${p.image}" style="width:50px; border-radius:8px;"></td>
                     <td><b>${p.name_tr}</b></td>
-                    <td><span style="color:var(--text-muted)">${p.name_en || '-'}</span></td>
-                    <td><b>₺${parseFloat(p.price).toLocaleString('tr-TR')}</b></td>
+                    <td>₺${parseFloat(p.price).toLocaleString()}</td>
                     <td>
-                        <button class="btn" style="background:var(--bg);" onclick="openEditModal(${i})"><i class="fas fa-pen-to-square"></i></button>
-                        <button class="btn btn-danger" onclick="deleteP(${i})"><i class="fas fa-trash"></i></button>
+                        <button class="btn" style="background:#f1f5f9" onclick="openEdit(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="delP(${i})"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 b.appendChild(tr);
             });
         }
 
-        function renderOTable() {
-            const b = document.getElementById('o-table'); b.innerHTML='';
-            orders.sort((x,y) => new Date(y.lastUpdate) - new Date(x.lastUpdate)).forEach((o, i) => {
+        function renderO() {
+            const b = document.getElementById('o-tbody'); b.innerHTML='';
+            orders.sort((a,b)=>new Date(b.lastUpdate)-new Date(a.lastUpdate)).forEach((o, i) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><b style="color:var(--primary)">#${o.orderId}</b></td>
+                    <td><strong style="color:var(--primary)">#${o.orderId}</strong></td>
                     <td>${o.customerName}</td>
-                    <td><small>${o.items}</small></td>
+                    <td>${o.items}</td>
                     <td><span class="badge badge-${o.status}">${o.status}</span></td>
-                    <td>
-                        <select class="editable-input" style="width:auto; padding:8px;" onchange="updateOStatus('${o.orderId}', this.value)">
-                            <option value="hazirlaniyor" ${o.status==='hazirlaniyor'?'selected':''}>Hazırlanıyor</option>
-                            <option value="kargoda" ${o.status==='kargoda'?'selected':''}>Kargoda</option>
-                            <option value="teslim" ${o.status==='teslim'?'selected':''}>Teslim Edildi</option>
-                        </select>
-                        <button class="btn btn-danger" style="padding:8px 12px" onclick="deleteO('${o.orderId}')"><i class="fas fa-trash"></i></button>
-                    </td>
+                    <td><button class="btn btn-danger" onclick="delO('${o.orderId}')"><i class="fas fa-trash"></i></button></td>
                 `;
                 b.appendChild(tr);
             });
         }
 
-        // Modals
-        function openAddModal() {
-            if(document.getElementById('orders-view').style.display === 'block') { openOrderModal(); return; }
-            curEditIdx = -1; curImgData = "";
-            resetPModal();
-            document.getElementById('p-modal-title').textContent = "Yeni Ürün Ekle";
+        function openAddModal() { curIdx=-1; pImg=""; resetModal(); document.getElementById('product-modal').style.display='flex'; }
+        function openEdit(i) {
+            curIdx=i; const p=products[i];
+            document.getElementById('p-name-tr').value=p.name_tr;
+            document.getElementById('p-name-en').value=p.name_en||"";
+            document.getElementById('p-price').value=p.price;
+            pImg = p.image;
+            if(pImg) { document.getElementById('p-preview').src=pImg; document.getElementById('p-preview').style.display='block'; document.getElementById('drop-zone').classList.add('has-image'); }
             document.getElementById('product-modal').style.display='flex';
         }
 
-        function openEditModal(i) {
-            curEditIdx = i; const p = products[i];
-            document.getElementById('p-modal-title').textContent = "Ürünü Düzenle";
-            document.getElementById('p-name-tr').value = p.name_tr;
-            document.getElementById('p-name-en').value = p.name_en || "";
-            document.getElementById('p-price').value = p.price;
-            document.getElementById('p-desc-tr').value = p.description_tr || "";
-            document.getElementById('p-desc-en').value = p.description_en || "";
-            document.getElementById('p-rating').value = p.rating || "5.0";
-            curImgData = p.image;
-            document.getElementById('p-preview').src = p.image;
-            document.getElementById('p-preview').style.display='block';
-            document.getElementById('p-drop-zone').classList.add('has-image');
-            document.getElementById('product-modal').style.display='flex';
-        }
-
-        function handleProductSave() {
+        function saveProduct() {
             const p = {
-                id: curEditIdx > -1 ? products[curEditIdx].id : Date.now().toString(),
+                id: curIdx>-1?products[curIdx].id:Date.now().toString(),
                 name_tr: document.getElementById('p-name-tr').value,
                 name_en: document.getElementById('p-name-en').value,
                 price: parseFloat(document.getElementById('p-price').value),
-                description_tr: document.getElementById('p-desc-tr').value,
-                description_en: document.getElementById('p-desc-en').value,
-                rating: document.getElementById('p-rating').value,
-                image: curImgData || "images/bardak.png"
+                image: pImg || "images/bardak.png",
+                rating: document.getElementById('p-rating').value
             };
-            if(!p.name_tr || isNaN(p.price)) return alert("Zorunlu alanları doldurun!");
-            if(curEditIdx > -1) products[curEditIdx] = p; else products.push(p);
-            renderPTable(); closeModal('product-modal');
+            if(!p.name_tr || isNaN(p.price)) return alert("Hata!");
+            if(curIdx>-1) products[curIdx]=p; else products.push(p);
+            renderP(); closeModal('product-modal');
         }
 
-        function deleteP(i) { if(confirm("Ürün silinsin mi?")) { products.splice(i,1); renderPTable(); } }
-
-        function openOrderModal() { document.getElementById('order-modal').style.display='flex'; }
+        function delP(i) { if(confirm("Sil?")) { products.splice(i,1); renderP(); } }
 
         function createManualOrder() {
             const name = document.getElementById('o-customer').value;
             const items = document.getElementById('o-items').value;
-            const status = document.getElementById('o-status').value;
-            const delivery = document.getElementById('o-delivery').value;
-            if(!name || !items) return alert("Müşteri ve ürün bilgisi girilmeli!");
-
+            if(!name || !items) return alert("Hata!");
             const code = "MOD-" + Math.floor(10000 + Math.random()*90000);
-            orders.push({
-                orderId: code, customerName: name, items, status,
-                lastUpdate: new Date().toISOString(), estimatedDelivery: delivery || "Bilgi Bekleniyor"
-            });
-            renderOTable();
-            closeModal('order-modal');
-            document.getElementById('final-order-code').textContent = code;
-            document.getElementById('success-modal').style.display='flex';
-            syncToDatabase();
+            orders.push({ orderId: code, customerName: name, items, status: document.getElementById('o-status').value, lastUpdate: new Date().toISOString() });
+            renderO(); closeModal('order-modal'); syncAll();
+            alert("Yeni Sipariş Kodu: " + code);
         }
 
-        function updateOStatus(id, s) {
-            const o = orders.find(x=>x.orderId===id);
-            if(o) { o.status = s; o.lastUpdate = new Date().toISOString(); syncToDatabase(); }
-        }
-        function deleteO(id) { if(confirm("Sipariş silinsin mi?")) { orders = orders.filter(x=>x.orderId!==id); renderOTable(); syncToDatabase(); } }
+        function delO(id) { if(confirm("Sil?")) { orders=orders.filter(x=>x.orderId!==id); renderO(); syncAll(); } }
 
-        async function syncToDatabase() {
-            showLoading(true);
-            const now = new Date().toLocaleString('tr-TR');
+        async function syncAll() {
             try {
                 await Promise.all([
                     fetch('/api/products', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(products) }),
                     fetch('/api/orders', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(orders) }),
-                    fetch('/api/last-update', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({time: now}) })
+                    fetch('/api/last-update', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({time: new Date().toLocaleString('tr-TR')}) })
                 ]);
-                document.getElementById('stat-update').textContent = now;
                 const t = document.getElementById('toast'); t.classList.add('show');
                 setTimeout(()=>t.classList.remove('show'), 3000);
-            } catch(e) { alert("Veritabanına ulaşılamadı!"); }
-            showLoading(false);
+            } catch(e) { alert("Bağlantı Hatası!"); }
         }
 
-        // Utils
-        function switchTab(t) {
-            document.getElementById('products-view').style.display = t==='products'?'block':'none';
-            document.getElementById('orders-view').style.display = t==='orders'?'block':'none';
-            document.getElementById('nav-products').classList.toggle('active', t==='products');
-            document.getElementById('nav-orders').classList.toggle('active', t==='orders');
-            document.getElementById('tab-title').textContent = t==='products' ? "Ürün Listesi" : "Sipariş Yönetimi";
-        }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function showLoading(s) { document.getElementById('loading').style.display = s?'flex':'none'; }
-        function resetPModal() {
+        function resetModal() {
             document.getElementById('p-name-tr').value=''; document.getElementById('p-name-en').value='';
-            document.getElementById('p-price').value=''; document.getElementById('p-desc-tr').value='';
-            document.getElementById('p-desc-en').value=''; document.getElementById('p-rating').value='5.0';
-            document.getElementById('p-preview').style.display='none';
-            document.getElementById('p-drop-zone').classList.remove('has-image');
+            document.getElementById('p-price').value=''; document.getElementById('p-preview').style.display='none';
+            document.getElementById('drop-zone').classList.remove('has-image');
         }
 
-        // Drag Drop
-        const dz = document.getElementById('p-drop-zone'); const fi = document.getElementById('p-file');
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+
+        // Drag Drop Logic
+        const dz = document.getElementById('drop-zone'); const fi = document.getElementById('p-file');
         dz.onclick=()=>fi.click();
-        dz.ondragover=(e)=>{e.preventDefault(); dz.classList.add('hover');};
+        dz.ondragover=(e)=>{ e.preventDefault(); dz.classList.add('hover'); };
         dz.ondragleave=()=>dz.classList.remove('hover');
-        dz.ondrop=(e)=>{ e.preventDefault(); dz.classList.remove('hover'); handleImg(e.dataTransfer.files[0]); };
-        fi.onchange=(e)=>handleImg(fi.files[0]);
-        function handleImg(f) {
-            if(!f) return;
-            const r = new FileReader();
-            r.onload=(e)=>{
-                curImgData = e.target.result;
-                document.getElementById('p-preview').src = curImgData;
-                document.getElementById('p-preview').style.display='block';
-                dz.classList.add('has-image');
-            };
-            r.readAsDataURL(f);
+        dz.ondrop=(e)=>{
+            e.preventDefault(); dz.classList.remove('hover');
+            const file = e.dataTransfer.files[0];
+            if(file) {
+                const r = new FileReader();
+                r.onload=(ev)=>{ pImg=ev.target.result; document.getElementById('p-preview').src=pImg; document.getElementById('p-preview').style.display='block'; dz.classList.add('has-image'); };
+                r.readAsDataURL(file);
+            }
+        };
+        fi.onchange=(e)=>{
+            const file = fi.files[0];
+            if(file) {
+                const r = new FileReader();
+                r.onload=(ev)=>{ pImg=ev.target.result; document.getElementById('p-preview').src=pImg; document.getElementById('p-preview').style.display='block'; dz.classList.add('has-image'); };
+                r.readAsDataURL(file);
+            }
         }
-
-        checkAuth();
     </script>
 </body>
 </html>
