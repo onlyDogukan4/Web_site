@@ -143,21 +143,37 @@
         </div>
     </div>
 
-    <!-- Ürün Detay Modalı (Lightbox) -->
+    <!-- Ürün Detay Modalı (Professional Lightbox) -->
     <div id="product-detail-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn detail-close" style="z-index: 10;">&times;</span>
-            <div class="detail-img-wrapper">
-                <img id="detail-img" src="" alt="Ürün Detayı">
-            </div>
-            <div class="detail-info-wrapper">
-                <h2 id="detail-title" style="font-size: 32px; font-weight: 800; margin-bottom: 10px;">Ürün Adı</h2>
-                <div id="detail-rating" style="margin-bottom: 20px; color: #f59e0b; font-size: 18px;"></div>
-                <div id="detail-price" style="font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 24px;">₺0,00</div>
-                <p id="detail-desc" style="color: var(--text-muted); margin-bottom: 32px; line-height: 1.8;">
-                    Yükleniyor...
-                </p>
-                <button id="detail-add-btn" class="btn-primary" style="width: 100%;">Sepete Ekle</button>
+        <div class="modal-content" style="max-width: 1000px; border-radius: 40px !important;">
+            <span class="close-btn detail-close" style="z-index: 10; font-size: 40px; right: 30px; top: 20px;">&times;</span>
+            <div class="product-detail-container">
+                <div class="product-detail-image">
+                    <img id="detail-img" src="" alt="Ürün Detayı">
+                </div>
+                <div class="product-detail-info">
+                    <div id="detail-rating" style="color: #f59e0b; font-size: 18px; margin-bottom: 20px;"></div>
+                    <h2 id="detail-title">Ürün Adı</h2>
+                    <div id="detail-price">₺0,00</div>
+                    <p id="detail-desc">Yükleniyor...</p>
+                    <button id="detail-add-btn" class="btn-primary">
+                        <i class="fas fa-shopping-cart" style="margin-right: 12px;"></i> <span data-tr="SEPETE EKLE" data-en="ADD TO CART">SEPETE EKLE</span>
+                    </button>
+                    <div style="margin-top: 30px; display: flex; gap: 20px; border-top: 1px solid var(--border); padding-top: 25px;">
+                        <div style="text-align: center; flex: 1;">
+                            <i class="fas fa-certificate" style="color: var(--primary); font-size: 24px; margin-bottom: 10px;"></i>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--text-muted);">%100 HİJYENİK</p>
+                        </div>
+                        <div style="text-align: center; flex: 1;">
+                            <i class="fas fa-leaf" style="color: #10b981; font-size: 24px; margin-bottom: 10px;"></i>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--text-muted);">GERİ DÖNÜŞÜMLÜ</p>
+                        </div>
+                        <div style="text-align: center; flex: 1;">
+                            <i class="fas fa-shipping-fast" style="color: #f59e0b; font-size: 24px; margin-bottom: 10px;"></i>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--text-muted);">HIZLI TESLİMAT</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -166,35 +182,43 @@
         <div class="container footer-content">
             <div class="footer-column">
                 <a href="index.html" class="footer-logo"><i class="fas fa-cube"></i> Moderra</a>
-                <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 20px;" data-tr="Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz." data-en="Where quality and aesthetics meet in paper cup production. Shaping the future with a female entrepreneur vision.">
+                <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 25px; font-size: 15px;" data-tr="Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz." data-en="Where quality and aesthetics meet in paper cup production. Shaping the future with a female entrepreneur vision.">
                     Karton bardak üretiminde kalite ve estetiğin buluştuğu nokta. Kadın girişimci vizyonuyla geleceği şekillendiriyoruz.
                 </p>
-                <div class="social-icons" style="gap: 20px;">
-                    <a href="#"><i class="fab fa-instagram" style="font-size: 24px;"></i></a>
-                    <a href="#"><i class="fab fa-linkedin" style="font-size: 24px;"></i></a>
-                    <a href="#"><i class="fab fa-facebook" style="font-size: 24px;"></i></a>
+                <div class="social-icons" style="display: flex; gap: 15px;">
+                    <a href="#" style="width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s;"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" style="width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s;"><i class="fab fa-facebook-f"></i></a>
                 </div>
             </div>
             <div class="footer-column">
-                <h3 data-tr="Hızlı Linkler" data-en="Quick Links">Hızlı Linkler</h3>
+                <h3 data-tr="Kurumsal" data-en="Corporate">Kurumsal</h3>
                 <ul class="footer-links">
-                    <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                     <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
-                    <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
+                    <li><a href="sss.html" data-tr="Sıkça Sorulan Sorular" data-en="F.A.Q.">Sıkça Sorulan Sorular</a></li>
                     <li><a href="admin.html" data-tr="Yönetici Paneli" data-en="Admin Panel">Yönetici Paneli</a></li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h3 data-tr="İletişim & Destek" data-en="Contact & Support">İletişim & Destek</h3>
-                <div class="footer-social-info">
-                    <a href="https://wa.me/905304640120" class="social-pill">
-                        <i class="fab fa-whatsapp" style="color: #25d366; font-size: 20px;"></i>
-                        <span>0530 464 01 20</span>
-                    </a>
-                    <div class="social-pill">
-                        <i class="fas fa-envelope" style="color: var(--primary); font-size: 18px;"></i>
-                        <span>info@moderra.com</span>
-                    </div>
+                <h3 data-tr="Hizmetler" data-en="Services">Hizmetler</h3>
+                <ul class="footer-links">
+                    <li><a href="konsept-bardaklar.html" data-tr="Özel Tasarım Bardaklar" data-en="Custom Design Cups">Özel Tasarım Bardaklar</a></li>
+                    <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3 data-tr="İletişim" data-en="Contact">İletişim</h3>
+                <div class="footer-contact-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>0530 464 01 20</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="far fa-envelope"></i>
+                    <span>info@moderra.com</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Bor, Niğde</span>
                 </div>
             </div>
         </div>
@@ -294,6 +318,7 @@
             }
             updateCartDisplay();
             cartModal.style.display = 'block'; 
+            document.body.classList.add('cart-open');
         }
 
         function removeFromCart(productId) {
@@ -435,9 +460,15 @@
             }
         };
         const cartCloseBtnOld = document.querySelector('.cart-close');
-        if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { cartModal.style.display = 'none'; };
+        if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
+            cartModal.style.display = 'none'; 
+            document.body.classList.remove('cart-open');
+        };
         window.onclick = (e) => { 
-            if(e.target === cartModal) cartModal.style.display = 'none'; 
+            if(e.target === cartModal) {
+                cartModal.style.display = 'none'; 
+                document.body.classList.remove('cart-open');
+            }
             if(e.target === profileModal) profileModal.style.display = 'none';
         };
         
@@ -487,6 +518,7 @@
         window.onclick = (event) => {
             if (event.target === cartModal) {
                 cartModal.style.display = 'none';
+                document.body.classList.remove('cart-open');
             }
             if (event.target === profileModal) {
                 profileModal.style.display = 'none';

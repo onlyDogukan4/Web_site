@@ -100,6 +100,14 @@
             <div class="form-row">
                 <div class="form-group"><label>Fiyat (₺)</label><input type="number" id="p-price" class="editable-input"></div>
                 <div class="form-group"><label>Puan</label><input type="text" id="p-rating" class="editable-input" value="5.0"></div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select id="p-status" class="editable-input">
+                        <option value="active">Aktif</option>
+                        <option value="oos">Stok Dışı</option>
+                        <option value="discount">İndirimde</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group"><label>Açıklama (TR)</label><textarea id="p-desc-tr" class="editable-input" rows="2"></textarea></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
@@ -322,9 +330,13 @@
                             <div style="font-size:11px; color:var(--text-muted)">${p.name_en || '-'}</div>
                         </td>
                         <td><b style="color:var(--primary)">₺${parseFloat(p.price || 0).toLocaleString('tr-TR')}</b></td>
-                        <td><span style="color:var(--success); font-weight:700">Aktif</span></td>
+                        <td>
+                            <span style="padding:4px 8px; border-radius:8px; font-size:12px; font-weight:700; background:${p.status==='active'?'#dcfce7':p.status==='oos'?'#fee2e2':'#fef9c3'}; color:${p.status==='active'?'#166534':p.status==='oos'?'#991b1b':'#854d0e'}">
+                                ${p.status==='active'?'Aktif':p.status==='oos'?'Stok Dışı':'İndirim'}
+                            </span>
+                        </td>
                         <td style="text-align:right;">
-                            <button class="btn btn-secondary" style="padding:8px" onclick="openEditProduct(${i})"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-secondary" style="padding:8px" onclick="openEditProduct(${i})"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-danger" style="padding:8px" onclick="deleteProduct(${i})"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     `;
@@ -387,6 +399,7 @@
             document.getElementById('p-name-en').value = p.name_en || "";
             document.getElementById('p-price').value = p.price || 0;
             document.getElementById('p-rating').value = p.rating || "5.0";
+            document.getElementById('p-status').value = p.status || "active";
             document.getElementById('p-desc-tr').value = p.description_tr || "";
             curImg = p.image || "";
             if (curImg) {
@@ -405,6 +418,7 @@
                 price: parseFloat(document.getElementById('p-price').value),
                 image: curImg || "images/bardak.png",
                 rating: document.getElementById('p-rating').value,
+                status: document.getElementById('p-status').value,
                 description_tr: document.getElementById('p-desc-tr').value
             };
             if(!p.name_tr || isNaN(p.price)) return alert("Lütfen Ürün Adı ve Fiyat girin!");
