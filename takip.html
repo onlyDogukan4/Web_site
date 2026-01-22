@@ -281,8 +281,18 @@
             document.getElementById('not-found').style.display = 'none';
 
             try {
-                const response = await fetch('/api/orders');
+                const response = await fetch('/api/orders?t=' + Date.now());
+                if (!response.ok) throw new Error("Veri çekilemedi (500)");
+                
                 const orders = await response.json();
+                
+                // Verinin dizi olduğunu doğrula
+                if (!Array.isArray(orders)) {
+                    console.error("API hatası veya boş veri:", orders);
+                    document.getElementById('not-found').style.display = 'block';
+                    return;
+                }
+
                 const order = orders.find(o => o.orderId.trim().toUpperCase() === id);
 
                 if (order) {
@@ -292,7 +302,7 @@
                 }
             } catch (e) {
                 console.error("Tracking error", e);
-                alert("Sipariş verileri alınamadı. Lütfen daha sonra tekrar deneyiniz.");
+                alert("Sipariş verileri şu an alınamıyor. Sunucu hatası (500).");
             }
         }
 

@@ -39,7 +39,9 @@ export default async function handler(req, res) {
             return res.status(200).json(data);
         }
     } catch (error) {
-        console.error("Redis Error:", error);
-        return res.status(500).json({ error: error.message });
+        console.error("Redis Orders Error:", error);
+        // ÖNEMLİ: Veritabanı bağlantısı kopsa bile sorgulama sayfasının hata vermemesi için
+        // başlangıç verilerini (INITIAL_ORDERS) geri döndürüyoruz.
+        return res.status(200).json(INITIAL_ORDERS);
     }
 }
