@@ -94,7 +94,7 @@ const INITIAL_PRODUCTS = [
     }
 ];
 
-import { Redis } from '@upstash/redis';
+// Upstash SDK tamamen kaldırıldı, doğrudan REST API kullanılıyor.
 
 export default async function handler(req, res) {
     // Vercel uzerindeki degiskenleri cek
@@ -162,7 +162,8 @@ export default async function handler(req, res) {
         console.error("Vercel Product Handler Error:", error);
         return res.status(500).json({
             error: "Veritabanı API Hatası",
-            details: error.message
+            details: error.message,
+            version: "REST-V3"
         });
     }
 }

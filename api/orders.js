@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+// Native Fetch REST implementation
 
 // Top-level initialization removed for Vercel stability
 
@@ -46,6 +46,6 @@ export default async function handler(req, res) {
             return res.status(200).json(data);
         }
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message, version: "REST-V3" });
     }
 }
