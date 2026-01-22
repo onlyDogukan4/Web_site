@@ -257,20 +257,21 @@
             const text = document.getElementById('db-status-text');
             try {
                 const res = await fetch('/api/products?t=' + Date.now());
+                const result = await res.json();
+                
                 if (res.ok) {
                     dot.style.background = '#10b981';
                     text.textContent = 'Veritabanı Bağlı';
                 } else {
-                    const err = await res.json();
-                    throw new Error(err.error || 'Bağlantı Hatası');
+                    dot.style.background = '#ef4444';
+                    text.textContent = 'Bağlantı Kesik!';
+                    console.error("DB Error:", result);
+                    alert("VERİTABANI HATASI: " + (result.error || "Bilinmeyen hata") + "\n\nDetay: " + (result.details || "Yok"));
                 }
             } catch (e) {
                 dot.style.background = '#ef4444';
-                text.textContent = 'Bağlantı Kesik!';
-                console.error("DB Status Error:", e);
-                if (e.message.includes('UPSTASH')) {
-                    alert("KRİTİK HATA: Vercel üzerinde UPSTASH anahtarlarınız eksik veya hatalı!");
-                }
+                text.textContent = 'Sunucu Hatası!';
+                console.error("Fetch Error:", e);
             }
         }
 

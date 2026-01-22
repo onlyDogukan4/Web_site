@@ -17,23 +17,23 @@ const INITIAL_ORDERS = [
 ];
 
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+    if (!url || !token) {
+        return res.status(500).json({ error: "UPSTASH_REDIS_REST_URL veya TOKEN eksik!" });
     }
+
+    const redis = new Redis({ url, token });
 
     try {
         if (req.method === 'POST') {
             const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            if (!Array.isArray(data)) throw new Error("Data must be an array");
+            if (!Array.isArray(data)) throw new Error("Veri array olmalı");
             await redis.set('orders', data);
             return res.status(200).json({ success: true });
         } else {
             let data = await redis.get('orders');
-            // Sadece gerçekten database boşsa INITIAL_ORDERS döndür
             if (data === null || data === undefined) {
                 return res.status(200).json(INITIAL_ORDERS);
             }
@@ -41,6 +41,9 @@ export default async function handler(req, res) {
         }
     } catch (error) {
         console.error("Redis Orders Error:", error);
-        return res.status(500).json({ error: "Veritabanı bağlantı hatası: " + error.message });
+        return res.status(500).json({
+            error: "Sipariş veritabanı bağlantı hatası!",
+            details: error.message
+        });
     }
 }
