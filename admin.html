@@ -98,15 +98,49 @@
                 <div class="form-group"><label>Product Name (EN)</label><input type="text" id="p-name-en" class="editable-input"></div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>Fiyat (₺)</label><input type="number" id="p-price" class="editable-input"></div>
-                <div class="form-group"><label>Puan</label><input type="text" id="p-rating" class="editable-input" value="5.0"></div>
+                <div class="form-group"><label>Mevcut Fiyat (₺)</label><input type="number" id="p-price" class="editable-input"></div>
+                <div class="form-group"><label>Eski Fiyat (Opsiyonel ₺)</label><input type="number" id="p-old-price" class="editable-input" placeholder="İndirim etiketi için"></div>
                 <div class="form-group">
                     <label>Durum</label>
                     <select id="p-status" class="editable-input">
                         <option value="active">Aktif</option>
                         <option value="oos">Stok Dışı</option>
                         <option value="discount">İndirimde</option>
+                        <option value="hot">Kampanya (HOT)</option>
                     </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Puan</label><input type="text" id="p-rating" class="editable-input" value="5.0"></div>
+                <div class="form-group">
+                    <label>Kampanya Grubu</label>
+                    <select id="p-campaign" class="editable-input">
+                        <option value="">Yok</option>
+                        <!-- JS ile dolacak -->
+                    </select>
+                </div>
+            </div>
+            <div style="background: #f1f5f9; padding:15px; border-radius:12px; margin-bottom:15px;">
+                <h4 style="margin-bottom:10px; font-size:14px;"><i class="fas fa-percentage"></i> Gelişmiş İndirimler</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Çoklu Alım İndirimi (%)</label>
+                        <input type="number" id="p-bulk-rate" class="editable-input" placeholder="Örn: 10 (Yüzde 10)">
+                    </div>
+                    <div class="form-group">
+                        <label>Kaç Adet Üstü?</label>
+                        <input type="number" id="p-bulk-threshold" class="editable-input" placeholder="Örn: 20">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Birlikte Alımda İndirim (%)</label>
+                        <input type="number" id="p-cross-rate" class="editable-input" placeholder="Örn: 20">
+                    </div>
+                    <div class="form-group">
+                        <label>Hangi Ürünle? (ID)</label>
+                        <input type="text" id="p-cross-target" class="editable-input" placeholder="Ürün ID girin">
+                    </div>
                 </div>
             </div>
             <div class="form-group"><label>Açıklama (TR)</label><textarea id="p-desc-tr" class="editable-input" rows="2"></textarea></div>
@@ -155,7 +189,9 @@
         <div class="logo"><i class="fas fa-cube"></i> MODERRA</div>
         <ul class="nav-menu">
             <li class="nav-link active" id="link-p" onclick="switchSection('p')"><i class="fas fa-layer-group"></i> Ürün Listesi</li>
+            <li class="nav-link" id="link-c" onclick="switchSection('c')"><i class="fas fa-bullhorn"></i> Kampanyalar</li>
             <li class="nav-link" id="link-o" onclick="switchSection('o')"><i class="fas fa-truck-loading"></i> Sipariş Takibi</li>
+            <li class="nav-link" id="link-s" onclick="switchSection('s')"><i class="fas fa-cog"></i> Genel Ayarlar</li>
             <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-home"></i> Siteye Git</li>
             <li style="margin-top: 20px; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.05); font-size: 12px; display: flex; align-items: center; gap: 8px;">
                 <span id="db-status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: #94a3b8;"></span>
@@ -175,7 +211,10 @@
                     <h1>Mevcut Ürünler</h1>
                     <p style="color: var(--text-muted); font-size: 14px;">Mağazanızda yayında olan tüm ürünler.</p>
                 </div>
-                <button class="btn btn-primary" onclick="openAddProduct()"><i class="fas fa-plus"></i> Yeni Ürün Ekle</button>
+                <div style="display:flex; gap:10px">
+                    <button class="btn btn-secondary" onclick="console.log(products)">ID'leri Listele</button>
+                    <button class="btn btn-primary" onclick="openAddProduct()"><i class="fas fa-plus"></i> Yeni Ürün Ekle</button>
+                </div>
             </div>
             <div class="section-card">
                 <div style="overflow-x: auto;">
