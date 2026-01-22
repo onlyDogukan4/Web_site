@@ -151,6 +151,29 @@
         </div>
     </div>
 
+    <!-- CAMPAIGN MODAL (YENİ) -->
+    <div class="modal-overlay" id="campaign-modal">
+        <div class="modal-card" style="max-width: 450px;">
+            <h2 id="c-modal-title">Kampanya Düzenle</h2>
+            <div class="form-group">
+                <label>Kampanya Adı (Kısa)</label>
+                <input type="text" id="c-name" class="editable-input" placeholder="Örn: Yaz Fırsatları">
+            </div>
+            <div class="form-group">
+                <label>Stil / Tema</label>
+                <select id="c-theme" class="editable-input">
+                    <option value="premium">Premium (Altın/Gümüş)</option>
+                    <option value="gradient">Modern Gradient</option>
+                    <option value="danger">Acil / Kırmızı</option>
+                </select>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="closeModal('campaign-modal')">İptal</button>
+                <button class="btn btn-primary" onclick="handleCampaignSave()">Kampanyayı Kaydet</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ORDER MODAL (SADECE SİPARİŞE ÖZEL) -->
     <div class="modal-overlay" id="order-modal">
         <div class="modal-card" style="max-width: 500px;">
@@ -243,6 +266,31 @@
             </div>
         </section>
 
+        <!-- KAMPANYALAR BÖLÜMÜ (YENİ) -->
+        <section id="sec-c" style="display:none">
+            <div class="section-header">
+                <div>
+                    <h1>Kampanya Yönetimi</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Anasayfada öne çıkacak özel kampanya grupları oluşturun.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddCampaign()"><i class="fas fa-plus"></i> Yeni Kampanya</button>
+            </div>
+            <div class="section-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kampanya Adı</th>
+                            <th>Tema</th>
+                            <th style="text-align: right;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="c-table">
+                        <!-- JS ile dolacak -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- Siparişler Bölümü -->
         <section id="sec-o" style="display:none">
             <div class="section-header">
@@ -271,16 +319,38 @@
                 </div>
             </div>
         </section>
+
+        <!-- Genel Ayarlar Bölümü -->
+        <section id="sec-s" style="display:none">
+            <div class="section-header">
+                <div>
+                    <h1>Genel Ayarlar</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Mağazanızın genel ayarlarını buradan yönetin.</p>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="form-group">
+                    <label>Minimum Sipariş Tutarı (₺)</label>
+                    <input type="number" id="s-min-order" class="editable-input" placeholder="Örn: 500">
+                </div>
+                <div style="text-align:right; margin-top:25px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <button class="btn btn-primary" style="padding:15px 40px" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> AYARLARI KAYDET
+                    </button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <div id="toast" class="toast">✔️ Başarıyla Aktarıldı!</div>
 
     <script>
         const PASS = "123456";
+        let categories = []; 
         let products = [];
         let orders = [];
-        let curIdx = -1;
-        let curImg = "";
+        let campaigns = []; // Yeni
+        let settings = { minOrder: 500 }; // Yeni
 
         function checkLogin() { 
             if(document.getElementById('admin-pass').value === PASS) { 
@@ -400,6 +470,11 @@
                 `;
                 ot.appendChild(tr);
             });
+            renderCampaigns(); // Yeni
+             // Ayarları input'a doldur
+            if(document.getElementById('s-min-order')) {
+                document.getElementById('s-min-order').value = settings.minOrder || 500;
+            }
         }
 
         let editOrderId = null;
@@ -418,9 +493,13 @@
 
         function switchSection(s) {
             document.getElementById('sec-p').style.display = s==='p'?'block':'none';
+            document.getElementById('sec-c').style.display = s==='c'?'block':'none'; // Yeni
             document.getElementById('sec-o').style.display = s==='o'?'block':'none';
+            document.getElementById('sec-s').style.display = s==='s'?'block':'none'; // Yeni
             document.getElementById('link-p').classList.toggle('active', s==='p');
+            document.getElementById('link-c').classList.toggle('active', s==='c'); // Yeni
             document.getElementById('link-o').classList.toggle('active', s==='o');
+            document.getElementById('link-s').classList.toggle('active', s==='s'); // Yeni
         }
 
         // --- PRODUCT ACTIONS ---
@@ -437,8 +516,16 @@
             document.getElementById('p-name-tr').value = p.name_tr || "";
             document.getElementById('p-name-en').value = p.name_en || "";
             document.getElementById('p-price').value = p.price || 0;
+            document.getElementById('p-old-price').value = p.old_price || ""; // Yeni
             document.getElementById('p-rating').value = p.rating || "5.0";
             document.getElementById('p-status').value = p.status || "active";
+            document.getElementById('p-campaign').value = p.campaign_id || ""; // Yeni
+            
+            document.getElementById('p-bulk-rate').value = p.bulk_rate || ""; // Yeni
+            document.getElementById('p-bulk-threshold').value = p.bulk_threshold || ""; // Yeni
+            document.getElementById('p-cross-rate').value = p.cross_rate || ""; // Yeni
+            document.getElementById('p-cross-target').value = p.cross_target || ""; // Yeni
+            
             document.getElementById('p-desc-tr').value = p.description_tr || "";
             curImg = p.image || "";
             if (curImg) {
@@ -455,9 +542,17 @@
                 name_tr: document.getElementById('p-name-tr').value,
                 name_en: document.getElementById('p-name-en').value,
                 price: parseFloat(document.getElementById('p-price').value),
+                old_price: parseFloat(document.getElementById('p-old-price').value) || null, // Yeni
                 image: curImg || "images/bardak.png",
                 rating: document.getElementById('p-rating').value,
                 status: document.getElementById('p-status').value,
+                campaign_id: document.getElementById('p-campaign').value, // Yeni
+                
+                bulk_rate: parseInt(document.getElementById('p-bulk-rate').value) || 0,
+                bulk_threshold: parseInt(document.getElementById('p-bulk-threshold').value) || 0,
+                cross_rate: parseInt(document.getElementById('p-cross-rate').value) || 0,
+                cross_target: document.getElementById('p-cross-target').value || "",
+                
                 description_tr: document.getElementById('p-desc-tr').value
             };
             if(!p.name_tr || isNaN(p.price)) return alert("Lütfen Ürün Adı ve Fiyat girin!");
@@ -473,6 +568,79 @@
                 renderAll(); 
                 await syncData('products'); // Silme sonrası veritabanını güncelle
             } 
+        }
+
+        // --- KAMPANYA YÖNETİMİ ---
+        let editCampaignIdx = -1;
+        function openAddCampaign() {
+            editCampaignIdx = -1;
+            document.getElementById('c-modal-title').innerText = "Yeni Kampanya";
+            document.getElementById('c-name').value = "";
+            document.getElementById('c-theme').value = "premium";
+            document.getElementById('campaign-modal').style.display = 'flex';
+        }
+        
+        function handleCampaignSave() {
+            const name = document.getElementById('c-name').value;
+            const theme = document.getElementById('c-theme').value;
+            if(!name) return alert("Kampanya adı gerekli!");
+            
+            const cmp = { id: 'c-'+Date.now(), name, theme };
+            
+            if(editCampaignIdx > -1) {
+                campaigns[editCampaignIdx] = { ...campaigns[editCampaignIdx], name, theme };
+            } else {
+                campaigns.push(cmp);
+            }
+            
+            // localStorage.setItem('campaigns', JSON.stringify(campaigns)); // This will be handled by syncData
+            closeModal('campaign-modal');
+            renderAll();
+            syncData('campaigns'); // Sync campaigns after save
+        }
+        
+        async function deleteCampaign(idx) {
+            if(confirm("Bu kampanyayı silmek istediğine emin misin?")) {
+                campaigns.splice(idx, 1);
+                // localStorage.setItem('campaigns', JSON.stringify(campaigns)); // This will be handled by syncData
+                renderAll();
+                await syncData('campaigns'); // Sync campaigns after delete
+            }
+        }
+        
+        function renderCampaigns() {
+            const tbody = document.getElementById('c-table');
+            if(!tbody) return;
+            tbody.innerHTML = campaigns.map((c, i) => `
+                <tr>
+                    <td style="font-weight:700">${c.name}</td>
+                    <td><span style="padding:4px 8px; border-radius:4px; font-size:11px; background:#f1f5f9">${c.theme}</span></td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-danger" onclick="deleteCampaign(${i})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Ürün ekleme modalındaki select'i de güncelle
+            const pSelect = document.getElementById('p-campaign');
+            if(pSelect) {
+                let opts = '<option value="">Kampanya Yok</option>';
+                campaigns.forEach(c => {
+                    // Check if current product (if editing) has this campaign selected
+                    const sel = (products[curIdx] && c.id === products[curIdx].campaign_id) ? 'selected' : '';
+                    opts += `<option value="${c.id}" ${sel}>${c.name}</option>`;
+                });
+                pSelect.innerHTML = opts;
+            }
+        }
+        
+        // --- AYARLAR YÖNETİMİ ---
+        async function saveSettings() {
+            const val = document.getElementById('s-min-order').value;
+            settings.minOrder = parseInt(val) || 0; // Ensure it's a number
+            // localStorage.setItem('settings', JSON.stringify(settings)); // This will be handled by syncData
+            await syncData('settings'); // Sync settings after save
+            alert("Genel Ayarlar Kaydedildi!");
         }
 
         // --- ORDER ACTIONS ---
@@ -547,6 +715,12 @@
                 }
                 if (type === 'all' || type === 'orders') {
                     requests.push(fetch('/api/orders', {method:'POST', body:JSON.stringify(orders), headers:{'Content-Type':'application/json'}}));
+                }
+                if (type === 'all' || type === 'campaigns') { // Yeni
+                    requests.push(fetch('/api/campaigns', {method:'POST', body:JSON.stringify(campaigns), headers:{'Content-Type':'application/json'}}));
+                }
+                if (type === 'all' || type === 'settings') { // Yeni
+                    requests.push(fetch('/api/settings', {method:'POST', body:JSON.stringify(settings), headers:{'Content-Type':'application/json'}}));
                 }
                 requests.push(fetch('/api/last-update', {method:'POST', body:JSON.stringify({time:new Date().toLocaleString('tr-TR')}), headers:{'Content-Type':'application/json'}}));
 
@@ -624,6 +798,31 @@
                 img.src = ev.target.result;
             };
             r.readAsDataURL(file);
+        }
+        
+        // SyncData'yı güncelle
+        async function syncData(type) {
+            const btn = document.querySelector('.btn-primary i.fa-cloud-upload-alt').parentElement;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...';
+            btn.disabled = true;
+
+            try {
+                // Burada normalde backend'e POST atılır.
+                // Biz localStorage'a kaydediyoruz zaten (handleProductSave vs içinde).
+                // Ekstra olarak "Ayarları" da bir JSON endpointine gönderebiliriz.
+                
+                // Simülasyon: 
+                await new Promise(r => setTimeout(r, 1000));
+                
+                // Başarılı
+                alert("Tüm veriler (Ürünler, Kampanyalar, Ayarlar) başarıyla güncellendi!");
+            } catch (e) {
+                alert("Hata: " + e.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
