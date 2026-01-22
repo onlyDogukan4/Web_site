@@ -5,7 +5,7 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-// Senin orijinal ürün kataloğun ve doğru dosya yolları
+// Senin orijinal ve eksiksiz ürün kataloğun
 const INITIAL_PRODUCTS = [
     {
         "id": "1",
@@ -13,48 +13,48 @@ const INITIAL_PRODUCTS = [
         "name_en": "8.5 oz Paper Cup (1000 pcs)",
         "price": 1453,
         "image": "images/bardak.png",
-        "description_tr": "En yüksek kalite standartlarında üretilmiştir.",
-        "description_en": "Produced with the highest quality standards.",
+        "description_tr": "En yüksek kalite standartlarında üretilmiş sızdırmaz karton bardak.",
+        "description_en": "Leak-proof paper cup produced to the highest quality standards.",
         "rating": "5.0"
     },
     {
         "id": "2",
         "name_tr": "7 oz Karton Bardak (1000 adet)",
         "name_en": "7 oz Paper Cup (1000 pcs)",
-        "price": 950,
+        "price": 1250,
         "image": "images/bardak.png",
-        "description_tr": "Sıcak içecekler için ideal sızdırmaz yapı.",
-        "description_en": "Leak-proof structure ideal for hot drinks.",
+        "description_tr": "Çay ve kahve servisi için en ideal boy.",
+        "description_en": "The most ideal size for tea and coffee service.",
         "rating": "4.9"
     },
     {
         "id": "3",
-        "name_tr": "Ahşap Karıştırıcı (100'lü Paket)",
-        "name_en": "Wooden Stirrer (100 pcs)",
+        "name_tr": "Ahşap Karıştırıcı (1000'li Paket)",
+        "name_en": "Wooden Stirrer (1000 pcs)",
         "price": 189.9,
         "image": "images/karistirici.jpeg",
-        "description_tr": "Doğal ahşaptan üretilmiş karıştırıcı.",
-        "description_en": "Stirrer made from natural wood.",
+        "description_tr": "Doğal ahşaptan üretilmiş, hijyenik karıştırıcılar.",
+        "description_en": "Hygienic stirrers made from natural wood.",
         "rating": "4.7"
     },
     {
         "id": "4",
-        "name_tr": "Kare Peçete (1000 Adet)",
-        "name_en": "Square Napkin (1000 pcs)",
-        "price": 99.9,
+        "name_tr": "Kare Peçete (2000 Adet)",
+        "name_en": "Square Napkin (2000 pcs)",
+        "price": 240,
         "image": "images/pecete.png",
-        "description_tr": "Yumuşak dokulu kare peçeteler.",
-        "description_en": "Soft textured square napkins.",
+        "description_tr": "Yumuşak dokulu ve emici kare peçeteler.",
+        "description_en": "Soft textured and absorbent square napkins.",
         "rating": "4.9"
     },
     {
         "id": "5",
-        "name_tr": "Karton Bardak Tutucu",
-        "name_en": "Paper Cup Sleeve",
-        "price": 120,
-        "image": "images/bardak.png",
-        "description_tr": "Elinizi sıcaktan koruyan ergonomik tasarım.",
-        "description_en": "Ergonomic design protecting your hand from heat.",
+        "name_tr": "Plastik Kaşık (1000 Adet)",
+        "name_en": "Plastic Spoon (1000 pcs)",
+        "price": 350,
+        "image": "images/kasık.jpeg",
+        "description_tr": "Dayanıklı ve şık tasarımlı servis kaşığı.",
+        "description_en": "Durable and stylish design serving spoon.",
         "rating": "4.8"
     },
     {
@@ -63,9 +63,19 @@ const INITIAL_PRODUCTS = [
         "name_en": "Hot Drink Lid (1000 pcs)",
         "price": 149.9,
         "image": "images/kapak.png",
-        "description_tr": "Sızdırmaz kapaklar.",
-        "description_en": "Leak-proof lids.",
+        "description_tr": "Bardaklara tam uyumlu, sızdırmaz kapaklar.",
+        "description_en": "Leak-proof lids perfectly compatible with cups.",
         "rating": "4.8"
+    },
+    {
+        "id": "7",
+        "name_tr": "Plastik Çatal (1000 Adet)",
+        "name_en": "Plastic Fork (1000 pcs)",
+        "price": 350,
+        "image": "images/catal.jpeg",
+        "description_tr": "Kırılmaya dayanıklı kaliteli plastik çatal.",
+        "description_en": "High quality break-resistant plastic fork.",
+        "rating": "4.7"
     },
     {
         "id": "11",
@@ -73,9 +83,19 @@ const INITIAL_PRODUCTS = [
         "name_en": "Single Pack Wet Wipe (1000 pcs)",
         "price": 279.9,
         "image": "images/mendil.png",
-        "description_tr": "Hijyenik ıslak mendil.",
-        "description_en": "Hygienic wet wipe.",
+        "description_tr": "Ferahlatan kokusuyla hijyenik ıslak mendil.",
+        "description_en": "Hygienic wet wipe with a refreshing scent.",
         "rating": "5.0"
+    },
+    {
+        "id": "12",
+        "name_tr": "Promosyon Çakmak",
+        "name_en": "Promotional Lighter",
+        "price": 45,
+        "image": "images/çakmak.png",
+        "description_tr": "Moderra logolu kaliteli baskılı çakmak.",
+        "description_en": "Quality printed lighter with Moderra logo.",
+        "rating": "4.6"
     }
 ];
 
@@ -93,8 +113,8 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true });
         } else {
             let data = await redis.get('products');
-            // Eğer veritabanı boşsa veya hatalıysa INITIAL_PRODUCTS ile başlat
-            if (!data || !Array.isArray(data) || data.length === 0) {
+            // Force reset: Eğer veri gelmiyorsa veya eksikse INITIAL_PRODUCTS kullan
+            if (!data || !Array.isArray(data) || data.length < 3) {
                 await redis.set('products', INITIAL_PRODUCTS);
                 data = INITIAL_PRODUCTS;
             }

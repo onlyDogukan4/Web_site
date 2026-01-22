@@ -16,7 +16,7 @@
         body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; }
 
         /* Sidebar */
-        .sidebar { width: 280px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 30px; position: fixed; inset-y: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar { width: 280px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 30px; position: fixed; top: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
         .logo { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 40px; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: var(--radius); color: var(--text-muted); text-decoration: none; font-weight: 600; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
         .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
@@ -312,12 +312,29 @@
                 tr.innerHTML = `
                     <td><b style="color:var(--primary)">#${o.orderId}</b></td>
                     <td><b>${o.customerName}</b></td>
-                    <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${o.items}</div></td>
+                    <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width:200px;">${o.items}</div></td>
                     <td><span class="status-badge status-${o.status}">${o.status}</span></td>
-                    <td style="text-align:right;"><button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-times"></i></button></td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-primary" style="padding:8px" onclick="openEditOrder('${o.orderId}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-times"></i></button>
+                    </td>
                 `;
                 ot.appendChild(tr);
             });
+        }
+
+        let editOrderId = null;
+        function openEditOrder(id) {
+            editOrderId = id;
+            const o = orders.find(x => x.orderId === id);
+            if(!o) return;
+            
+            document.getElementById('o-customer').value = o.customerName;
+            document.getElementById('o-items').value = o.items;
+            document.getElementById('o-status').value = o.status;
+            document.getElementById('o-delivery').value = o.estimatedDelivery === "Bilgi Bekleniyor" ? "" : o.estimatedDelivery;
+            
+            document.getElementById('order-modal').style.display = 'flex';
         }
 
         function switchSection(s) {
@@ -386,31 +403,48 @@
             
             if(!name || !items) return alert("Müşteri ve ürün bilgisi girilmeli!");
             
-            const randomID = Math.floor(1000 + Math.random() * 9000);
-            const code = "MOD-" + randomID;
+            if (editOrderId) {
+                // Düzenleme
+                const idx = orders.findIndex(x => x.orderId === editOrderId);
+                if (idx > -1) {
+                    orders[idx].customerName = name;
+                    orders[idx].items = items;
+                    orders[idx].status = status;
+                    orders[idx].estimatedDelivery = delivery || "Bilgi Bekleniyor";
+                    orders[idx].lastUpdate = new Date().toISOString();
+                }
+                editOrderId = null;
+            } else {
+                // Yeni Sipariş
+                const randomID = Math.floor(10000 + Math.random() * 90000);
+                const code = "MOD-" + randomID;
+                
+                const newOrder = { 
+                    orderId: code, 
+                    customerName: name, 
+                    items, 
+                    status, 
+                    lastUpdate: new Date().toISOString(),
+                    estimatedDelivery: delivery || "Bilgi Bekleniyor"
+                };
+                orders.push(newOrder);
+                alert(`YENİ SİPARİŞ OLUŞTU!\nKod: ${code}`);
+            }
             
-            const newOrder = { 
-                orderId: code, 
-                customerName: name, 
-                items, 
-                status, 
-                lastUpdate: new Date().toISOString(),
-                estimatedDelivery: delivery || "Bilgi Bekleniyor"
-            };
-            
-            orders.push(newOrder);
             renderAll(); 
             closeModal('order-modal'); 
             await syncData('orders'); // Kaydet
             
-            alert(`SİPARİŞ OLUŞTU!\nKod: ${code}\nMüşteri No: ${randomID}`);
+            // Formu temizle
+            document.getElementById('o-customer').value = "";
+            document.getElementById('o-items').value = "";
         }
         
-        function deleteOrder(id) { 
+        async function deleteOrder(id) { 
             if(confirm("Bu siparişi listeden kaldırmak istiyor musunuz?")) { 
                 orders = orders.filter(x => x.orderId !== id); 
                 renderAll(); 
-                syncData('orders'); 
+                await syncData('orders'); 
             } 
         }
 
@@ -422,6 +456,12 @@
                 const requests = [];
                 // Eğer sadece sipariş eklendiyse boşuna ürünleri tekrar göndermeyelim (Limit aşımı önlemi)
                 if (type === 'all' || type === 'products') {
+                    const size = JSON.stringify(products).length / (1024 * 1024);
+                    if (size > 4.2) {
+                        alert(`DİKKAT: Ürün verisi çok büyük (${size.toFixed(2)}MB).\nSinirlenmenize gerek yok, bu sorunu çözmek için eski ürünlerin fotoğraflarını silip yeni 'Otomatik Sıkıştırma' sistemimizle tekrar yüklemeniz yeterlidir.`);
+                        if (saveBtn) saveBtn.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> TÜMÜNÜ KAYDET VE YAYINLA`;
+                        return;
+                    }
                     requests.push(fetch('/api/products', {method:'POST', body:JSON.stringify(products), headers:{'Content-Type':'application/json'}}));
                 }
                 if (type === 'all' || type === 'orders') {
@@ -473,11 +513,34 @@
 
         function loadImg(file) {
             const r = new FileReader();
-            r.onload = (ev) => { 
-                curImg = ev.target.result; 
-                document.getElementById('p-preview').src = curImg; 
-                document.getElementById('p-preview').style.display = 'block'; 
-                document.getElementById('p-drop-text').style.display = 'none'; 
+            r.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    // KÖKTEN ÇÖZÜM: Fotoğrafı küçült ve sıkıştır (Vercel 4.5MB Limitini aşmamak için)
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const max = 800; // Maksimum 800px genişlik veya yükseklik
+
+                    if (width > height) {
+                        if (width > max) { height *= max / width; width = max; }
+                    } else {
+                        if (height > max) { width *= max / height; height = max; }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // 0.7 kalite ile JPEG olarak kaydet (Boyutu %90 azaltır)
+                    curImg = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    document.getElementById('p-preview').src = curImg; 
+                    document.getElementById('p-preview').style.display = 'block'; 
+                    document.getElementById('p-drop-text').style.display = 'none'; 
+                };
+                img.src = ev.target.result;
             };
             r.readAsDataURL(file);
         }

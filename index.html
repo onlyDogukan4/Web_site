@@ -25,23 +25,19 @@
             <ul class="nav-links" id="nav-links">
                 <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
                 <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
 
             <div class="nav-icons">
-                <a href="takip.html" class="track-btn-premium" data-tr="Sipariş Takibi" data-en="Track Order">
-                    <i class="fas fa-box-open"></i> <span>Sipariş Takibi</span>
-                </a>
-                <div class="icon-group">
-                    <i class="fas fa-search" id="open-search"></i>
-                    <i class="fas fa-moon" id="theme-toggle"></i>
-                    <div class="cart-icon-wrapper" id="open-cart-modal">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span id="cart-count">0</span>
-                    </div>
-                    <i class="fas fa-user-circle" id="open-profile-modal"></i>
-                </div>
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count">0</span>
+                </i>
+                <i class="fas fa-user" id="open-profile-modal"></i>
                 <div class="hamburger">
                     <i class="fas fa-bars"></i>
                 </div>
@@ -92,31 +88,24 @@
     </section>
     </main>
     
-    <!-- Modern Sepet Side-Drawer -->
-    <div id="cart-modal" class="cart-drawer-overlay">
-        <div class="cart-drawer">
-            <div class="cart-drawer-header">
-                <h3><i class="fas fa-shopping-bag"></i> <span data-tr="Sepetim" data-en="My Cart">Sepetim</span></h3>
-                <span class="cart-close-drawer">&times;</span>
+    <!-- Sepet Modalı (Eski Hali) -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content cart-modal-content" style="max-width:600px; margin: 10% auto; border-radius:30px;">
+            <span class="close-btn cart-close" id="close-cart-btn-modal" style="top: 15px; right: 20px;">&times;</span>
+            <div class="cart-header" style="padding:25px; border-bottom:1px solid #eee;">
+                <h3 style="display:flex; align-items:center; gap:10px;"><i class="fas fa-shopping-cart"></i> <span data-tr="Sepetim" data-en="My Cart">Sepetim</span></h3>
             </div>
-            
-            <div id="cart-items-list" class="cart-drawer-body">
-                <div class="empty-cart-ui">
-                    <i class="fas fa-shopping-basket"></i>
-                    <p data-tr="Sepetiniz şu an boş." data-en="Your cart is empty.">Sepetiniz şu an boş.</p>
-                </div>
+            <div id="cart-items-list" style="padding:20px; max-height:400px; overflow-y:auto;">
+                <p class="empty-cart-message" data-tr="Sepetinizde ürün bulunmamaktadır." data-en="Your cart is empty.">Sepetinizde ürün bulunmamaktadır.</p>
             </div>
-
-            <div class="cart-drawer-footer">
-                <div class="cart-subtotal">
-                    <span data-tr="Ara Toplam" data-en="Subtotal">Ara Toplam</span>
+            <div class="cart-footer" style="padding:25px; border-top:1px solid #eee; background:#f9fafb;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size:20px;">
+                    <span data-tr="Toplam:" data-en="Total:">Toplam:</span>
                     <span id="cart-total-price">₺0,00</span>
                 </div>
-                <button id="whatsapp-checkout" class="checkout-btn-modern">
-                    <i class="fab fa-whatsapp"></i> 
-                    <span data-tr="Siparişi Tamamla" data-en="Complete Order">Siparişi Tamamla</span>
+                <button id="whatsapp-checkout" class="btn" style="width:100%; padding:15px; border-radius:12px; background:#25d366; color:white; font-size:16px;">
+                    <i class="fab fa-whatsapp"></i> <span data-tr="WhatsApp ile Sipariş Ver" data-en="Order via WhatsApp">WhatsApp ile Sipariş Ver</span>
                 </button>
-                <p class="cart-note" data-tr="* Siparişiniz WhatsApp üzerinden alınacaktır." data-en="* Your order will be received via WhatsApp.">* Siparişiniz WhatsApp üzerinden alınacaktır.</p>
             </div>
         </div>
     </div>
@@ -263,12 +252,7 @@
             let total = 0;
 
             if (cart.length === 0) {
-                cartItemsList.innerHTML = `
-                    <div class="empty-cart-ui">
-                        <i class="fas fa-shopping-basket"></i>
-                        <p data-tr="Sepetiniz şu an boş." data-en="Your cart is empty.">${currentLang === 'tr' ? 'Sepetiniz şu an boş.' : 'Your cart is empty.'}</p>
-                    </div>
-                `;
+                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
                 cartCount.style.display = 'none';
                 whatsappCheckout.style.display = 'none';
             } else {
@@ -277,16 +261,14 @@
                     total += itemTotal;
 
                     const itemElement = document.createElement('div');
-                    itemElement.classList.add('cart-drawer-item');
+                    itemElement.classList.add('cart-item');
                     itemElement.innerHTML = `
-                        <div class="cd-item-info">
-                            <span class="cd-item-name">${item.name}</span>
-                            <span class="cd-item-pricing">${item.quantity} x ₺${item.price.toLocaleString('tr-TR', {minimumFractionDigits:2})}</span>
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-details">${item.quantity} x ₺${item.price.toFixed(2).replace('.', ',')}</div>
                         </div>
-                        <div class="cd-item-actions">
-                            <span class="cd-item-total">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</span>
-                            <i class="fas fa-trash cd-remove-btn" onclick="removeFromCart('${item.id}')"></i>
-                        </div>
+                        <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
+                        <i class="fas fa-trash-alt item-remove" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#ef4444; margin-left:15px;"></i>
                     `;
                     cartItemsList.appendChild(itemElement);
                 });
@@ -309,7 +291,7 @@
                 cart.push({ id: productId, name: productName, price: price, quantity: 1 });
             }
             updateCartDisplay();
-            cartModal.classList.add('active'); 
+            cartModal.style.display = 'block'; 
         }
 
         function removeFromCart(productId) {
@@ -439,7 +421,7 @@
 
         // --- Sepet Modal Kontrolleri ---
         openCartModal.onclick = () => { 
-            cartModal.classList.add('active'); 
+            cartModal.style.display = 'block'; 
             // Profil eksikse uyarıyı aç
             const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
             if (!userData.name) {
@@ -450,8 +432,12 @@
                 }, 500);
             }
         };
-        cartCloseBtn.onclick = () => { cartModal.classList.remove('active'); };
-        cartModal.onclick = (e) => { if(e.target === cartModal) cartModal.classList.remove('active'); };
+        const cartCloseBtnOld = document.querySelector('.cart-close');
+        if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { cartModal.style.display = 'none'; };
+        window.onclick = (e) => { 
+            if(e.target === cartModal) cartModal.style.display = 'none'; 
+            if(e.target === profileModal) profileModal.style.display = 'none';
+        };
         
         // --- Ürün Detay Modalı (Lightbox) İşlemleri ---
         const detailModal = document.getElementById('product-detail-modal');
