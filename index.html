@@ -1016,19 +1016,36 @@
                     ? "Mağazamızdaki Ürünler: " + allProducts.map(p => p.name_tr).join(", ")
                     : "Ambalaj, Bardak ve Gıda Kapları satıyoruz.";
 
+                 // Dinamik Prompt Oluşturma
+                 let goalInstruction = "";
+                 if (total >= freeShip) {
+                     goalInstruction = `
+                        DURUM: Müşteri zaten Ücretsiz Kargo limitini geçti (${total} TL).
+                        GÖREV: Sakın kargo ücretinden bahsetme! Müşteriyi tebrik et ("Harika", "Kargo bizden" vb).
+                        ODAK: Sadece ürünlerin birbirini tamamlamasına odaklan (Bardak-Kapak gibi). 
+                        Veya lüks bir ürün öner (Peçete, Çatal).
+                     `;
+                 } else {
+                     const gap = freeShip - total;
+                     goalInstruction = `
+                        DURUM: Müşterinin ücretsiz kargo için ${gap} TL'ye daha ihtiyacı var.
+                        GÖREV: "Kargo parası vereceğine ürün al" diyerek nazikçe baskı kur.
+                        ODAK: Sepet tutarını artırmaya çalış.
+                     `;
+                 }
+
                  const promptInstructions = `
                     Sepet:
                     ${cartItems.map(i => `${i.quantity} ADET - ${i.name}`).join(', ')}
                     
-                    Toplam Tutar: ${total} TL.
-                    Kargo Limiti: ${freeShip} TL.
+                    Toplam: ${total} TL. Kargo Limiti: ${freeShip} TL.
                     
-                    GÖREVİN:
-                    Sepetteki ürünlere bakarak, mağazamızdaki DİĞER ürünlerden mantıklı tamamlayıcılar öner.
-                    Örneğin: Karton bardak alana "Kapak" veya "Karıştırıcı" öner.
-                    Gıda kabı alana "Plastik Çatal/Kaşık" öner.
+                    ${goalInstruction}
                     
-                    Sadece 1 cümle kur. Samimi, esprili ve satış odaklı ol.
+                    GENEL KURALLAR:
+                    - Mr. Karton olarak konuş. (Zeki, Elit, Satış Odaklı).
+                    - Asla "Merhaba" deme.
+                    - Maksimum 1-2 cümle.
                  `;
                  
                  const res = await fetch('/api/chat', {
