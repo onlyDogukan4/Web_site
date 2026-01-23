@@ -466,6 +466,22 @@ button {
     }
 }
 
+.campaign-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(190, 18, 60, 0.3);
+    z-index: 20;
+    transform: rotate(-3deg);
+    border: 2px solid white;
+}
+
 /* Discount Badge */
 .discount-badge {
     position: absolute;
