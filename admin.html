@@ -28,7 +28,38 @@
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
         /* Modals */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto; /* allow scrolling when content exceeds viewport */
+        }
+        .modal-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            width: 100%;
+            max-width: 600px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            position: relative;
+            max-height: 90vh; /* limit height */
+            overflow-y: auto; /* enable internal scroll */
+        }
+        .close-btn {
+            cursor: pointer;
+            font-size: 24px;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--text-muted);
+        }
+        .close-btn:hover { color: var(--danger); }
         .modal-card { background: var(--card-bg); border-radius: 28px; width: 100%; max-width: 600px; padding: 35px; box-shadow: var(--shadow); position: relative; }
 
         .form-group { margin-bottom: 15px; }
@@ -148,6 +179,7 @@
                 <button class="btn btn-secondary" onclick="closeModal('product-modal')">İptal</button>
                 <button class="btn btn-primary" onclick="handleProductSave()">Değişiklikleri Kaydet</button>
             </div>
+            <span class="close-btn" onclick="closeModal('product-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
         </div>
     </div>
 
@@ -171,6 +203,7 @@
                 <button class="btn btn-secondary" onclick="closeModal('campaign-modal')">İptal</button>
                 <button class="btn btn-primary" onclick="handleCampaignSave()">Kampanyayı Kaydet</button>
             </div>
+            <span class="close-btn" onclick="closeModal('campaign-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
         </div>
     </div>
 
@@ -205,6 +238,7 @@
                 <button class="btn btn-secondary" onclick="closeModal('order-modal')">Vazgeç</button>
                 <button class="btn btn-primary" onclick="createManualOrder()">Kaydet ve Kod Üret</button>
             </div>
+            <span class="close-btn" onclick="closeModal('order-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
         </div>
     </div>
 
@@ -288,6 +322,12 @@
                         <!-- JS ile dolacak -->
                     </tbody>
                 </table>
+            </div>
+            <div style="text-align:right; margin-top:25px; border-top: 1px solid var(--border); padding-top: 20px;">
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">* Kampanyaları canlıya almak için basın.</p>
+                <button class="btn btn-primary" style="padding:15px 40px" onclick="syncData('campaigns')">
+                    <i class="fas fa-cloud-upload-alt"></i> KAMPANYALARI YAYINLA
+                </button>
             </div>
         </section>
 
@@ -396,15 +436,19 @@
             await checkDBStatus();
             try {
                 // Her seferinde taze veri çekelim
-                const [resP, resO] = await Promise.all([
+                const [resP, resO, resC, resS] = await Promise.all([
                     fetch('/api/products?t=' + Date.now()),
-                    fetch('/api/orders?t=' + Date.now())
+                    fetch('/api/orders?t=' + Date.now()),
+                    fetch('/api/campaigns?t=' + Date.now()),
+                    fetch('/api/settings?t=' + Date.now())
                 ]);
                 
                 if (!resP.ok || !resO.ok) throw new Error("API Hatası!");
                 
                 products = await resP.json();
                 orders = await resO.json();
+                campaigns = resC.ok ? await resC.json() : [];
+                settings = resS.ok ? await resS.json() : { minOrder: 500 };
                 
                 // Verinin dizi olduğundan emin olalım
                 if (!Array.isArray(products)) {

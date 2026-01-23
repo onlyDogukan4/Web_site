@@ -94,6 +94,48 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
+    // --- CAMPAIGNS ENDPOINT ---
+    if (req.url.startsWith('/campaigns.json') || req.url.startsWith('/api/campaigns')) {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                const data = JSON.parse(body);
+                await redis.set('campaigns', data);
+                console.log("DB: Campaigns updated.");
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else if (req.method === 'GET') {
+            const data = await redis.get('campaigns');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data || []));
+            return;
+        }
+    }
+
+    // --- SETTINGS ENDPOINT ---
+    if (req.url.startsWith('/settings.json') || req.url.startsWith('/api/settings')) {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                const data = JSON.parse(body);
+                await redis.set('settings', data);
+                console.log("DB: Settings updated.");
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else if (req.method === 'GET') {
+            const data = await redis.get('settings');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data || {}));
+            return;
+        }
+    }
+
     if (req.url === '/api/last-update') {
         if (req.method === 'POST') {
             let body = '';

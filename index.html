@@ -6,7 +6,7 @@
     <meta name="keywords" content="karton bardak, özel logolu bardak, baskılı bardak, ambalaj, moderra">
     <title data-tr="Moderra | Premium Online Alışveriş" data-en="Moderra | Premium Online Shopping">Moderra | Premium Online Alışveriş</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.1">
     <link rel="stylesheet" href="chatbot.css">
 </head>
 <body data-scroll-container>
@@ -829,16 +829,31 @@
                     
                     const card = document.createElement('div');
                     card.className = 'product-card';
+                    // Calculate discount percentage if old price exists and is higher
+                    let discountBadge = '';
+                    if (p.old_price && parseFloat(p.old_price) > parseFloat(p.price)) {
+                        const discountRate = Math.round(((p.old_price - p.price) / p.old_price) * 100);
+                        discountBadge = `<div class="discount-badge">-${discountRate}%</div>`;
+                    }
+                    
+                    // Hot badge logic
+                    let hotBadge = '';
+                    if (p.status === 'hot') {
+                        hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
+                    }
+
                     card.innerHTML = `
                         <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
+                        ${discountBadge}
+                        ${hotBadge}
                         <div class="product-info">
                             <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
                             <div class="product-price">
-                                ${p.old_price ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
+                                ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price) ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
                                 ₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                             </div>
                             <div class="product-actions">
-                                <button class="add-to-cart" onclick="addToCart('${p.id}', '${p.name_tr}', ${p.price})">
+                                <button class="add-to-cart" data-id="${p.id}" data-name="${p.name_tr}" data-price="${p.price}">
                                     <i class="fas fa-shopping-cart"></i> ${isEn?'Add':'Sepete Ekle'}
                                 </button>
                                 <button class="inspect-btn" onclick="openProductDetail('${p.id}')">
@@ -847,21 +862,37 @@
                             </div>
                         </div>
                     `;
-                    // Premium and Discount Class
+                    
+                    // Re-attach event listener for this specific button dynamically or rely on global delegation
+                    // Since I'm replacing innerHTML, the previous event listeners on buttons might be lost if not delegated.
+                    // The code below line 866 attaches listeners to .add-to-cart.
+                    // However, since renderProducts runs async, we need to re-attach listeners OR use onclick in HTML.
+                    // The previous code used onclick="addToCart(...)". I will switch back to that for simplicity and reliability.
+
+                     card.innerHTML = `
+                        <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
+                        ${discountBadge}
+                        ${hotBadge}
+                        <div class="product-info">
+                            <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
+                            <div class="product-price">
+                                ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price) ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
+                                ₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('${p.id}', '${p.name_tr.replace(/'/g, "\\'")}', ${p.price})">
+                                    <i class="fas fa-shopping-cart"></i> ${isEn?'Add':'Sepete Ekle'}
+                                </button>
+                                <button class="inspect-btn" onclick="openProductDetail('${p.id}')">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Premium Campaign Style
                     if(p.status === 'hot' || (p.campaign_id && p.campaign_id.length > 2)) card.classList.add('premium-campaign');
-                    if(p.old_price && p.old_price > p.price) {
-                        const discountRate = Math.round(((p.old_price - p.price) / p.old_price) * 100);
-                        const badge = document.createElement('div');
-                        badge.className = 'discount-badge';
-                        badge.textContent = `-${discountRate}%`;
-                        card.appendChild(badge);
-                    }
-                    if(p.status === 'hot') {
-                        const badge = document.createElement('div');
-                        badge.className = 'hot-badge';
-                        badge.innerHTML = `<i class="fas fa-fire"></i> FIRSAT`;
-                        card.appendChild(badge);
-                    }
+
                     container.appendChild(card);
                 });
             } catch (e) {
