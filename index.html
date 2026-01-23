@@ -979,14 +979,22 @@
                  });
                  const data = await res.json();
                  
+                 if (data.error) {
+                     console.error("AI API Error:", data.error);
+                     textEl.innerText = "Dr. Karton şu an bakımda: " + (data.details || data.error);
+                     return;
+                 }
+                 
                  if(data && data.candidates && data.candidates[0].content) {
                      textEl.innerText = data.candidates[0].content.parts[0].text;
+                     
+                     // (Optional) Parse logic here to update buttons based on AI response if you want dynamic buttons later
                  } else {
                      textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
                  }
              } catch(e) {
                  console.error(e);
-                 textEl.innerText = "Sepetiniz doluyor, avantajları kaçırmayın!";
+                 textEl.innerText = "Bağlantı hatası. Sepetin harika görünüyor!";
              }
         }
 
