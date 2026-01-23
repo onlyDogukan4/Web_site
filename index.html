@@ -1015,14 +1015,19 @@
             cartModal.style.display = 'block'; 
             document.body.classList.add('cart-open');
             
-            // Ayarları tazeleyip sepeti güncelle
-            fetch('/api/settings?t='+Date.now())
+            // 1. Önce mevcut ayarlarla göster (Hız için)
+            updateCartDisplay();
+
+            // 2. Sunucudan EN GÜNCEL ayarları çek zorla
+            fetch('/api/settings?t=' + Date.now(), { cache: "no-store" })
                 .then(r => r.json())
                 .then(s => {
+                    console.log("Güncel Ayarlar İndirildi:", s);
                     localStorage.setItem('settings', JSON.stringify(s));
+                    // 3. Ekranı TAZELENMİŞ ayarlarla tekrar güncelle
                     updateCartDisplay(); 
                 })
-                .catch(e => updateCartDisplay());
+                .catch(e => console.error("Ayarlar çekilemedi:", e));
         };
         const cartCloseBtnOld = document.querySelector('.cart-close');
         if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
