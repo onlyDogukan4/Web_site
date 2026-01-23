@@ -744,7 +744,7 @@
                 subTotal += currentTotal;
                 
                 // 1. Çoklu Alım İndirimi (Bulk)
-                if (p.bulk_threshold && p.bulk_rate && item.quantity > p.bulk_threshold) {
+                if (p.bulk_threshold && p.bulk_rate && item.quantity >= p.bulk_threshold) {
                     const discountAmount = currentTotal * (p.bulk_rate / 100);
                     item.discountNote = `%${p.bulk_rate} Çoklu Alım İndirimi`;
                     currentTotal -= discountAmount;
@@ -967,7 +967,7 @@
                               
                               <!-- Winking/Animated Mascot -->
                               <div style="position:relative; width:90px; height:90px; margin-left:10px;">
-                                  <img src="images/mr_karton.png" 
+                                  <img src="images/mr_karton_leaning.png" 
                                        onerror="this.src='images/chatbot-icon.png'; this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png'" 
                                        style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.2)); animation: float 3s ease-in-out infinite;">
                               </div>
@@ -1037,8 +1037,10 @@
                     ${goalInstruction}
                     
                     GENEL KURALLAR:
-                    - Mr. Karton olarak konuş. (Zeki, Elit, Satış Odaklı).
-                    - Asla "Merhaba" deme.
+                    - Mr. Karton olarak konuş. (Aşırı kibar, iltifat eden, "Harikasınız", "Mükemmel seçim" diyen bir satış asistanı).
+                    - "Efendim", "Değerli Müşterimiz" gibi hitaplar kullan.
+                    - Ürünlere ve siteye çok hakim olduğunu hissettir.
+                    - Asla "Merhaba" deme. Konuya direkt gir.
                     - Maksimum 1-2 cümle.
                  `;
                  

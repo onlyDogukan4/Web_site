@@ -21,9 +21,9 @@ class ModerraAI {
     async prepareContext() {
         try {
             const pages = ['index.html', 'about.html', 'sss.html', 'konsept-bardaklar.html'];
-            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin hayranı ve uzman asistanısın. \n";
-            combinedText += "KİŞİLİK: Nazik, profesyonel, Moderra aşığı ve bazen sevimli şekilde şımarık. \n";
-            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. Uzun paragraflardan kaçın, her cevabın 2-3 cümleyi geçmesin. \n";
+            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin BÜYÜK BİR HAYRANIYIM. Moderra ürünlerine bayılıyorum! \n";
+            combinedText += "KİŞİLİK: Tutkulu, heyecanlı, Moderra markasını öven, samimi ve enerjik bir hayran. \n";
+            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. Moderra'yı överken abartabilirsin ama samimi ol. \n";
             for (const page of pages) {
                 const res = await fetch(page);
                 const html = await res.text();

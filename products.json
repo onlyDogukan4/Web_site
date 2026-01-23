@@ -7,7 +7,9 @@
         "image": "images/bardak.png",
         "description_tr": "En yüksek kalite standartlarında üretilmiştir.",
         "description_en": "Produced with the highest quality standards.",
-        "rating": "5.0"
+        "rating": "5.0",
+        "bulk_threshold": 3,
+        "bulk_rate": 20
     },
     {
         "id": "3",
