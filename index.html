@@ -903,8 +903,9 @@
                              sideWidget = document.createElement('div');
                              sideWidget.id = 'mr-karton-side-widget';
                              const isDesktop = window.innerWidth > 768;
+                             // Desktop Position: Left: -200px to allow space for width
                              sideWidget.style.cssText = isDesktop 
-                                 ? "position:absolute; left:-180px; top:50px; width:170px; z-index:9999; display:flex; flex-direction:column; align-items:center;"
+                                 ? "position:absolute; left:-200px; top:80px; width:190px; z-index:9999; display:flex; flex-direction:column; align-items:flex-end;"
                                  : "position:relative; width:100%; margin-top:20px; display:flex; gap:10px; align-items:flex-end;";
                              modalContent.appendChild(sideWidget);
                          }
@@ -932,33 +933,26 @@
                              if(cheap) suggestions.push({ p: cheap, reason: "Fırsat Ürünü" });
                          }
                          
-                         // Generate Buttons HTML (Modern & Elegant)
+                         // Generate Buttons HTML (Modern & Elegant - Blue Gradient)
                          let buttonsHTML = '';
                          suggestions.slice(0, 2).forEach(s => {
                              const safeName = s.p.name_tr.replace(/'/g, "\\'");
                              buttonsHTML += `
                                 <button class="btn" 
-                                    style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; color: #0369a1; font-size:11px; text-align:left; width:100%; margin-bottom:6px; padding:8px 12px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s; white-space:normal; line-height:1.2; font-weight:600; display:flex; align-items:center; gap:5px;" 
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'"
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'"
+                                    style="background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; color: #1e40af; font-size:11px; text-align:left; width:100%; margin-bottom:5px; padding:8px 10px; border-radius:8px; box-shadow: 0 2px 2px rgba(0,0,0,0.05); transition: all 0.2s; white-space:normal; line-height:1.2; font-weight:600; display:flex; align-items:center; gap:6px;" 
+                                    onmouseover="this.style.background='#dbeafe'; this.style.transform='translateY(-1px)'"
+                                    onmouseout="this.style.background='linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%)'; this.style.transform='translateY(0)'"
                                     onclick="addToCart('${s.p.id}', '${safeName}', ${s.p.price})">
-                                    <i class="fas fa-plus-circle" style="color:var(--primary)"></i> 
-                                    <span>${s.reason}: ${s.p.name_tr} <span style="color:var(--primary)">(${s.p.price}₺)</span></span>
+                                    <i class="fas fa-plus" style="font-size:10px;"></i>
+                                    <span>${s.reason}: ${s.p.name_tr.split(' ').slice(0, 3).join(' ')}...</span>
                                 </button>
                              `;
                          });
 
-                         // Use the correct Winking Image (Chatbot Icon)
-                         // And Flattering/Pohpohlayan Text Container
+                         // LEANING MR KARTON UI (Using 'kırpmamis.png')
+                         // Image aligned to RIGHT of the widget container so it 'leans' on the modal.
+                         // Bubble on top.
                          sideWidget.innerHTML = `
-                              <div style="background:white; border:none; border-radius:16px; padding:15px; font-size:12px; box-shadow:0 8px 20px rgba(0,0,0,0.15); position:relative; margin-bottom:12px; width:100%; border-bottom-left-radius: 4px;">
-                                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                       <h4 style="margin:0; font-size:13px; color:var(--primary); font-weight:800; display:flex; align-items:center; gap:5px;">
-                                           <i class="fas fa-magic" style="color:#eab308"></i> Dr. Karton
-                                       </h4>
-                                       <span style="font-size:9px; background:#eff6ff; color:#3b82f6; padding:2px 6px; border-radius:10px;">Size Özel</span>
-                                  </div>
-                                  
                                   <p id="mr-karton-ai-text" style="color:#334155; margin-bottom:12px; line-height:1.5; font-family:'Inter', sans-serif;">
                                       Mükemmel seçimlerinizi inceliyorum...
                                   </p>
