@@ -1,52 +1,39 @@
-// Native Fetch REST implementation
 
-// Top-level initialization removed for Vercel stability
+import { Redis } from '@upstash/redis';
 
-const INITIAL_ORDERS = [
-    {
-        "orderId": "MOD-12345",
-        "customerName": "Deneme Kullanıcısı",
-        "status": "hazirlaniyor",
-        "lastUpdate": new Date().toISOString(),
-        "items": "1000 adet Bardak",
-        "estimatedDelivery": "2026-01-25"
-    }
-];
+const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 export default async function handler(req, res) {
-    console.log(">>> V5-CLEAN-FINAL START <<<");
-    const url = (process.env.UPSTASH_REDIS_REST_URL || "").trim();
-    const token = (process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
-    if (!url || !token) {
-        return res.status(500).json({ error: "Upstash config missing" });
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
     }
 
     try {
         if (req.method === 'POST') {
-            const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            const response = await fetch(`${url}/set/orders`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(data)
-            });
+            const data = req.body;
+            await redis.set('orders', data);
             return res.status(200).json({ success: true });
+        } else if (req.method === 'GET') {
+            const data = await redis.get('orders');
+            return res.status(200).json(data || []);
         } else {
-            const response = await fetch(`${url}/get/orders`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const body = await response.json();
-            let data = body.result;
-
-            if (data === null || data === undefined) {
-                return res.status(200).json(INITIAL_ORDERS);
-            }
-            if (typeof data === 'string') {
-                try { data = JSON.parse(data); } catch (e) { }
-            }
-            return res.status(200).json(data);
+            return res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (error) {
-        return res.status(500).json({ error: error.message, version: "V5-CLEAN-FINAL" });
+        console.error("Orders API Error:", error);
+        return res.status(500).json({ error: error.message });
     }
 }

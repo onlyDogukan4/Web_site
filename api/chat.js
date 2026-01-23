@@ -34,8 +34,8 @@ export default async function handler(req, res) {
         });
     }
 
-    const modelName = "gemini-1.5-flash-latest";
-    const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${API_KEY}`;
+    const modelName = "gemini-1.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
 
     const body = {
         contents: [
