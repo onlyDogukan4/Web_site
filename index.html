@@ -884,49 +884,86 @@
                 });
                 
                 // --- MR. KARTON AKILLI ÖNERİ SİSTEMİ ---
-                // --- MR. KARTON SIDE WIDGET (SOL TARAFA YAŞLANMIŞ) ---
+                // --- MR. KARTON SIDE WIDGET (DYNAMIC & REAL PRODUCTS) ---
                 if (total >= minOrder && cart.length > 0) {
-                    const modalContent = document.querySelector('.cart-modal-content');
-                    if (modalContent) {
-                        modalContent.style.overflow = 'visible'; // Dışarı taşması için
-                        modalContent.style.position = 'relative'; 
+                     // Fetch Products for Real Recommendations
+                     let allProducts = [];
+                     try {
+                        const pRes = await fetch('/api/products');
+                        allProducts = await pRes.json();
+                     } catch(e) {}
 
-                        let sideWidget = document.getElementById('mr-karton-side-widget');
-                        if (!sideWidget) {
-                            sideWidget = document.createElement('div');
-                            sideWidget.id = 'mr-karton-side-widget';
-                            // Desktop: Sol tarafa, Mobile: Alta
-                            if(window.innerWidth > 768) {
-                                sideWidget.style.cssText = "position:absolute; left:-160px; top:50px; width:150px; z-index:9999; display:flex; flex-direction:column; align-items:center;";
-                            } else {
-                                sideWidget.style.cssText = "position:relative; width:100%; margin-top:20px; display:flex; gap:10px; align-items:flex-end;";
-                            }
-                            modalContent.appendChild(sideWidget);
-                        }
-                        
-                        // İçerik (Baloncuk + Robot)
-                        // Robot altta, baloncuk üstte (konuşuyor gibi)
-                        sideWidget.innerHTML = `
-                             <div style="background:white; border:2px solid var(--primary); border-radius:15px; padding:10px; font-size:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); position:relative; margin-bottom:10px; width:100%;">
-                                 <h4 style="margin:0 0 5px 0; font-size:13px; color:var(--primary); font-weight:800;">Dr. Karton 🤖</h4>
-                                 <p id="mr-karton-ai-text" style="color:#334155; margin-bottom:8px; line-height:1.3;">Sepetini inceliyorum...</p>
-                                 
-                                 <!-- 2 Seçenek Butonu -->
-                                 <div id="mr-karton-options" style="display:flex; flex-direction:column; gap:5px;">
-                                     <button class="btn btn-sm btn-outline-primary" style="font-size:10px; text-align:left;" onclick="addToCart('generic_lid', 'Kapak', 50)">+ Kapak Ekle (50₺)</button>
-                                     <button class="btn btn-sm btn-outline-primary" style="font-size:10px; text-align:left;" onclick="addToCart('generic_stirrer', 'Karıştırıcı', 25)">+ Karıştırıcı (25₺)</button>
-                                 </div>
+                     const modalContent = document.querySelector('.cart-modal-content');
+                     if (modalContent) {
+                         modalContent.style.overflow = 'visible';
+                         modalContent.style.position = 'relative'; 
+ 
+                         let sideWidget = document.getElementById('mr-karton-side-widget');
+                         if (!sideWidget) {
+                             sideWidget = document.createElement('div');
+                             sideWidget.id = 'mr-karton-side-widget';
+                             const isDesktop = window.innerWidth > 768;
+                             sideWidget.style.cssText = isDesktop 
+                                 ? "position:absolute; left:-180px; top:50px; width:170px; z-index:9999; display:flex; flex-direction:column; align-items:center;"
+                                 : "position:relative; width:100%; margin-top:20px; display:flex; gap:10px; align-items:flex-end;";
+                             modalContent.appendChild(sideWidget);
+                         }
+                         
+                         // --- LOGIC: Find Missing Complements ---
+                         let suggestions = [];
+                         
+                         const hasCups = cart.some(i => i.name.toLowerCase().includes('bardak'));
+                         const hasLids = cart.some(i => i.name.toLowerCase().includes('kapak'));
+                         const hasStirrer = cart.some(i => i.name.toLowerCase().includes('karıştırıcı'));
+                         
+                         if(hasCups && !hasLids) {
+                             const lid = allProducts.find(p => p.name_tr.toLowerCase().includes('kapak') || p.name_tr.toLowerCase().includes('lid'));
+                             if(lid) suggestions.push({ p: lid, reason: "Kapak Lazım!" });
+                         }
+                         
+                         if(hasCups && !hasStirrer) {
+                             const stirrer = allProducts.find(p => p.name_tr.toLowerCase().includes('karıştırıcı') || p.name_tr.toLowerCase().includes('kaşık'));
+                             if(stirrer) suggestions.push({ p: stirrer, reason: "Karıştırıcı?" });
+                         }
+                         
+                         // If no specific gap, find a cheap booster
+                         if(suggestions.length === 0) {
+                             const cheap = allProducts.sort((a,b) => parseFloat(a.price) - parseFloat(b.price)).find(p => parseFloat(p.price) > 20 && !cart.find(c=>c.id==p.id));
+                             if(cheap) suggestions.push({ p: cheap, reason: "Fırsat Ürünü" });
+                         }
+                         
+                         // Generate Buttons HTML
+                         let buttonsHTML = '';
+                         suggestions.slice(0, 2).forEach(s => {
+                             // Use Real ID and escape name
+                             const safeName = s.p.name_tr.replace(/'/g, "\\'");
+                             // Calculate suggested Quantity? (Advanced: match cup count). For now 1.
+                             buttonsHTML += `
+                                <button class="btn btn-sm btn-outline-primary" 
+                                    style="font-size:10px; text-align:left; width:100%; margin-bottom:4px; white-space:normal;" 
+                                    onclick="addToCart('${s.p.id}', '${safeName}', ${s.p.price})">
+                                    + ${s.reason}: ${s.p.name_tr} (${s.p.price}₺)
+                                </button>
+                             `;
+                         });
 
-                                 <!-- Ok işareti -->
-                                 <div style="position:absolute; bottom:-8px; left:50%; margin-left:-8px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:8px solid var(--primary);"></div>
-                             </div>
-                             <img src="images/robot.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png'" style="width:100px; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.2)); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                        `;
-                        
-                        fetchMrKartonAdvice(cart, total, freeShip);
-                    }
+                         sideWidget.innerHTML = `
+                              <div style="background:white; border:2px solid var(--primary); border-radius:15px; padding:10px; font-size:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); position:relative; margin-bottom:10px; width:100%;">
+                                  <h4 style="margin:0 0 5px 0; font-size:13px; color:var(--primary); font-weight:800;">Dr. Karton 🤖</h4>
+                                  <p id="mr-karton-ai-text" style="color:#334155; margin-bottom:8px; line-height:1.3;">Sepetini inceliyorum...</p>
+                                  
+                                  <div id="mr-karton-options" style="display:flex; flex-direction:column; gap:2px;">
+                                      ${buttonsHTML}
+                                  </div>
+ 
+                                  <div style="position:absolute; bottom:-8px; left:50%; margin-left:-8px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:8px solid var(--primary);"></div>
+                              </div>
+                              <img src="images/robot.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png'" style="width:100px; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.2)); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                         `;
+                         
+                         fetchMrKartonAdvice(cart, total, freeShip);
+                     }
                 } else {
-                    // Min order altındaysa gizle veya başka bir şey göster
                     const w = document.getElementById('mr-karton-side-widget');
                     if(w) w.style.display = 'none';
                 }
