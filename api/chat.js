@@ -22,13 +22,13 @@ export default async function handler(req, res) {
     // Hem GEMINI_API_KEY hem de NEXT_PUBLIC_ sürümünü kontrol et
     const API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    // API Key yoksa direkt Fallback'e git
     if (API_KEY) {
-        // Models configuration: [Name, API Version]
+        // Models configuration: Try newest 2026 models first
         const strategies = [
-            { model: "gemini-1.5-flash", version: "v1beta" }, // Try bleeding edge first
-            { model: "gemini-pro", version: "v1" },           // Try stable
-            { model: "gemini-pro", version: "v1beta" }        // Try beta pro
+            { model: "gemini-3-flash-preview", version: "v1beta" }, // Latest (Jan 2026)
+            { model: "gemini-3-pro-preview", version: "v1beta" },
+            { model: "gemini-2.0-flash", version: "v1beta" },      // Valid until Mar 2026
+            { model: "gemini-pro", version: "v1beta" }              // Fallback
         ];
 
         for (const strat of strategies) {
