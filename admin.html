@@ -689,15 +689,51 @@
         }
         
         // --- AYARLAR YÖNETİMİ ---
+        // --- AYARLAR YÖNETİMİ ---
         async function saveSettings() {
-            const minOrder = document.getElementById('s-min-order').value;
-            const freeShip = document.getElementById('s-free-shipping').value;
-            
-            settings.minOrder = parseInt(minOrder) || 0;
-            settings.freeShipping = parseInt(freeShip) || 0;
-            
-            await syncData('settings'); 
-            alert("Genel Ayarlar ve Kargo Limitleri Kaydedildi!");
+            try {
+                const minOrderInput = document.getElementById('s-min-order');
+                const freeShipInput = document.getElementById('s-free-shipping');
+                
+                if (!minOrderInput || !freeShipInput) {
+                    alert("Hata: Ayar kutucukları bulunamadı! HTML yapısı bozuk.");
+                    return;
+                }
+
+                const minOrderVal = parseInt(minOrderInput.value);
+                const freeShipVal = parseInt(freeShipInput.value);
+                
+                if (isNaN(minOrderVal) || isNaN(freeShipVal)) {
+                    alert("Lütfen geçerli sayısal değerler girin!");
+                    return;
+                }
+                
+                // Global nesneyi güncelle
+                settings = {
+                    minOrder: minOrderVal,
+                    freeShipping: freeShipVal
+                };
+                
+                console.log("Sunucuya gönderiliyor:", settings);
+                
+                // Manuel Sync Çağrısı (syncData fonksiyonuna güvenmeden doğrudan fetch atıyorum)
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    body: JSON.stringify(settings),
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                if (res.ok) {
+                    alert(`✅ BAŞARILI!\nAyarlar Veritabanına Yazıldı.\n\nMin Sepet: ${minOrderVal} TL\nKargo Limiti: ${freeShipVal} TL\n\nŞimdi ana sayfayı yenileyip kontrol edebilirsiniz.`);
+                } else {
+                    alert("❌ SUNUCU HATASI: Kaydedilemedi. Lütfen internet bağlantısını kontrol edin.");
+                }
+                
+                // Ekranı güncellemek için render çağırılabilir ama gerek yok, inputlar zaten dolu.
+            } catch (e) {
+                alert("KRİTİK HATA: " + e.message);
+                console.error(e);
+            }
         }
 
         // --- ORDER ACTIONS ---
