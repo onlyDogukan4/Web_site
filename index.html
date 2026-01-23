@@ -961,7 +961,7 @@
                               <img src="images/robot.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png'" style="width:100px; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.2)); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                          `;
                          
-                         fetchMrKartonAdvice(cart, total, freeShip);
+                          fetchMrKartonAdvice(cart, total, freeShip, allProducts);
                      }
                 } else {
                     const w = document.getElementById('mr-karton-side-widget');
@@ -988,31 +988,39 @@
         }
         
         // Helper to fetch AI advice
-        async function fetchMrKartonAdvice(cartItems, total, freeShip) {
+        async function fetchMrKartonAdvice(cartItems, total, freeShip, allProducts = []) {
              const textEl = document.getElementById('mr-karton-ai-text');
              if(!textEl) return;
              
              try {
+                 // Ürün kataloğunu AI'ye tanıt (Sadece isimler, token tasarrufu için)
+                 const catalogueSummary = allProducts.length > 0 
+                    ? "Mağazamızdaki Ürünler: " + allProducts.map(p => p.name_tr).join(", ")
+                    : "Ambalaj, Bardak ve Gıda Kapları satıyoruz.";
+
                  const promptInstructions = `
-                    Aşağıdaki sepet içeriği için kısa, samimi, biraz manipülatif ve esprili bir "Satış Temsilcisi" yorumu yaz.
-                    Adın Dr. Karton.
-                    
                     Sepet:
-                    ${cartItems.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                    ${cartItems.map(i => `${i.quantity} ADET - ${i.name}`).join(', ')}
                     
-                    Toplam: ${total} TL.
+                    Toplam Tutar: ${total} TL.
                     Kargo Limiti: ${freeShip} TL.
                     
-                    Kurallar:
-                    1. Eğer (Kargo Limiti - Toplam) < 100 TL ise, "Şunu da ekle kargo bedava olsun" diye gaz ver.
-                    2. Ürünlere göre mantıklı bir tamamlayıcı öner (Bardak varsa kapak öner).
-                    3. Maksimum 2 cümle olsun.
+                    GÖREVİN:
+                    Sepetteki ürünlere bakarak, mağazamızdaki DİĞER ürünlerden mantıklı tamamlayıcılar öner.
+                    Örneğin: Karton bardak alana "Kapak" veya "Karıştırıcı" öner.
+                    Gıda kabı alana "Plastik Çatal/Kaşık" öner.
+                    
+                    Sadece 1 cümle kur. Samimi, esprili ve satış odaklı ol.
                  `;
                  
                  const res = await fetch('/api/chat', {
                      method: 'POST',
                      headers: {'Content-Type': 'application/json'},
-                     body: JSON.stringify({ prompt: promptInstructions, chatHistory: [] })
+                     body: JSON.stringify({ 
+                         prompt: promptInstructions, 
+                         chatHistory: [],
+                         siteContext: catalogueSummary
+                     })
                  });
                  const data = await res.json();
                  
@@ -1024,8 +1032,6 @@
                  
                  if(data && data.candidates && data.candidates[0].content) {
                      textEl.innerText = data.candidates[0].content.parts[0].text;
-                     
-                     // (Optional) Parse logic here to update buttons based on AI response if you want dynamic buttons later
                  } else {
                      textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
                  }
