@@ -961,13 +961,14 @@
 
         renderProducts();
         
-        // Verimlilik için: Sadece sayfa odağa geldiğinde veya her 60 saniyede bir güncelle
+        // Aggressive Auto-Refresh (Every 5 seconds) to ensure users see updates immediately
         window.addEventListener('focus', renderProducts);
-        setInterval(renderProducts, 60000); 
+        setInterval(renderProducts, 5000); 
 
         updateLanguage();
         updateCartDisplay();
     </script>
+
     <script src="fiyat-guncelle.js"></script>
     <script src="chatbot.js"></script>
     

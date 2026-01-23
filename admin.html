@@ -496,8 +496,14 @@
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <button class="btn btn-secondary" style="padding:8px" onclick="openEditProduct(${i})"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-danger" style="padding:8px" onclick="deleteProduct(${i})"><i class="fas fa-trash-alt"></i></button>
+                            <div style="display:flex; justify-content:flex-end; gap:5px;">
+                                <button class="btn btn-secondary" style="padding:8px 12px; background:#3b82f6; color:white;" onclick="openEditProduct(${i})">
+                                    <i class="fas fa-edit"></i> DÜZENLE
+                                </button>
+                                <button class="btn btn-danger" style="padding:8px 12px;" onclick="deleteProduct(${i})">
+                                    <i class="fas fa-trash-alt"></i> SİL
+                                </button>
+                            </div>
                         </td>
                     `;
                     pt.appendChild(tr);
