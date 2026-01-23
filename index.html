@@ -977,7 +977,7 @@
         openCartModal.onclick = () => { 
             cartModal.style.display = 'block'; 
             updateCartDisplay();
-            // Profil check kaldirildi. Sadece checkout'ta sorulacak.
+            document.body.classList.add('cart-open'); // Chatbot'u gizle
         };
         const cartCloseBtnOld = document.querySelector('.cart-close');
         if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
