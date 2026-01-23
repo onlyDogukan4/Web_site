@@ -935,6 +935,46 @@
             }
         }
         
+        // Helper to fetch AI advice
+        async function fetchMrKartonAdvice(cartItems, total, freeShip) {
+             const textEl = document.getElementById('mr-karton-ai-text');
+             if(!textEl) return;
+             
+             try {
+                 const promptInstructions = `
+                    Aşağıdaki sepet içeriği için kısa, samimi, biraz manipülatif ve esprili bir "Satış Temsilcisi" yorumu yaz.
+                    Adın Dr. Karton.
+                    
+                    Sepet:
+                    ${cartItems.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                    
+                    Toplam: ${total} TL.
+                    Kargo Limiti: ${freeShip} TL.
+                    
+                    Kurallar:
+                    1. Eğer (Kargo Limiti - Toplam) < 100 TL ise, "Şunu da ekle kargo bedava olsun" diye gaz ver.
+                    2. Ürünlere göre mantıklı bir tamamlayıcı öner (Bardak varsa kapak öner).
+                    3. Maksimum 2 cümle olsun.
+                 `;
+                 
+                 const res = await fetch('/api/chat', {
+                     method: 'POST',
+                     headers: {'Content-Type': 'application/json'},
+                     body: JSON.stringify({ prompt: promptInstructions, chatHistory: [] })
+                 });
+                 const data = await res.json();
+                 
+                 if(data && data.candidates && data.candidates[0].content) {
+                     textEl.innerText = data.candidates[0].content.parts[0].text;
+                 } else {
+                     textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
+                 }
+             } catch(e) {
+                 console.error(e);
+                 textEl.innerText = "Sepetiniz doluyor, avantajları kaçırmayın!";
+             }
+        }
+
         function updateItemQuantity(id, change) {
             const item = cart.find(x => x.id == id); // Loose equality for string/number match
             if(!item) return;
