@@ -6,8 +6,67 @@
     <meta name="keywords" content="karton bardak, özel logolu bardak, baskılı bardak, ambalaj, moderra">
     <title data-tr="Moderra | Premium Online Alışveriş" data-en="Moderra | Premium Online Shopping">Moderra | Premium Online Alışveriş</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=2.1">
+    <link rel="stylesheet" href="style.css?v=2.2">
     <link rel="stylesheet" href="chatbot.css">
+    <style>
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+            background: #f3f4f6;
+            padding: 5px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        .qty-btn:hover { background: var(--primary); color: white; }
+        
+        /* Upsell Style */
+        .upsell-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #eff6ff; 
+            border: 1px dashed #6366f1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .upsell-img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
+        
+        #cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body data-scroll-container>
     <!-- Modern Search UI -->
@@ -511,16 +570,19 @@
                 whatsappCheckout.style.display = 'none';
             } else {
                 cart.forEach((item, index) => {
-                    // const itemTotal = item.price * item.quantity; // calculateCartTotal içinde yapılıyor ama burada tekil lazım
-                    // calculateCartTotal tekil item'ı modify ediyor
-                    const itemTotal = (item.price * item.quantity); // item.price hiç değişmez, indirim toplama yansır
+                    const itemTotal = (item.price * item.quantity); 
                     
                     const itemElement = document.createElement('div');
                     itemElement.classList.add('cart-item');
                     itemElement.innerHTML = `
                         <div class="item-info">
                             <div class="item-name">${item.name}</div>
-                            <div class="item-details">${item.quantity} x ₺${item.price.toFixed(2).replace('.', ',')}</div>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                <span style="font-size:14px; font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                            </div>
+                            <div style="font-size:11px; color:#64748b; margin-top:5px;">Birim: ₺${item.price.toFixed(2)}</div>
                              ${item.discountNote ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${item.discountNote}</div>` : ''}
                         </div>
                         <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
@@ -529,13 +591,40 @@
                     cartItemsList.appendChild(itemElement);
                 });
                 
+                // --- UPSELL LOGIC ---
+                if (total >= minOrder && total < freeShip) {
+                    // Find a cheap product to suggest
+                    try {
+                        const res = await fetch('/api/products?t='+Date.now());
+                        const allProds = await res.json();
+                        // Filter products not in cart or simple add
+                        const cheapProduct = allProds.sort((a,b) => parseFloat(a.price) - parseFloat(b.price)).find(p => parseFloat(p.price) > 10); // Too cheap might be wrong
+                        
+                        if(cheapProduct) {
+                           const remaining = freeShip - total;
+                           // Suggest if product price is reasonably close to remaining or just a good add-on
+                           // Let's just suggest the cheapest useful item
+                           const upsellHTML = `
+                                <div class="upsell-container" onclick="addToCart('${cheapProduct.id}', '${cheapProduct.name_tr.replace(/'/g, "\\'")}', ${cheapProduct.price})">
+                                    <img src="${cheapProduct.image}" class="upsell-img">
+                                    <div style="flex:1">
+                                        <div style="font-size:12px; font-weight:700; color:#1e293b">Sepeti Tamamla!</div>
+                                        <div style="font-size:11px; color:#64748b">${cheapProduct.name_tr} ekle, kargo bedava olsun.</div>
+                                    </div>
+                                    <div style="font-weight:800; color:var(--primary)">+₺${parseFloat(cheapProduct.price).toLocaleString('tr-TR')}</div>
+                                    <i class="fas fa-plus-circle" style="color:var(--primary)"></i>
+                                </div>
+                           `;
+                           const div = document.createElement('div');
+                           div.innerHTML = upsellHTML;
+                           cartItemsList.appendChild(div);
+                        }
+                    } catch(e) {}
+                }
+
                 const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
                 cartCount.textContent = totalCount;
-                if(totalCount > 0) {
-                    cartCount.style.display = 'flex'; // Flex ile ortalayalim CSS'de
-                } else {
-                   cartCount.style.display = 'none';
-                }
+                cartCount.style.display = totalCount > 0 ? 'flex' : 'none';
                 
                 whatsappCheckout.style.display = 'block';
             }
@@ -544,10 +633,23 @@
             if (discountTotal > 0) {
                 cartTotalPrice.innerHTML = `
                     <div style="font-size:14px; text-decoration:line-through; color:#94a3b8">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                    <div style="color:var(--primary);">${totalFormatted}</div>
+                    <div style="color:var(--primary); font-size:20px;">${totalFormatted}</div>
+                    <div style="font-size:12px; color:var(--success)">Toplam İndirim: ₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
                 `;
             } else {
                 cartTotalPrice.textContent = totalFormatted;
+            }
+        }
+        
+        function updateItemQuantity(id, change) {
+            const item = cart.find(x => x.id == id); // Loose equality for string/number match
+            if(!item) return;
+            
+            item.quantity += change;
+            if(item.quantity <= 0) {
+                removeFromCart(id);
+            } else {
+                updateCartDisplay();
             }
         }
         
