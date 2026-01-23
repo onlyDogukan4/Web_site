@@ -709,6 +709,9 @@
             
             if(!name || !items) return alert("Müşteri ve ürün bilgisi girilmeli!");
             
+            let isNew = false;
+            let newCode = "";
+
             if (editOrderId) {
                 // Düzenleme
                 const idx = orders.findIndex(x => x.orderId === editOrderId);
@@ -723,10 +726,11 @@
             } else {
                 // Yeni Sipariş
                 const randomID = Math.floor(10000 + Math.random() * 90000);
-                const code = "MOD-" + randomID;
+                newCode = "MOD-" + randomID;
+                isNew = true;
                 
                 const newOrder = { 
-                    orderId: code, 
+                    orderId: newCode, 
                     customerName: name, 
                     items, 
                     status, 
@@ -734,16 +738,26 @@
                     estimatedDelivery: delivery || "Bilgi Bekleniyor"
                 };
                 orders.push(newOrder);
-                alert(`YENİ SİPARİŞ OLUŞTU!\nKod: ${code}`);
             }
             
             renderAll(); 
             closeModal('order-modal'); 
-            await syncData('orders'); // Kaydet
             
+            // Veritabani kaydi bekle
+            try {
+                await syncData('orders'); 
+                if(isNew) {
+                    alert(`✅ YENİ SİPARİŞ OLUŞTURULDU VE VERİTABANINA YAZILDI!\n\nTakip Kodu: ${newCode}\n\nMüşteriye bu kodu iletebilirsiniz.`);
+                }
+            } catch(e) {
+                alert("Uyarı: Sipariş yerelde oluştu ama veritabanına yazılamadı! Lütfen internet bağlantınızı kontrol edin.");
+            }
+
             // Formu temizle
             document.getElementById('o-customer').value = "";
             document.getElementById('o-items').value = "";
+            document.getElementById('o-delivery').value = "";
+        }
         }
         
         async function deleteOrder(id) { 

@@ -47,24 +47,69 @@
             align-items: center;
             gap: 10px;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         .upsell-img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
         
+        /* "Mr. Karton" Bubble in Cart */
+        .mr-karton-bubble {
+            position: absolute;
+            bottom: 5px; right: 5px;
+            font-size: 10px;
+            background: #fff;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            color: #555;
+        }
+        
+        /* Cart Badge Positioning */
+        #open-cart-modal {
+            position: relative; /* Crucial for badge */
+            display: inline-flex; /* Better for sizing */
+            align-items: center;
+            justify-content: center;
+        }
+
         #cart-count {
             position: absolute;
             top: -8px;
             right: -8px;
             background: #ef4444;
             color: white;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10;
+            border: 2px solid white; /* Make it pop */
+        }
+        
+        /* Hide Chatbot when Cart Open class is on Body */
+        body.cart-open #chatbot-container,
+        body.cart-open #chatbot-toggle-btn {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        
+        /* Shake Animation for Validation */
+        @keyframes shake-red {
+            0% { transform: translateX(0); border-color: transparent; }
+            25% { transform: translateX(-5px); border-color: #ef4444; }
+            50% { transform: translateX(5px); border-color: #ef4444; }
+            75% { transform: translateX(-5px); border-color: #ef4444; }
+            100% { transform: translateX(0); border-color: #ef4444; }
+        }
+        .validation-shake {
+            animation: shake-red 0.5s ease-in-out;
+            border: 2px solid #ef4444 !important;
         }
     </style>
 </head>
