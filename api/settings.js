@@ -27,16 +27,16 @@ export default async function handler(req, res) {
     try {
         if (req.method === 'POST') {
             const data = req.body;
-            await redis.set('products', data);
+            await redis.set('settings', data);
             return res.status(200).json({ success: true });
         } else if (req.method === 'GET') {
-            const data = await redis.get('products');
-            return res.status(200).json(data || []);
+            const data = await redis.get('settings');
+            return res.status(200).json(data || {});
         } else {
             return res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (error) {
-        console.error("Products API Error:", error);
+        console.error("Settings API Error:", error);
         return res.status(500).json({ error: error.message });
     }
 }
