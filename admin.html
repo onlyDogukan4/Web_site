@@ -871,29 +871,7 @@
         }
         
         // SyncData'yı güncelle
-        async function syncData(type) {
-            const btn = document.querySelector('.btn-primary i.fa-cloud-upload-alt').parentElement;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...';
-            btn.disabled = true;
 
-            try {
-                // Burada normalde backend'e POST atılır.
-                // Biz localStorage'a kaydediyoruz zaten (handleProductSave vs içinde).
-                // Ekstra olarak "Ayarları" da bir JSON endpointine gönderebiliriz.
-                
-                // Simülasyon: 
-                await new Promise(r => setTimeout(r, 1000));
-                
-                // Başarılı
-                alert("Tüm veriler (Ürünler, Kampanyalar, Ayarlar) başarıyla güncellendi!");
-            } catch (e) {
-                alert("Hata: " + e.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
     </script>
 </body>
 </html>
