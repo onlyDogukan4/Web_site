@@ -224,6 +224,24 @@
             .option-list { justify-content: center; }
             .concept-details h1 { font-size: 40px; }
         }
+
+        .modern-cup-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 14px;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            letter-spacing: 1px;
+            pointer-events: none;
+            z-index: 10;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
     </style>
 </head>
 <body data-scroll-container>
@@ -450,34 +468,31 @@
         let concepts = [];
         let currentConceptIndex = 0;
 
+
         async function initConcepts() {
             try {
                 const res = await fetch('/api/concepts?t=' + Date.now());
                 concepts = await res.json();
                 
                 if (concepts.length === 0) {
-                    // Fallback if empty
                     concepts = [{
                         id: 'yilbasi',
                         name: 'Yılbaşı',
                         theme_color: '#e74c3c',
                         bg_color: '#ffffff',
                         text_color: '#2c3e50',
-                        desc_tr: 'Yeni yılın ruhunu sofralarınıza taşıyın.',
+                        label_text: '%20 İndirim',
                         base_image: 'images/newyear.png',
                         variations: {}
                     }];
                 }
 
                 renderConceptSections();
-            } catch (e) { console.error("Concepts could not be loaded", e); }
+            } catch (e) { console.error(e); }
         }
 
         function renderConceptSections() {
-            const body = document.querySelector('body[data-scroll-container]');
             const indicator = document.querySelector('.scroll-indicator');
-            
-            // Remove hardcoded sections
             document.querySelectorAll('.concept-section').forEach(s => s.remove());
             indicator.innerHTML = '';
 
@@ -487,7 +502,6 @@
                 section.id = c.id;
                 section.dataset.color = c.theme_color;
                 section.dataset.bg = c.bg_color;
-                section.dataset.text = c.text_color;
 
                 const isEn = localStorage.getItem('lang') === 'en';
                 const name = isEn ? (c.name_en || c.name) : c.name;
@@ -497,16 +511,16 @@
                     <div class="concept-container">
                         <div class="concept-visual">
                             <div class="cup-preview">
-                                <img src="${c.base_image}" alt="${name}" class="dynamic-cup" id="cup-${c.id}">
+                                <img src="${c.base_image}" alt="${name}" class="dynamic-cup">
+                                ${c.label_text ? `<div class="modern-cup-label" style="background:${c.theme_color}; color:white;">${c.label_text}</div>` : ''}
                             </div>
                         </div>
                         <div class="concept-details">
-                            <h1>${name}</h1>
+                            <h1 style="color:var(--theme-color)">${name}</h1>
                             <p>${desc}</p>
                             
-
                             <div class="customize-group">
-                                <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
+                                <span class="customize-label" data-tr="BOYUT SEÇİMİ" data-en="SIZE SELECTION">Boyut Seçimi</span>
                                 <div class="option-list" data-concept-id="${c.id}">
                                     <button class="size-btn active" data-oz="4oz" data-scale="0.8">4 oz</button>
                                     <button class="size-btn" data-oz="6oz" data-scale="0.9">6 oz</button>
@@ -515,38 +529,28 @@
                                 </div>
                             </div>
 
-
-
                             <div class="customize-group">
-                                <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
+                                <span class="customize-label" data-tr="KAPAK TERCİHİ" data-en="LID PREFERENCE">Kapak Tercihi</span>
                                 <div class="option-list" data-concept-id="${c.id}">
                                     <button class="lid-btn active" data-lid="nolid" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
                                     <button class="lid-btn" data-lid="lid" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
                                 </div>
                             </div>
 
-                            <div class="customize-group">
-                                <span class="customize-label" data-tr="BARDAK ÜZERİNDEKİ YAZI" data-en="TEXT ON CUP">Bardak Üzerindeki Yazı</span>
-                                <div style="position:relative;">
-                                    <input type="text" class="editable-input cup-text-input" placeholder="İsminiz, logonuz veya sloganınız..." oninput="updateCupText(this, '${c.id}')" style="width:100%; padding:15px; border-radius:15px;">
-                                </div>
-                            </div>
-
                             <div class="customize-group" style="margin-top:20px;">
                                 <div id="stock-info-${c.id}" style="font-size:12px; font-weight:700; color:var(--success);">
-                                    <i class="fas fa-box"></i> <span data-tr="Stok Durumu: Müsait" data-en="Stock Status: Available">Stok Durumu: Müsait</span>
+                                    <i class="fas fa-check-circle"></i> <span data-tr="Stokta Var - Hemen Teslim" data-en="In Stock - Fast Shipping">Stokta Var - Hemen Teslim</span>
                                 </div>
                             </div>
 
                             <a href="https://wa.me/905304640120?text=Merhaba, ${name} konsepti hakkında bilgi almak istiyorum." class="order-btn" id="wa-btn-${c.id}">
-                                <i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span>
+                                <i class="fab fa-whatsapp"></i><span data-tr="TEKLİF AL / SİPARİŞ VER" data-en="GET QUOTE / ORDER">TEKLİF AL / SİPARİŞ VER</span>
                             </a>
                         </div>
                     </div>
                 `;
                 document.body.appendChild(section);
 
-                // Add dot
                 const dot = document.createElement('div');
                 dot.className = 'dot' + (idx === 0 ? ' active' : '');
                 dot.dataset.target = c.id;
@@ -558,50 +562,7 @@
             setupObserver();
         }
 
-        function bindConceptEvents() {
-            document.querySelectorAll('.size-btn, .lid-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const parent = this.parentElement;
-                    const conceptId = parent.dataset.conceptId;
-                    parent.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    updateCupVisual(conceptId);
-                };
-            });
-        }
-
-
-        function updateCupText(input, conceptId) {
-            const section = document.getElementById(conceptId);
-            const preview = section.querySelector('.cup-preview');
-            let overlay = section.querySelector('.text-overlay-on-cup');
-            
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'text-overlay-on-cup';
-                overlay.style.cssText = `
-                    position: absolute; top: 58%; left: 50%; transform: translate(-50%, -50%) perspective(1000px) rotateY(15deg) rotateZ(-1deg);
-                    width: 140px; color: rgba(0,0,0,0.6); font-family: 'Handlee', cursive; font-size: 16px;
-                    text-align: center; pointer-events: none; mix-blend-mode: multiply; word-wrap: break-word; font-weight: bold;
-                `;
-                preview.appendChild(overlay);
-            }
-            
-            overlay.textContent = input.value;
-            
-            // Sync WhatsApp message
-            const waBtn = document.getElementById(`wa-btn-${conceptId}`);
-            if (waBtn) {
-                const name = conceptId.charAt(0).toUpperCase() + conceptId.slice(1);
-                const size = section.querySelector('.size-btn.active').textContent;
-                const text = input.value ? `\nÜzerine yazılacak yazı: "${input.value}"` : '';
-                waBtn.href = `https://wa.me/905304640120?text=Merhaba, ${name} konsepti (${size}) hakkında bilgi almak istiyorum.${text}`;
-            }
-        }
-
         function updateCupVisual(conceptId) {
-            // ... (restored below)
             const concept = concepts.find(c => c.id == conceptId);
             if (!concept) return;
 
@@ -612,17 +573,22 @@
             const oz = sizeBtn.dataset.oz;
             const lid = lidBtn.dataset.lid;
             const scale = sizeBtn.dataset.scale || 1.0;
-            
             const variantKey = `${oz}-${lid}`;
-            const cupImg = section.querySelector('.dynamic-cup');
             
-            // Use variant image if exists, else base image
+            const cupImg = section.querySelector('.dynamic-cup');
             const targetSrc = (concept.variations && concept.variations[variantKey]) 
                                ? concept.variations[variantKey] 
                                : concept.base_image;
             
             cupImg.style.transform = `scale(${scale})`;
             cupImg.src = targetSrc;
+
+            // Update WA
+            const waBtn = document.getElementById(`wa-btn-${conceptId}`);
+            if (waBtn) {
+                const name = concept.name;
+                waBtn.href = `https://wa.me/905304640120?text=Merhaba, ${name} konsepti (${oz}, ${lid === 'lid' ? 'Kapaklı' : 'Kapaksız'}) hakkında bilgi almak istiyorum.`;
+            }
         }
 
         function updateThemeColors(section) {

@@ -1351,6 +1351,8 @@
         let lastRenderedDataSignature = ""; // Global cache for flicker prevention
 
 
+
+        let lastPackagesSignature = "";
         async function renderPackages() {
             const container = document.getElementById('packages-container');
             if (!container) return;
@@ -1363,10 +1365,18 @@
                 const products = await prodRes.json();
                 const isEn = localStorage.getItem('lang') === 'en';
 
+                // Skip render if no data change
+                const currentSignature = JSON.stringify(packages);
+                if (currentSignature === lastPackagesSignature) return;
+                lastPackagesSignature = currentSignature;
+
                 container.innerHTML = '';
-                packages.forEach(pkg => {
+                // Sort by custom order field if exists
+                const sortedPkgs = (packages || []).sort((a,b) => (a.order||0) - (b.order||0));
+
+                sortedPkgs.forEach(pkg => {
                     // Calculate package dynamic price
-                    const itemIds = pkg.items.split(',').map(id => id.trim());
+                    const itemIds = (pkg.items || "").split(',').map(id => id.trim());
                     let subTotal = 0;
                     const includedProducts = [];
 
@@ -1378,12 +1388,12 @@
                         }
                     });
 
-                    const discountedPrice = subTotal * (1 - (pkg.discount / 100));
+                    const discountedPrice = subTotal * (1 - ((pkg.discount||0) / 100));
 
                     const div = document.createElement('div');
                     div.style.cssText = "background:var(--bg-card); border-radius:32px; padding:30px; border:1px solid var(--border); box-shadow:var(--shadow); transition:0.3s; display:flex; flex-direction:column; gap:20px; position:relative; overflow:hidden;";
                     div.innerHTML = `
-                        <div style="position:absolute; top:20px; right:-35px; background:var(--primary); color:white; padding:5px 40px; transform:rotate(45deg); font-weight:800; font-size:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">%${pkg.discount} İNDİRİM</div>
+                        <div style="position:absolute; top:20px; right:-35px; background:var(--primary); color:white; padding:5px 40px; transform:rotate(45deg); font-weight:800; font-size:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">%${pkg.discount||0} İNDİRİM</div>
                         <div style="display:flex; align-items:center; gap:20px;">
                             <img src="${pkg.image || 'images/box.png'}" style="width:100px; height:100px; object-fit:contain; border-radius:15px; background:#f8fafc; padding:10px;">
                             <div>
@@ -1412,41 +1422,11 @@
             } catch (e) { console.error("Packages could not be loaded", e); }
         }
 
-        async function addPackageToCart(pkgId) {
-            try {
-                const [pkgRes, prodRes] = await Promise.all([
-                    fetch('/api/packages'),
-                    fetch('/api/products')
-                ]);
-                const packages = await pkgRes.json();
-                const products = await prodRes.json();
-                const pkg = packages.find(x => x.id == pkgId);
-                if (!pkg) return;
+        // Global session flag
+        window.packageOffered = false;
 
-                const itemIds = pkg.items.split(',').map(id => id.trim());
-                
-                // Add each product to cart with dynamic cross-sell applied
-                itemIds.forEach(id => {
-                    const p = products.find(x => x.id == id);
-                    if (p) {
-                         // Apply the package discount to each item
-                         // For simplicity in cart, we can mark them or just add.
-                         // But better to add as a bundle or set prices.
-                         // For now, let's just add them and show the bundle alert.
-                         addToCart(p.id, p.name_tr, p.price);
-                    }
-                });
-                
-                setTimeout(() => {
-                    alert(`${pkg.name} başarıyla sepete eklendi! Set indirimi sepette uygulanacaktır.`);
-                    updateCartDisplay();
-                }, 500);
-
-            } catch(e) { }
-        }
-
-        // --- Modified addToCart to suggest bundles ---
         async function addToCart(productId, productName, productPrice) {
+            // ... (Restored and fixed addToCart logic below)
             let product = null;
             try {
                 const res = await fetch('/api/products');
@@ -1476,19 +1456,20 @@
             }
             
             // --- PACKAGE SUGGESTION LOGIC ---
-            if (!this.packageOffered) { // Offer only once per session
-                const res = await fetch('/api/packages');
-                const packages = await res.json();
-                // If added product is in a package, suggest that package
-                const relevantPkg = packages.find(pkg => pkg.items.split(',').some(id => id.trim() == productId));
-                if (relevantPkg) {
-                    this.packageOffered = true;
-                    setTimeout(() => {
-                        if (confirm(`💍 Bu ürün ${relevantPkg.name} içinde de bulunuyor! \n\nPaket olarak alırsanız %${relevantPkg.discount} daha ucuza gelir. Paketi incelemek ister misiniz?`)) {
-                            document.getElementById('paketler').scrollIntoView({behavior:'smooth'});
-                        }
-                    }, 1500);
-                }
+            if (!window.packageOffered) { 
+                try {
+                    const res = await fetch('/api/packages');
+                    const packages = await res.json();
+                    const relevantPkg = packages.find(pkg => (pkg.items||"").split(',').some(id => id.trim() == productId));
+                    if (relevantPkg) {
+                        window.packageOffered = true;
+                        setTimeout(() => {
+                            if (confirm(`💍 Bu ürün ${relevantPkg.name} içinde de bulunuyor! \n\nPaket olarak alırsanız %${relevantPkg.discount} daha ucuza gelir. Paketi incelemek ister misiniz?`)) {
+                                document.getElementById('paketler').scrollIntoView({behavior:'smooth'});
+                            }
+                        }, 1500);
+                    }
+                } catch(e){}
             }
 
             setTimeout(() => { updateCartDisplay(); }, 800);

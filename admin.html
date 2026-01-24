@@ -259,17 +259,18 @@
         </div>
     </div>
 
-    <!-- CONCEPT MODAL (YENİ) -->
+
+    <!-- CONCEPT MODAL -->
     <div class="modal-overlay" id="concept-modal">
-        <div class="modal-card" style="max-width: 600px;">
+        <div class="modal-card" style="max-width: 700px;">
             <h2 id="con-modal-title">Konsept Düzenle</h2>
             <div class="form-group">
                 <label>Konsept Adı</label>
                 <input type="text" id="con-name" class="editable-input" placeholder="Örn: Yılbaşı">
             </div>
-             <div class="form-row">
+            <div class="form-row">
                  <div class="form-group">
-                    <label>Tema Rengi (Btn/Highlight)</label>
+                    <label>Tema Rengi</label>
                     <input type="color" id="con-color" class="editable-input" value="#e74c3c">
                 </div>
                 <div class="form-group">
@@ -277,68 +278,69 @@
                     <input type="color" id="con-bg" class="editable-input" value="#ffffff">
                 </div>
                  <div class="form-group">
-                    <label>Yazı Rengi</label>
-                    <input type="color" id="con-text" class="editable-input" value="#2c3e50">
+                    <label>Etiket Yazısı (Modern Label)</label>
+                    <input type="text" id="con-label" class="editable-input" placeholder="Örn: %20 İndirim veya FIRSAT">
                 </div>
             </div>
             <div class="form-group">
-                <label>Açıklama (TR)</label>
-                <textarea id="con-desc-tr" class="editable-input" rows="2"></textarea>
-            </div>
-             <div class="form-group">
-                <label>Varsayılan Görsel (Baz)</label>
-                <input type="text" id="con-img" class="editable-input" placeholder="Resim URL">
+                <label>Baz Görsel (Sürükle-Bırak)</label>
+                <div class="drop-zone" id="con-drop-zone">
+                    <div id="con-drop-text" style="text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-cloud-upload-alt fa-2x"></i><br>
+                        <span style="font-size: 11px;">Baz bardağı buraya bırakın</span>
+                    </div>
+                    <img id="con-preview" src="" style="display:none; height:100px;">
+                </div>
+                <input type="file" id="con-file" accept="image/*" style="display:none">
             </div>
             
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-            <h4>Varyasyonlar & Görseller</h4>
-            <p style="font-size:12px; color:#666; margin-bottom:10px;">Her boyut/kapak durumu için görsel URL girin. (Boşsa baz görsel kullanılır)</p>
-            
-            <div id="con-variations" style="max-height:200px; overflow-y:auto; padding:10px; background:#f8fafc; border-radius:10px;">
-                <!-- JS ile doldurulacak: 4oz-no-lid, 4oz-lid, etc. -->
+            <h4>Oz/Kapak Varyasyon Görselleri</h4>
+            <div id="con-variations" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; max-height: 300px; overflow-y: auto; padding: 10px; background: #f8fafc; border-radius: 12px;">
+                <!-- JS dynamic render -->
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button class="btn btn-secondary" onclick="closeModal('concept-modal')">İptal</button>
                 <button class="btn btn-primary" onclick="handleConceptSave()">Kaydet</button>
             </div>
-            <span class="close-btn" onclick="closeModal('concept-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+            <span class="close-btn" onclick="closeModal('concept-modal')">&times;</span>
         </div>
     </div>
 
-    <!-- PACKAGE MODAL (YENİ) -->
+    <!-- PACKAGE MODAL -->
     <div class="modal-overlay" id="package-modal">
         <div class="modal-card" style="max-width: 600px;">
-            <h2 id="pkg-modal-title">Paket / Set Oluştur</h2>
+            <h2 id="pkg-modal-title">Paket Düzenle</h2>
             <div class="form-group">
                 <label>Paket Adı</label>
-                <input type="text" id="pkg-name" class="editable-input" placeholder="Örn: Düğün Hazırlık Paketi">
+                <input type="text" id="pkg-name" class="editable-input">
             </div>
             <div class="form-group">
-                <label>İçerik (Ürün ID'lerini virgülle ayırın)</label>
-                <input type="text" id="pkg-items" class="editable-input" placeholder="1, 5, 24, 88">
-                <small style="color:#666;">Not: Ürün ID'lerini ürün listesinden bulabilirsiniz.</small>
+                <label>Paket Görseli (Sürükle-Bırak)</label>
+                <div class="drop-zone" id="pkg-drop-zone">
+                    <div id="pkg-drop-text" style="text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-box-open fa-2x"></i><br>
+                        <span style="font-size: 11px;">Paket resmini buraya bırakın</span>
+                    </div>
+                    <img id="pkg-preview" src="" style="display:none; height:100px;">
+                </div>
+                <input type="file" id="pkg-file" accept="image/*" style="display:none">
+            </div>
+            <div class="form-group">
+                <label>Ürün ID'leri (Virgül ile)</label>
+                <input type="text" id="pkg-items" class="editable-input">
             </div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>Toplam İndirim Oranı (%)</label>
-                    <input type="number" id="pkg-discount" class="editable-input" placeholder="Örn: 8">
-                </div>
-                <div class="form-group">
-                    <label>Görsel</label>
-                    <input type="text" id="pkg-img" class="editable-input" placeholder="Resim URL">
-                </div>
-            </div>
-             <div class="form-group">
-                <label>Açıklama</label>
-                <textarea id="pkg-desc" class="editable-input" rows="2"></textarea>
+                <div class="form-group"><label>İndirim (%)</label><input type="number" id="pkg-discount" class="editable-input"></div>
+                <div class="form-group"><label>Sıralama</label><input type="number" id="pkg-order" class="editable-input" value="0"></div>
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button class="btn btn-secondary" onclick="closeModal('package-modal')">İptal</button>
-                <button class="btn btn-primary" onclick="handlePackageSave()">Paketi Kaydet</button>
+                <button class="btn btn-primary" onclick="handlePackageSave()">Değişiklikleri Kaydet</button>
             </div>
-            <span class="close-btn" onclick="closeModal('package-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+            <span class="close-btn" onclick="closeModal('package-modal')">&times;</span>
         </div>
     </div>
 
@@ -1008,75 +1010,68 @@
             }
         }
 
-        // --- PACKAGE LOGIC ---
-        function openAddPackage() { 
-            editPkgIdx=-1; 
-            resetPkgModal(); 
-            document.getElementById('pkg-modal-title').innerText = "Yeni Paket Oluştur";
-            document.getElementById('package-modal').style.display='flex'; 
+
+        // --- DRAG & DROP FOR CONCEPTS & PACKAGES ---
+        function setupDropZones() {
+            // Concept Base
+            setupGenericDrop('con-drop-zone', 'con-file', 'con-preview', 'con-drop-text', (res) => {
+                curConceptBaseImg = res;
+            });
+            // Package Base
+            setupGenericDrop('pkg-drop-zone', 'pkg-file', 'pkg-preview', 'pkg-drop-text', (res) => {
+                curPkgImg = res;
+            });
         }
-        function openEditPackage(i) {
-            editPkgIdx=i; const p = packages[i];
-            document.getElementById('pkg-modal-title').innerText = "Paketi Düzenle";
-            document.getElementById('pkg-name').value = p.name || "";
-            document.getElementById('pkg-items').value = p.items || "";
-            document.getElementById('pkg-discount').value = p.discount || "";
-            document.getElementById('pkg-img').value = p.image || "";
-            document.getElementById('pkg-desc').value = p.description || "";
-            document.getElementById('package-modal').style.display='flex';
-        }
-        function handlePackageSave() {
-            const pkg = {
-                id: editPkgIdx>-1 ? packages[editPkgIdx].id : 'pkg-'+Date.now(),
-                name: document.getElementById('pkg-name').value,
-                items: document.getElementById('pkg-items').value,
-                discount: parseInt(document.getElementById('pkg-discount').value)||0,
-                image: document.getElementById('pkg-img').value,
-                description: document.getElementById('pkg-desc').value
+
+        function setupGenericDrop(zoneId, fileId, previewId, textId, callback) {
+            const zone = document.getElementById(zoneId);
+            const input = document.getElementById(fileId);
+            if(!zone || !input) return;
+
+            zone.onclick = () => input.click();
+            zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('hover'); };
+            zone.ondragleave = () => zone.classList.remove('hover');
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                zone.classList.remove('hover');
+                handleFileSelect(e.dataTransfer.files[0], previewId, textId, callback);
             };
-            if(!pkg.name || !pkg.items) return alert("Paket adı ve içerik gerekli!");
-            if(editPkgIdx>-1) packages[editPkgIdx]=pkg; else packages.push(pkg);
-            renderAll(); closeModal('package-modal'); syncData('packages');
+            input.onchange = (e) => handleFileSelect(e.target.files[0], previewId, textId, callback);
         }
-        async function deletePackage(i) { 
-            if(confirm("Bu paketi silmek istediğinize emin misiniz?")) {
-                packages.splice(i,1); 
-                renderAll(); 
-                await syncData('packages'); 
-            }
+
+        function handleFileSelect(file, previewId, textId, callback) {
+            if(!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const res = e.target.result;
+                const prev = document.getElementById(previewId);
+                const txt = document.getElementById(textId);
+                if(prev) { prev.src = res; prev.style.display = 'block'; }
+                if(txt) txt.style.display = 'none';
+                callback(res);
+            };
+            reader.readAsDataURL(file);
         }
-        function resetPkgModal() { 
-            document.querySelectorAll('#package-modal input, #package-modal textarea').forEach(e=>e.value=''); 
-        }
-        function renderPackages() {
-            const pkgt = document.getElementById('pkg-table');
-            if(!pkgt) return;
-            pkgt.innerHTML = packages.map((p,i) => `
-                <tr>
-                    <td>${p.name}</td>
-                    <td>${p.items ? p.items.split(',').length : 0} Ürün</td>
-                    <td>%${p.discount}</td>
-                    <td style="text-align:right;">
-                        <button class="btn btn-primary" style="padding:8px" onclick="openEditPackage(${i})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" style="padding:8px" onclick="deletePackage(${i})"><i class="fas fa-trash-alt"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+
+        // Global state for images
+        let curConceptBaseImg = "";
+        let curPkgImg = "";
+        let curVariantImages = {};
 
         // --- CONCEPT LOGIC ---
         function openAddConcept() { 
-            editConIdx=-1; 
+            editConIdx=-1; curConceptBaseImg=""; curVariantImages={};
             resetConModal(); 
             document.getElementById('con-modal-title').innerText = "Yeni Konsept Oluştur";
             document.getElementById('concept-modal').style.display='flex'; 
         }
         
-
         function fillVariationInputs(variations = {}) {
             const container = document.getElementById('con-variations');
             if (!container) return;
             container.innerHTML = "";
+            curVariantImages = { ...variations };
+
             const combinations = [
                 {sz:'4oz', ld:false}, {sz:'4oz', ld:true},
                 {sz:'6oz', ld:false}, {sz:'6oz', ld:true},
@@ -1086,86 +1081,116 @@
             
             combinations.forEach(combo => {
                 const key = `${combo.sz}-${combo.ld?'lid':'nolid'}`;
-                const val = variations[key] || "";
+                const val = curVariantImages[key] || "";
                 
                 const div = document.createElement('div');
-                div.style.marginBottom = "5px";
-                div.style.display = "flex";
-                div.style.alignItems = "center";
-                div.style.gap = "10px";
+                div.className = "var-card";
+                div.style.cssText = "background:white; padding:10px; border-radius:10px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:5px;";
                 div.innerHTML = `
-                    <span style="font-size:11px; width:80px;">${combo.sz} ${combo.ld?'(Kapaklı)':'(Kapaksız)'}:</span>
-                    <input type="text" class="var-input editable-input" data-key="${key}" value="${val}" placeholder="Resim URL" style="flex:1; padding:5px;">
+                    <span style="font-size:11px; font-weight:700;">${combo.sz} ${combo.ld?'(Kapaklı)':'(Kapaksız)'}</span>
+                    <div class="drop-zone" id="dz-${key}" style="height:60px; padding:5px;">
+                        <img id="prev-${key}" src="${val}" style="height:100%; display:${val?'block':'none'}; margin:0 auto;">
+                        <span id="txt-${key}" style="font-size:9px; display:${val?'none':'block'}; color:#94a3b8;">Görsel Yükle</span>
+                    </div>
+                    <input type="file" id="file-${key}" accept="image/*" style="display:none">
                 `;
                 container.appendChild(div);
+
+                // Setup sub-dropzone for each variation
+                setTimeout(() => {
+                    setupGenericDrop(`dz-${key}`, `file-${key}`, `prev-${key}`, `txt-${key}`, (res) => {
+                        curVariantImages[key] = res;
+                    });
+                }, 0);
             });
         }
         
         function openEditConcept(i) {
             editConIdx=i; const c = concepts[i];
+            curConceptBaseImg = c.base_image || "";
+            curVariantImages = c.variations || {};
+
             document.getElementById('con-modal-title').innerText = "Konsepti Düzenle";
             document.getElementById('con-name').value = c.name || "";
             document.getElementById('con-color').value = c.theme_color || "#e74c3c";
             document.getElementById('con-bg').value = c.bg_color || "#ffffff";
-            document.getElementById('con-text').value = c.text_color || "#2c3e50";
-            document.getElementById('con-desc-tr').value = c.desc_tr || "";
-            document.getElementById('con-img').value = c.base_image || "";
-            fillVariationInputs(c.variations);
+            document.getElementById('con-label').value = c.label_text || "";
+            
+            const prev = document.getElementById('con-preview');
+            const txt = document.getElementById('con-drop-text');
+            if(curConceptBaseImg) { prev.src = curConceptBaseImg; prev.style.display='block'; txt.style.display='none'; }
+            else { prev.style.display='none'; txt.style.display='block'; }
+
+            fillVariationInputs(curVariantImages);
             document.getElementById('concept-modal').style.display='flex';
         }
 
         function handleConceptSave() {
-            // Collect variations
-            const vars = {};
-            document.querySelectorAll('.var-input').forEach(inp => {
-                if(inp.value.trim()) vars[inp.dataset.key] = inp.value.trim();
-            });
-
             const con = {
                 id: editConIdx>-1 ? concepts[editConIdx].id : 'con-'+Date.now(),
                 name: document.getElementById('con-name').value,
                 theme_color: document.getElementById('con-color').value,
                 bg_color: document.getElementById('con-bg').value,
-                text_color: document.getElementById('con-text').value,
-                desc_tr: document.getElementById('con-desc-tr').value,
-                base_image: document.getElementById('con-img').value,
-                variations: vars
+                label_text: document.getElementById('con-label').value,
+                base_image: curConceptBaseImg,
+                variations: curVariantImages
             };
             if(!con.name) return alert("Konsept adı gerekli!");
             if(editConIdx>-1) concepts[editConIdx]=con; else concepts.push(con);
             renderAll(); closeModal('concept-modal'); syncData('concepts');
         }
-        async function deleteConcept(i) { 
-            if(confirm("Bu konsepti silmek istediğinize emin misiniz?")) {
-                concepts.splice(i,1); 
-                renderAll(); 
-                await syncData('concepts'); 
-            }
+
+        // --- PACKAGE LOGIC ---
+        function openAddPackage() {
+            editPkgIdx=-1; curPkgImg=""; resetPkgModal();
+            document.getElementById('package-modal').style.display='flex';
         }
-        function resetConModal() { 
-            document.querySelectorAll('#concept-modal input, #concept-modal textarea').forEach(e=>e.value=''); 
-            document.getElementById('con-color').value='#e74c3c';
-            document.getElementById('con-bg').value='#ffffff';
-            document.getElementById('con-text').value='#2c3e50';
+        function openEditPackage(i) {
+            editPkgIdx=i; const p = packages[i];
+            curPkgImg = p.image || "";
+            document.getElementById('pkg-name').value = p.name || "";
+            document.getElementById('pkg-items').value = p.items || "";
+            document.getElementById('pkg-discount').value = p.discount || 0;
+            document.getElementById('pkg-order').value = p.order || 0;
+            
+            const prev = document.getElementById('pkg-preview');
+            const txt = document.getElementById('pkg-drop-text');
+            if(curPkgImg) { prev.src = curPkgImg; prev.style.display='block'; txt.style.display='none'; }
+            else { prev.style.display='none'; txt.style.display='block'; }
+
+            document.getElementById('package-modal').style.display='flex';
+        }
+        function handlePackageSave() {
+            const pkg = {
+                id: editPkgIdx>-1 ? packages[editPkgIdx].id : 'pkg-'+Date.now(),
+                name: document.getElementById('pkg-name').value,
+                items: document.getElementById('pkg-items').value,
+                discount: parseInt(document.getElementById('pkg-discount').value)||0,
+                order: parseInt(document.getElementById('pkg-order').value)||0,
+                image: curPkgImg
+            };
+            if(!pkg.name || !pkg.items) return alert("Hata");
+            if(editPkgIdx>-1) packages[editPkgIdx]=pkg; else packages.push(pkg);
+            renderAll(); closeModal('package-modal'); syncData('packages');
+        }
+
+        function resetConModal() {
+            document.querySelectorAll('#concept-modal input').forEach(e=>e.value='');
+            document.getElementById('con-preview').style.display='none';
+            document.getElementById('con-drop-text').style.display='block';
             fillVariationInputs();
         }
-        function renderConcepts() {
-            const cont = document.getElementById('con-table');
-            if(!cont) return;
-            cont.innerHTML = concepts.map((c,i) => `
-                <tr>
-                    <td style="display:flex;align-items:center;gap:10px;">
-                        <div style="width:20px;height:20px;border-radius:50%;background:${c.theme_color}"></div> ${c.name}
-                    </td>
-                    <td>${c.theme_color}</td>
-                    <td>${c.desc_tr || ''}</td>
-                    <td style="text-align:right;">
-                        <button class="btn btn-primary" style="padding:8px" onclick="openEditConcept(${i})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" style="padding:8px" onclick="deleteConcept(${i})"><i class="fas fa-trash-alt"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+        function resetPkgModal() {
+            document.querySelectorAll('#package-modal input').forEach(e=>e.value='');
+            document.getElementById('pkg-preview').style.display='none';
+            document.getElementById('pkg-drop-text').style.display='block';
         }
+
+        // Initialize drag drops on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDropZones();
+            // ...
+        });
 
         // --- AYARLAR YÖNETİMİ ---
         async function saveSettings() {
