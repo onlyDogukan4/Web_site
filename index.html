@@ -532,8 +532,8 @@
                         if(bestMatch) {
                            const upsellHTML = `
                                 <div class="upsell-container" onclick="addToCart('${bestMatch.id}', '${bestMatch.name_tr.replace(/'/g, "\\'")}', ${bestMatch.price}); updateItemQuantity('${bestMatch.id}', ${quantityToSuggest-1});">
-                                    <div style="position: absolute; top:0; left:0; bottom:0; width:40px; background:#e0e7ff; display:flex; align-items:center; justify-content:center;">
-                                        <i class="fas fa-robot" style="font-size:20px; color:var(--primary);"></i>
+                                    <div style="position: absolute; top:0; left:0; bottom:0; width:60px; display:flex; align-items:flex-end; justify-content:center; overflow:visible;">
+                                        <img src="images/mr_karton_leaning.png" style="width:140px;height:auto; transform: translateX(-10px) translateY(10px);">
                                     </div>
                                     <div style="padding-left: 35px; flex:1;">
                                         <div class="mr-karton-bubble" style="top:-10px; right:auto; left:48px; background:var(--primary); color:white; border:none; border-radius:10px 10px 10px 0;">

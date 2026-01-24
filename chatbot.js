@@ -21,9 +21,10 @@ class ModerraAI {
     async prepareContext() {
         try {
             const pages = ['index.html', 'about.html', 'sss.html', 'konsept-bardaklar.html'];
-            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin BÜYÜK BİR HAYRANIYIM. Moderra ürünlerine bayılıyorum! \n";
-            combinedText += "KİŞİLİK: Tutkulu, heyecanlı, Moderra markasını öven, samimi ve enerjik bir hayran. \n";
-            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. Moderra'yı överken abartabilirsin ama samimi ol. \n";
+            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin EN BÜYÜK HAYRANIYIM. Moderra ürünlerine aşığım! \n";
+            combinedText += "KİŞİLİK: Tutkulu, heyecanlı, Moderra markasını öven, samimi ve enerjik bir hayran. Asla resmi bir satıcı gibi konuşma. \n";
+            combinedText += "SAMİMİYET: Kullanıcı ile kanka gibisin. Emoji kullanmayı seversin. Moderra'yı överken 'Bizimkiler harika iş çıkarmış' gibi konuşabilirsin. \n";
+            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. \n";
             for (const page of pages) {
                 const res = await fetch(page);
                 const html = await res.text();
@@ -33,7 +34,7 @@ class ModerraAI {
             }
             this.siteContext = combinedText + "\nWhatsApp: 0530 464 01 20.";
         } catch (e) {
-            this.siteContext = "Sen Moderra asistanı Dr. Karton'sun.";
+            this.siteContext = "Sen Moderra asistanı Dr. Karton'sun. Moderra hayranısın.";
         }
     }
 
