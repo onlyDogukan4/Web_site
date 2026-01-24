@@ -259,6 +259,89 @@
         </div>
     </div>
 
+    <!-- CONCEPT MODAL (YENİ) -->
+    <div class="modal-overlay" id="concept-modal">
+        <div class="modal-card" style="max-width: 600px;">
+            <h2 id="con-modal-title">Konsept Düzenle</h2>
+            <div class="form-group">
+                <label>Konsept Adı</label>
+                <input type="text" id="con-name" class="editable-input" placeholder="Örn: Yılbaşı">
+            </div>
+             <div class="form-row">
+                 <div class="form-group">
+                    <label>Tema Rengi (Btn/Highlight)</label>
+                    <input type="color" id="con-color" class="editable-input" value="#e74c3c">
+                </div>
+                <div class="form-group">
+                    <label>Arkaplan Rengi</label>
+                    <input type="color" id="con-bg" class="editable-input" value="#ffffff">
+                </div>
+                 <div class="form-group">
+                    <label>Yazı Rengi</label>
+                    <input type="color" id="con-text" class="editable-input" value="#2c3e50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Açıklama (TR)</label>
+                <textarea id="con-desc-tr" class="editable-input" rows="2"></textarea>
+            </div>
+             <div class="form-group">
+                <label>Varsayılan Görsel (Baz)</label>
+                <input type="text" id="con-img" class="editable-input" placeholder="Resim URL">
+            </div>
+            
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <h4>Varyasyonlar & Görseller</h4>
+            <p style="font-size:12px; color:#666; margin-bottom:10px;">Her boyut/kapak durumu için görsel URL girin. (Boşsa baz görsel kullanılır)</p>
+            
+            <div id="con-variations" style="max-height:200px; overflow-y:auto; padding:10px; background:#f8fafc; border-radius:10px;">
+                <!-- JS ile doldurulacak: 4oz-no-lid, 4oz-lid, etc. -->
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="closeModal('concept-modal')">İptal</button>
+                <button class="btn btn-primary" onclick="handleConceptSave()">Kaydet</button>
+            </div>
+            <span class="close-btn" onclick="closeModal('concept-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+        </div>
+    </div>
+
+    <!-- PACKAGE MODAL (YENİ) -->
+    <div class="modal-overlay" id="package-modal">
+        <div class="modal-card" style="max-width: 600px;">
+            <h2 id="pkg-modal-title">Paket / Set Oluştur</h2>
+            <div class="form-group">
+                <label>Paket Adı</label>
+                <input type="text" id="pkg-name" class="editable-input" placeholder="Örn: Düğün Hazırlık Paketi">
+            </div>
+            <div class="form-group">
+                <label>İçerik (Ürün ID'lerini virgülle ayırın)</label>
+                <input type="text" id="pkg-items" class="editable-input" placeholder="1, 5, 24, 88">
+                <small style="color:#666;">Not: Ürün ID'lerini ürün listesinden bulabilirsiniz.</small>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Toplam İndirim Oranı (%)</label>
+                    <input type="number" id="pkg-discount" class="editable-input" placeholder="Örn: 8">
+                </div>
+                <div class="form-group">
+                    <label>Görsel</label>
+                    <input type="text" id="pkg-img" class="editable-input" placeholder="Resim URL">
+                </div>
+            </div>
+             <div class="form-group">
+                <label>Açıklama</label>
+                <textarea id="pkg-desc" class="editable-input" rows="2"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="closeModal('package-modal')">İptal</button>
+                <button class="btn btn-primary" onclick="handlePackageSave()">Paketi Kaydet</button>
+            </div>
+            <span class="close-btn" onclick="closeModal('package-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+        </div>
+    </div>
+
     <!-- ORDER MODAL (SADECE SİPARİŞE ÖZEL) -->
     <div class="modal-overlay" id="order-modal">
         <div class="modal-card" style="max-width: 500px;">
@@ -298,17 +381,19 @@
         <div class="logo"><i class="fas fa-cube"></i> MODERRA</div>
         <ul class="nav-menu">
             <li class="nav-link active" id="link-p" onclick="switchSection('p')"><i class="fas fa-layer-group"></i> Ürün Listesi</li>
+            <li class="nav-link" id="link-pkg" onclick="switchSection('pkg')"><i class="fas fa-box-open"></i> Paketler/Setler</li>
+            <li class="nav-link" id="link-con" onclick="switchSection('con')"><i class="fas fa-palette"></i> Konseptler</li>
             <li class="nav-link" id="link-c" onclick="switchSection('c')"><i class="fas fa-bullhorn"></i> Kampanyalar</li>
             <li class="nav-link" id="link-o" onclick="switchSection('o')"><i class="fas fa-truck-loading"></i> Sipariş Takibi</li>
             <li class="nav-link" id="link-s" onclick="switchSection('s')"><i class="fas fa-cog"></i> Genel Ayarlar</li>
             <li class="nav-link" onclick="window.open('index.html')"><i class="fas fa-home"></i> Siteye Git</li>
-            <li style="margin-top: 20px; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.05); font-size: 12px; display: flex; align-items: center; gap: 8px;">
+             <li style="margin-top: 20px; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.05); font-size: 12px; display: flex; align-items: center; gap: 8px;">
                 <span id="db-status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: #94a3b8;"></span>
-                <span id="db-status-text">Veritabanı kontrol ediliyor...</span>
+                <span id="db-status-text">Bağlanıyor...</span>
             </li>
         </ul>
         <button class="btn btn-danger" style="margin-top:auto; width:100%; justify-content: center;" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Güvenli Çıkış
+            <i class="fas fa-sign-out-alt"></i> Çıkış
         </button>
     </aside>
 
@@ -364,6 +449,36 @@
                     </button>
                 </div>
             </div>
+        </section>
+
+        <!-- Paketler (YENİ) -->
+        <section id="sec-pkg" style="display:none">
+            <div class="section-header">
+                <div><h1>Paketler & Setler</h1><p>Düğün, parti gibi toplu setleri yönetin.</p></div>
+                <button class="btn btn-primary" onclick="openAddPackage()"><i class="fas fa-plus"></i> Yeni Paket</button>
+            </div>
+            <div class="section-card">
+                 <table>
+                    <thead><tr><th>Paket Adı</th><th>İçerik (Adet)</th><th>İndirim</th><th>İşlem</th></tr></thead>
+                    <tbody id="pkg-table"></tbody>
+                </table>
+            </div>
+             <div style="margin-top:20px; text-align:right;"><button class="btn btn-primary" onclick="syncData('packages')">PAKETLERİ YAYINLA</button></div>
+        </section>
+
+        <!-- Konseptler (YENİ) -->
+        <section id="sec-con" style="display:none">
+            <div class="section-header">
+                 <div><h1>Konsept Bardaklar</h1><p>Konsept tasarımlarını ve simülasyonları yönetin.</p></div>
+                <button class="btn btn-primary" onclick="openAddConcept()"><i class="fas fa-plus"></i> Yeni Konsept</button>
+            </div>
+            <div class="section-card">
+                <table>
+                    <thead><tr><th>Konsept</th><th>Tema</th><th>Açıklama</th><th>İşlem</th></tr></thead>
+                    <tbody id="con-table"></tbody>
+                </table>
+            </div>
+             <div style="margin-top:20px; text-align:right;"><button class="btn btn-primary" onclick="syncData('concepts')">KONSEPTLERİ YAYINLA</button></div>
         </section>
 
         <!-- KAMPANYALAR BÖLÜMÜ (YENİ) -->
@@ -463,9 +578,14 @@
         let products = [];
         let orders = [];
         let campaigns = []; // Yeni
-        let settings = { minOrder: 500 }; // Yeni
+        let packages = []; // Yeni
+        let concepts = []; // Yeni
+        let settings = { minOrder: 500, freeShipping: 1000 }; // Yeni
         let curIdx = -1; // Global state for product editing
         let curImg = ""; // Global state for product image editing
+        let editCampaignIdx = -1;
+        let editPkgIdx = -1; // Yeni
+        let editConIdx = -1; // Yeni
 
         function checkLogin() { 
             if(document.getElementById('admin-pass').value === PASS) { 
@@ -511,11 +631,13 @@
             await checkDBStatus();
             try {
                 // Her seferinde taze veri çekelim
-                const [resP, resO, resC, resS] = await Promise.all([
+                const [resP, resO, resC, resS, resPkg, resCon] = await Promise.all([
                     fetch('/api/products?t=' + Date.now()),
                     fetch('/api/orders?t=' + Date.now()),
                     fetch('/api/campaigns?t=' + Date.now()),
-                    fetch('/api/settings?t=' + Date.now())
+                    fetch('/api/settings?t=' + Date.now()),
+                    fetch('/api/packages?t=' + Date.now()), // Yeni
+                    fetch('/api/concepts?t=' + Date.now()) // Yeni
                 ]);
                 
                 if (!resP.ok || !resO.ok) throw new Error("API Hatası!");
@@ -523,7 +645,9 @@
                 products = await resP.json();
                 orders = await resO.json();
                 campaigns = resC.ok ? await resC.json() : [];
-                settings = resS.ok ? await resS.json() : { minOrder: 500 };
+                settings = resS.ok ? await resS.json() : { minOrder: 500, freeShipping: 1000 };
+                packages = resPkg.ok ? await resPkg.json() : []; // Yeni
+                concepts = resCon.ok ? await resCon.json() : []; // Yeni
                 
                 // Verinin dizi olduğundan emin olalım
                 if (!Array.isArray(products)) {
@@ -533,6 +657,14 @@
                 if (!Array.isArray(orders)) {
                     console.error("Siparişler API'den beklenen formatta gelmedi:", orders);
                     orders = []; // Varsayılan boş diziye ayarla
+                }
+                if (!Array.isArray(packages)) { // Yeni
+                    console.error("Paketler API'den beklenen formatta gelmedi:", packages);
+                    packages = [];
+                }
+                if (!Array.isArray(concepts)) { // Yeni
+                    console.error("Konseptler API'den beklenen formatta gelmedi:", concepts);
+                    concepts = [];
                 }
                 
                 renderAll();
@@ -559,6 +691,23 @@
             pt.innerHTML = '';
             
             let filtered = [...products]; // Create copy to avoid ref issues
+
+            // Search and Filter logic
+            const searchTerm = document.getElementById('search-box')?.value.toLowerCase();
+            const filterStatus = document.getElementById('filter-status')?.value;
+
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    (p.name_tr && p.name_tr.toLowerCase().includes(searchTerm)) ||
+                    (p.name_en && p.name_en.toLowerCase().includes(searchTerm)) ||
+                    (p.id && p.id.toString().includes(searchTerm))
+                );
+            }
+
+            if (filterStatus) {
+                filtered = filtered.filter(p => p.status === filterStatus);
+            }
+
 
             if (filtered.length === 0) {
                 // Now 7 columns
@@ -605,22 +754,28 @@
 
             // Siparişleri Çiz
             const ot = document.getElementById('o-table');
-            ot.innerHTML = '';
-            orders.sort((a,b) => new Date(b.lastUpdate) - new Date(a.lastUpdate)).forEach((o, i) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b style="color:var(--primary)">#${o.orderId}</b></td>
-                    <td><b>${o.customerName}</b></td>
-                    <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width:200px;">${o.items}</div></td>
-                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
-                    <td style="text-align:right;">
-                        <button class="btn btn-primary" style="padding:8px" onclick="openEditOrder('${o.orderId}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-times"></i></button>
-                    </td>
-                `;
-                ot.appendChild(tr);
-            });
+            if(ot) {
+                ot.innerHTML = '';
+                orders.sort((a,b) => new Date(b.lastUpdate) - new Date(a.lastUpdate)).forEach((o, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b style="color:var(--primary)">#${o.orderId}</b></td>
+                        <td><b>${o.customerName}</b></td>
+                        <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width:200px;">${o.items}</div></td>
+                        <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-primary" style="padding:8px" onclick="openEditOrder('${o.orderId}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-times"></i></button>
+                        </td>
+                    `;
+                    ot.appendChild(tr);
+                });
+            }
+            
             renderCampaigns(); // Yeni
+            renderPackages(); // Yeni
+            renderConcepts(); // Yeni
+
              // Ayarları input'a doldur
             if(document.getElementById('s-min-order')) {
                 document.getElementById('s-min-order').value = settings.minOrder || 500;
@@ -647,10 +802,15 @@
             document.getElementById('sec-c').style.display = s==='c'?'block':'none'; // Yeni
             document.getElementById('sec-o').style.display = s==='o'?'block':'none';
             document.getElementById('sec-s').style.display = s==='s'?'block':'none'; // Yeni
+            document.getElementById('sec-pkg').style.display = s==='pkg'?'block':'none'; // Yeni
+            document.getElementById('sec-con').style.display = s==='con'?'block':'none'; // Yeni
+
             document.getElementById('link-p').classList.toggle('active', s==='p');
             document.getElementById('link-c').classList.toggle('active', s==='c'); // Yeni
             document.getElementById('link-o').classList.toggle('active', s==='o');
             document.getElementById('link-s').classList.toggle('active', s==='s'); // Yeni
+            document.getElementById('link-pkg').classList.toggle('active', s==='pkg'); // Yeni
+            document.getElementById('link-con').classList.toggle('active', s==='con'); // Yeni
         }
 
         // --- PRODUCT ACTIONS ---
@@ -722,7 +882,6 @@
         }
 
         // --- KAMPANYA YÖNETİMİ ---
-        let editCampaignIdx = -1;
         function openAddCampaign() {
             editCampaignIdx = -1;
             document.getElementById('c-modal-title').innerText = "Yeni Kampanya";
@@ -787,9 +946,9 @@
             const text_color = document.getElementById('c-text-color').value;
             
             // New Campaign Type Logic
-            const c_type = document.getElementById('c-type').value || 'percent'; // percent | buy_x_pay_y
-            const c_buy = parseInt(document.getElementById('c-buy-x').value) || 0;
-            const c_pay = parseInt(document.getElementById('c-pay-y').value) || 0;
+            const c_type = document.getElementById('c-type')?.value || 'percent'; // percent | buy_x_pay_y
+            const c_buy = parseInt(document.getElementById('c-buy-x')?.value) || 0;
+            const c_pay = parseInt(document.getElementById('c-pay-y')?.value) || 0;
 
             if(!name) return alert("Kampanya adı gerekli!");
             
@@ -840,7 +999,7 @@
             
             const pSelect = document.getElementById('p-campaign');
             if(pSelect) {
-                let opts = '<option value="">Kampanya Yok</option>';
+                let opts = '<option value="">Yok</option>'; // Changed from "Kampanya Yok" to "Yok" for consistency
                 campaigns.forEach(c => {
                     const sel = (curIdx > -1 && products[curIdx] && c.id === products[curIdx].campaign_id) ? 'selected' : '';
                     opts += `<option value="${c.id}" ${sel}>${c.name}</option>`;
@@ -848,8 +1007,166 @@
                 pSelect.innerHTML = opts;
             }
         }
+
+        // --- PACKAGE LOGIC ---
+        function openAddPackage() { 
+            editPkgIdx=-1; 
+            resetPkgModal(); 
+            document.getElementById('pkg-modal-title').innerText = "Yeni Paket Oluştur";
+            document.getElementById('package-modal').style.display='flex'; 
+        }
+        function openEditPackage(i) {
+            editPkgIdx=i; const p = packages[i];
+            document.getElementById('pkg-modal-title').innerText = "Paketi Düzenle";
+            document.getElementById('pkg-name').value = p.name || "";
+            document.getElementById('pkg-items').value = p.items || "";
+            document.getElementById('pkg-discount').value = p.discount || "";
+            document.getElementById('pkg-img').value = p.image || "";
+            document.getElementById('pkg-desc').value = p.description || "";
+            document.getElementById('package-modal').style.display='flex';
+        }
+        function handlePackageSave() {
+            const pkg = {
+                id: editPkgIdx>-1 ? packages[editPkgIdx].id : 'pkg-'+Date.now(),
+                name: document.getElementById('pkg-name').value,
+                items: document.getElementById('pkg-items').value,
+                discount: parseInt(document.getElementById('pkg-discount').value)||0,
+                image: document.getElementById('pkg-img').value,
+                description: document.getElementById('pkg-desc').value
+            };
+            if(!pkg.name || !pkg.items) return alert("Paket adı ve içerik gerekli!");
+            if(editPkgIdx>-1) packages[editPkgIdx]=pkg; else packages.push(pkg);
+            renderAll(); closeModal('package-modal'); syncData('packages');
+        }
+        async function deletePackage(i) { 
+            if(confirm("Bu paketi silmek istediğinize emin misiniz?")) {
+                packages.splice(i,1); 
+                renderAll(); 
+                await syncData('packages'); 
+            }
+        }
+        function resetPkgModal() { 
+            document.querySelectorAll('#package-modal input, #package-modal textarea').forEach(e=>e.value=''); 
+        }
+        function renderPackages() {
+            const pkgt = document.getElementById('pkg-table');
+            if(!pkgt) return;
+            pkgt.innerHTML = packages.map((p,i) => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.items ? p.items.split(',').length : 0} Ürün</td>
+                    <td>%${p.discount}</td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-primary" style="padding:8px" onclick="openEditPackage(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" style="padding:8px" onclick="deletePackage(${i})"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- CONCEPT LOGIC ---
+        function openAddConcept() { 
+            editConIdx=-1; 
+            resetConModal(); 
+            document.getElementById('con-modal-title').innerText = "Yeni Konsept Oluştur";
+            document.getElementById('concept-modal').style.display='flex'; 
+        }
         
-        // --- AYARLAR YÖNETİMİ ---
+
+        function fillVariationInputs(variations = {}) {
+            const container = document.getElementById('con-variations');
+            if (!container) return;
+            container.innerHTML = "";
+            const combinations = [
+                {sz:'4oz', ld:false}, {sz:'4oz', ld:true},
+                {sz:'6oz', ld:false}, {sz:'6oz', ld:true},
+                {sz:'7oz', ld:false}, {sz:'7oz', ld:true},
+                {sz:'8oz', ld:false}, {sz:'8oz', ld:true}
+            ];
+            
+            combinations.forEach(combo => {
+                const key = `${combo.sz}-${combo.ld?'lid':'nolid'}`;
+                const val = variations[key] || "";
+                
+                const div = document.createElement('div');
+                div.style.marginBottom = "5px";
+                div.style.display = "flex";
+                div.style.alignItems = "center";
+                div.style.gap = "10px";
+                div.innerHTML = `
+                    <span style="font-size:11px; width:80px;">${combo.sz} ${combo.ld?'(Kapaklı)':'(Kapaksız)'}:</span>
+                    <input type="text" class="var-input editable-input" data-key="${key}" value="${val}" placeholder="Resim URL" style="flex:1; padding:5px;">
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function openEditConcept(i) {
+            editConIdx=i; const c = concepts[i];
+            document.getElementById('con-modal-title').innerText = "Konsepti Düzenle";
+            document.getElementById('con-name').value = c.name || "";
+            document.getElementById('con-color').value = c.theme_color || "#e74c3c";
+            document.getElementById('con-bg').value = c.bg_color || "#ffffff";
+            document.getElementById('con-text').value = c.text_color || "#2c3e50";
+            document.getElementById('con-desc-tr').value = c.desc_tr || "";
+            document.getElementById('con-img').value = c.base_image || "";
+            fillVariationInputs(c.variations);
+            document.getElementById('concept-modal').style.display='flex';
+        }
+
+        function handleConceptSave() {
+            // Collect variations
+            const vars = {};
+            document.querySelectorAll('.var-input').forEach(inp => {
+                if(inp.value.trim()) vars[inp.dataset.key] = inp.value.trim();
+            });
+
+            const con = {
+                id: editConIdx>-1 ? concepts[editConIdx].id : 'con-'+Date.now(),
+                name: document.getElementById('con-name').value,
+                theme_color: document.getElementById('con-color').value,
+                bg_color: document.getElementById('con-bg').value,
+                text_color: document.getElementById('con-text').value,
+                desc_tr: document.getElementById('con-desc-tr').value,
+                base_image: document.getElementById('con-img').value,
+                variations: vars
+            };
+            if(!con.name) return alert("Konsept adı gerekli!");
+            if(editConIdx>-1) concepts[editConIdx]=con; else concepts.push(con);
+            renderAll(); closeModal('concept-modal'); syncData('concepts');
+        }
+        async function deleteConcept(i) { 
+            if(confirm("Bu konsepti silmek istediğinize emin misiniz?")) {
+                concepts.splice(i,1); 
+                renderAll(); 
+                await syncData('concepts'); 
+            }
+        }
+        function resetConModal() { 
+            document.querySelectorAll('#concept-modal input, #concept-modal textarea').forEach(e=>e.value=''); 
+            document.getElementById('con-color').value='#e74c3c';
+            document.getElementById('con-bg').value='#ffffff';
+            document.getElementById('con-text').value='#2c3e50';
+            fillVariationInputs();
+        }
+        function renderConcepts() {
+            const cont = document.getElementById('con-table');
+            if(!cont) return;
+            cont.innerHTML = concepts.map((c,i) => `
+                <tr>
+                    <td style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:20px;height:20px;border-radius:50%;background:${c.theme_color}"></div> ${c.name}
+                    </td>
+                    <td>${c.theme_color}</td>
+                    <td>${c.desc_tr || ''}</td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-primary" style="padding:8px" onclick="openEditConcept(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" style="padding:8px" onclick="deleteConcept(${i})"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
         // --- AYARLAR YÖNETİMİ ---
         async function saveSettings() {
             try {

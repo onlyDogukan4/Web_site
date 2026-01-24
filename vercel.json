@@ -7,6 +7,14 @@
         {
             "source": "/orders.json",
             "destination": "/api/orders"
+        },
+        {
+            "source": "/packages.json",
+            "destination": "/api/packages"
+        },
+        {
+            "source": "/concepts.json",
+            "destination": "/api/concepts"
         }
     ]
 }

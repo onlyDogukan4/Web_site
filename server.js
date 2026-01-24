@@ -94,6 +94,7 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
+
     // --- CAMPAIGNS ENDPOINT ---
     if (req.url.startsWith('/campaigns.json') || req.url.startsWith('/api/campaigns')) {
         if (req.method === 'POST') {
@@ -109,6 +110,48 @@ const server = http.createServer(async (req, res) => {
             return;
         } else if (req.method === 'GET') {
             const data = await redis.get('campaigns');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data || []));
+            return;
+        }
+    }
+
+    // --- PACKAGES ENDPOINT ---
+    if (req.url.startsWith('/packages.json') || req.url.startsWith('/api/packages')) {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                const data = JSON.parse(body);
+                await redis.set('packages', data);
+                console.log("DB: Packages updated.");
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else if (req.method === 'GET') {
+            const data = await redis.get('packages');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(data || []));
+            return;
+        }
+    }
+
+    // --- CONCEPTS ENDPOINT ---
+    if (req.url.startsWith('/concepts.json') || req.url.startsWith('/api/concepts')) {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                const data = JSON.parse(body);
+                await redis.set('concepts', data);
+                console.log("DB: Concepts updated.");
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            });
+            return;
+        } else if (req.method === 'GET') {
+            const data = await redis.get('concepts');
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data || []));
             return;

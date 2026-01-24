@@ -255,11 +255,9 @@ class ModerraAI {
                     botText = botText.replace('[SUGGEST_PACKAGE: wedding]', "");
                     // Trigger visual effect
                     setTimeout(() => {
-                        if (confirm("💍 Düğün Paketimizi İncelemek İster misiniz? \n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)")) {
-                            window.location.href = '#dugun-paketi'; // (Placeholder, or open a modal)
-                            // For now, let's just add a "Wedding Bundle" item if logic existed, 
-                            // or just scroll to concept page
-                            window.location.href = 'konsept-bardaklar.html#dugun';
+                        const bundleSection = document.getElementById('paketler');
+                        if (bundleSection && confirm("💍 Düğün Paketimizi İncelemek İster misiniz? \n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)")) {
+                            bundleSection.scrollIntoView({ behavior: 'smooth' });
                         }
                     }, 1000);
                 }

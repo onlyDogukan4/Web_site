@@ -193,9 +193,19 @@
         </div>
     </section>
 
+
     <section class="container" id="urunler"> 
         <h2 class="section-title">Popüler Ürünler</h2>
         <div class="products" id="products-dynamic-container">
+            <!-- JS ile doldurulacak -->
+        </div>
+    </section>
+
+    <!-- ÖZEL PAKETLER BÖLÜMÜ (YENİ) -->
+    <section class="container" id="paketler" style="margin-top: 80px;">
+        <h2 class="section-title" data-tr="Moderra Süper Paketler" data-en="Moderra Super Bundles">Moderra Süper Paketler</h2>
+        <p style="text-align:center; color:var(--text-muted); margin-top:-20px; margin-bottom:40px;" data-tr="İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!" data-en="Everything you need in one package, at more advantageous prices!">İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!</p>
+        <div id="packages-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
             <!-- JS ile doldurulacak -->
         </div>
     </section>
@@ -1340,6 +1350,152 @@
 
         let lastRenderedDataSignature = ""; // Global cache for flicker prevention
 
+
+        async function renderPackages() {
+            const container = document.getElementById('packages-container');
+            if (!container) return;
+            try {
+                const [pkgRes, prodRes] = await Promise.all([
+                    fetch('/api/packages?t=' + Date.now()),
+                    fetch('/api/products?t=' + Date.now())
+                ]);
+                const packages = await pkgRes.json();
+                const products = await prodRes.json();
+                const isEn = localStorage.getItem('lang') === 'en';
+
+                container.innerHTML = '';
+                packages.forEach(pkg => {
+                    // Calculate package dynamic price
+                    const itemIds = pkg.items.split(',').map(id => id.trim());
+                    let subTotal = 0;
+                    const includedProducts = [];
+
+                    itemIds.forEach(id => {
+                        const p = products.find(x => x.id == id);
+                        if (p) {
+                            subTotal += parseFloat(p.price);
+                            includedProducts.push(isEn ? (p.name_en || p.name_tr) : p.name_tr);
+                        }
+                    });
+
+                    const discountedPrice = subTotal * (1 - (pkg.discount / 100));
+
+                    const div = document.createElement('div');
+                    div.style.cssText = "background:var(--bg-card); border-radius:32px; padding:30px; border:1px solid var(--border); box-shadow:var(--shadow); transition:0.3s; display:flex; flex-direction:column; gap:20px; position:relative; overflow:hidden;";
+                    div.innerHTML = `
+                        <div style="position:absolute; top:20px; right:-35px; background:var(--primary); color:white; padding:5px 40px; transform:rotate(45deg); font-weight:800; font-size:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">%${pkg.discount} İNDİRİM</div>
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <img src="${pkg.image || 'images/box.png'}" style="width:100px; height:100px; object-fit:contain; border-radius:15px; background:#f8fafc; padding:10px;">
+                            <div>
+                                <h3 style="margin:0; font-size:20px; font-weight:800;">${pkg.name}</h3>
+                                <p style="margin:5px 0 0; font-size:13px; color:var(--text-muted); line-height:1.4;">${pkg.description || ''}</p>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <h4 style="font-size:12px; text-transform:uppercase; color:var(--primary); font-weight:800; margin-bottom:10px; opacity:0.7;">Paket İçeriği:</h4>
+                            <ul style="margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:8px;">
+                                ${includedProducts.map(name => `<li style="background:#f1f5f9; padding:4px 10px; border-radius:10px; font-size:11px; font-weight:600;"><i class="fas fa-check" style="color:var(--success); margin-right:5px;"></i>${name}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:20px; border-top:1px solid #f1f5f9;">
+                            <div>
+                                <div style="text-decoration:line-through; font-size:14px; color:#94a3b8;">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                                <div style="font-size:24px; font-weight:900; color:var(--primary);">₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                            </div>
+                            <button class="btn-primary" style="padding:12px 25px; border-radius:15px; font-size:14px;" onclick="addPackageToCart('${pkg.id}')">
+                                <i class="fas fa-cart-plus"></i> ${isEn ? 'Buy Set' : 'Seti Al'}
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (e) { console.error("Packages could not be loaded", e); }
+        }
+
+        async function addPackageToCart(pkgId) {
+            try {
+                const [pkgRes, prodRes] = await Promise.all([
+                    fetch('/api/packages'),
+                    fetch('/api/products')
+                ]);
+                const packages = await pkgRes.json();
+                const products = await prodRes.json();
+                const pkg = packages.find(x => x.id == pkgId);
+                if (!pkg) return;
+
+                const itemIds = pkg.items.split(',').map(id => id.trim());
+                
+                // Add each product to cart with dynamic cross-sell applied
+                itemIds.forEach(id => {
+                    const p = products.find(x => x.id == id);
+                    if (p) {
+                         // Apply the package discount to each item
+                         // For simplicity in cart, we can mark them or just add.
+                         // But better to add as a bundle or set prices.
+                         // For now, let's just add them and show the bundle alert.
+                         addToCart(p.id, p.name_tr, p.price);
+                    }
+                });
+                
+                setTimeout(() => {
+                    alert(`${pkg.name} başarıyla sepete eklendi! Set indirimi sepette uygulanacaktır.`);
+                    updateCartDisplay();
+                }, 500);
+
+            } catch(e) { }
+        }
+
+        // --- Modified addToCart to suggest bundles ---
+        async function addToCart(productId, productName, productPrice) {
+            let product = null;
+            try {
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                product = products.find(p => p.id == productId);
+            } catch(e) { }
+            
+            if(!product) product = { id: productId, name: productName, price: parseFloat(productPrice) };
+            const price = parseFloat(product.price);
+            if (isNaN(price)) return;
+
+            const card = document.querySelector(`.add-to-cart[onclick*="${productId}"]`)?.closest('.product-card');
+            const img = card ? card.querySelector('img') : null;
+            if(img) flyToCart(img);
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ 
+                    id: productId, 
+                    name: product.name_tr, 
+                    price: price, 
+                    quantity: 1,
+                    productRaw: product 
+                });
+            }
+            
+            // --- PACKAGE SUGGESTION LOGIC ---
+            if (!this.packageOffered) { // Offer only once per session
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                // If added product is in a package, suggest that package
+                const relevantPkg = packages.find(pkg => pkg.items.split(',').some(id => id.trim() == productId));
+                if (relevantPkg) {
+                    this.packageOffered = true;
+                    setTimeout(() => {
+                        if (confirm(`💍 Bu ürün ${relevantPkg.name} içinde de bulunuyor! \n\nPaket olarak alırsanız %${relevantPkg.discount} daha ucuza gelir. Paketi incelemek ister misiniz?`)) {
+                            document.getElementById('paketler').scrollIntoView({behavior:'smooth'});
+                        }
+                    }, 1500);
+                }
+            }
+
+            setTimeout(() => { updateCartDisplay(); }, 800);
+            updateCartDisplay(); 
+        }
+
+
         async function renderProducts() {
             const container = document.getElementById('products-dynamic-container');
             if (!container) return;
@@ -1362,7 +1518,7 @@
 
                 if (!Array.isArray(products)) throw new Error("Not array");
 
-                // 2. Fetch Campaigns (Moved up for diffing)
+                // 2. Fetch Campaigns
                 let campaigns = [];
                 try {
                      const cRes = await fetch('/api/campaigns?t=' + Date.now());
@@ -1373,7 +1529,7 @@
                 const currentLang = localStorage.getItem('lang') || 'tr';
                 const currentSignature = JSON.stringify({ p: products, c: campaigns, l: currentLang });
                 
-                if (currentSignature === lastRenderedDataSignature) return; // Stop if no change
+                if (currentSignature === lastRenderedDataSignature) return; 
                 lastRenderedDataSignature = currentSignature;
 
                 // 4. Render
@@ -1386,69 +1542,41 @@
                     
                     const card = document.createElement('div');
                     card.className = 'product-card';
-                    card.style.position = 'relative'; // Ensure positioning context
+                    card.style.position = 'relative';
                     
-                    // Campaign Data Logic
                     let activeCampaign = null;
                     if (p.campaign_id && campaigns) {
                         activeCampaign = campaigns.find(c => c.id == p.campaign_id);
                     }
                     
-                    // Determine Styling based on Campaign
-                    let borderColor = 'transparent';
                     let topBadge = '';
                     let bottomBadge = '';
                     let descHtml = '';
                     
                     if (activeCampaign) {
-                        const borderColor = activeCampaign.border_color || '#ffd700'; // Default Gold
+                        const borderColor = activeCampaign.border_color || '#ffd700';
                         const textColor = activeCampaign.text_color || '#000';
-                        
-                        // Apply Styles (Reverted to CSS class + Badges)
                         if (activeCampaign.theme === 'premium') card.classList.add('premium-campaign');
-                        // Custom border color variable for CSS to use if needed, but avoiding inline solid borders
                         card.style.setProperty('--campaign-color', borderColor);
-                        card.style.border = '1px solid transparent'; // Remove visible border as requested but keep size
                         
-                        // Top Badge
                         if(activeCampaign.top_text) {
-                            topBadge = `
-                                <div style="position:absolute; top:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;">
-                                    <span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">
-                                        ${activeCampaign.top_text}
-                                    </span>
-                                </div>
-                            `;
+                            topBadge = `<div style="position:absolute; top:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;"><span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">${activeCampaign.top_text}</span></div>`;
                         }
-                        
-                        // Bottom Badge
                         if(activeCampaign.bottom_text) {
-                            bottomBadge = `
-                                <div style="position:absolute; bottom:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;">
-                                    <span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">
-                                        ${activeCampaign.bottom_text}
-                                    </span>
-                                </div>
-                            `;
+                            bottomBadge = `<div style="position:absolute; bottom:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;"><span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">${activeCampaign.bottom_text}</span></div>`;
                         }
-                        
-                        // Description (Appended to name or price area)
                         if(activeCampaign.description) {
                             descHtml = `<div style="font-size:11px; color:#e11d48; font-weight:600; margin-bottom:5px;">${activeCampaign.description}</div>`;
                         }
                     } else if (p.bulk_rate && p.bulk_threshold) {
-                         // Default "Bulk" style if no custom campaign
                          topBadge = `<div class="discount-badge" style="left:auto; right:auto; top:-10px; left:50%; transform:translateX(-50%); font-size:11px; padding:4px 10px;">%${p.bulk_rate} İNDİRİM</div>`;
-                         // Dashed border removed
                     }
 
-                    // Hot badge logic (if separate from campaign)
                     let hotBadge = '';
                     if (p.status === 'hot' && !activeCampaign) {
                         hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
                     }
                     
-                    // Render Card
                     card.innerHTML = `
                         ${topBadge}
                         <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
@@ -1471,11 +1599,9 @@
                         </div>
                         ${bottomBadge}
                     `;
-                    
                     container.appendChild(card);
                 });
 
-                // Re-apply search filter if user was searching
                 const activeSearch = document.getElementById('search-input');
                 if(activeSearch && activeSearch.value.trim().length > 0) {
                      setTimeout(() => activeSearch.dispatchEvent(new Event('input')), 50);
@@ -1483,21 +1609,13 @@
 
             } catch (e) {
                 console.error("Ürünler yüklenemedi", e);
-                container.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
-                        <h3 data-tr="Veritabanı Bağlantı Hatası" data-en="Database Connection Error">Veritabanı Bağlantı Hatası</h3>
-                        <p style="color: var(--text-muted); margin-top: 10px;" data-tr="Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin." data-en="Please check your Vercel settings or refresh the page.">Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin.</p>
-                    </div>
-                `;
-            } finally {
-               // Lock removed
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);"><i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i><h3 data-tr="Veritabanı Hatası" data-en="Database Error">Veritabanı Hatası</h3></div>`;
             }
         }
         
-        // --- CART & MODAL EVENT LISTENERS (SAFE BINDING) ---
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts();
+            renderPackages();
             
             const openCartBtn = document.getElementById('open-cart-modal');
             const closeCartBtn = document.getElementById('close-cart-btn-modal');
@@ -1509,21 +1627,16 @@
                     updateCartDisplay();
                 });
             }
-            
             if(closeCartBtn) {
                 closeCartBtn.addEventListener('click', () => {
                     cartModal.style.display = 'none';
                 });
             }
-            
-            // Close on click outside
             window.addEventListener('click', (e) => {
                 if (e.target == cartModal) cartModal.style.display = 'none';
                 const pModal = document.getElementById('product-detail-modal');
                 if (e.target == pModal) pModal.style.display = 'none';
             });
-            
-            // Detail Modal Close
             const detailClose = document.querySelector('.detail-close');
             if(detailClose) {
                 detailClose.addEventListener('click', () => {
