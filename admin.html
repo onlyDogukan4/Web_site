@@ -775,6 +775,7 @@
              dDiv.innerText = desc;
         }
         
+
         function handleCampaignSave() {
             const name = document.getElementById('c-name').value;
             const theme = document.getElementById('c-theme').value;
@@ -784,31 +785,36 @@
             const description = document.getElementById('c-desc').value;
             const border_color = document.getElementById('c-border-color').value;
             const text_color = document.getElementById('c-text-color').value;
+            
+            // New Campaign Type Logic
+            const c_type = document.getElementById('c-type').value || 'percent'; // percent | buy_x_pay_y
+            const c_buy = parseInt(document.getElementById('c-buy-x').value) || 0;
+            const c_pay = parseInt(document.getElementById('c-pay-y').value) || 0;
 
             if(!name) return alert("Kampanya adı gerekli!");
             
             const cmp = { 
-                id: 'c-'+Date.now(), 
+                id: editCampaignIdx > -1 ? campaigns[editCampaignIdx].id : 'c-'+Date.now(), 
                 name, 
                 theme,
                 top_text,
                 bottom_text,
                 description,
                 border_color,
-                text_color
+                text_color,
+                type: c_type,
+                params: c_type === 'buy_x_pay_y' ? { buy: c_buy, pay: c_pay } : null
             };
             
             if(editCampaignIdx > -1) {
-                // Preserve ID
-                const oldId = campaigns[editCampaignIdx].id;
-                campaigns[editCampaignIdx] = { ...cmp, id: oldId };
+                campaigns[editCampaignIdx] = cmp;
             } else {
                 campaigns.push(cmp);
             }
             
-            closeModal('campaign-modal');
             renderAll();
-            syncData('campaigns'); 
+            closeModal('campaign-modal');
+            syncData('campaigns');
         }
         
         async function deleteCampaign(idx) {

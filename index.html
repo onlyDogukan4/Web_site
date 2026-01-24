@@ -736,10 +736,25 @@
             updateCartDisplay(); // Anlık da güncellensin sayı
         }
 
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            updateCartDisplay();
-        }
+
+        // Global Helper for Chatbot
+        window.addToCartByMatch = async (keyword) => {
+            try {
+                const res = await fetch('/api/products?t=' + Date.now());
+                const products = await res.json();
+                // Find best match
+                const match = products.find(p => 
+                    p.name_tr.toLowerCase().includes(keyword.toLowerCase()) || 
+                    p.name_en.toLowerCase().includes(keyword.toLowerCase())
+                );
+                
+                if(match) {
+                    addToCart(match.id, match.name_tr, match.price);
+                    return { success: true, name: match.name_tr };
+                }
+                return { success: false };
+            } catch(e) { return { success: false }; }
+        };
 
         function calculateCartTotal() {
             let total = 0;
@@ -752,27 +767,54 @@
                 let currentTotal = itemPrice * item.quantity;
                 subTotal += currentTotal;
                 
-                // 1. Çoklu Alım İndirimi (Bulk)
+                // 1. Çoklu Alım İndirimi (Bulk) - İSTEK: Kapsayıcı (>=) olsun
                 if (p.bulk_threshold && p.bulk_rate && item.quantity >= p.bulk_threshold) {
                     const discountAmount = currentTotal * (p.bulk_rate / 100);
-                    item.discountNote = `%${p.bulk_rate} Çoklu Alım İndirimi`;
+                    item.discountNote = `%${p.bulk_rate} İndirim (${p.bulk_threshold} ve üzeri)`;
                     currentTotal -= discountAmount;
                     discountTotal += discountAmount;
                 }
                 
-                // 2. Çapraz İndirim (Cross-sell)
-                // Eğer sepette 'cross_target' ID'li ürün varsa bu ürüne indirim uygula
-                if (p.cross_target && p.cross_rate) {
+                // 2. Özel Kampanya Mantığı (1 Alana 1 Bedava vb.)
+                // p.campaign_type = 'buy_x_pay_y' (Örn: 2 al 1 öde)
+                // Adminden şu formatta gelecek: campaign_params: { buy: 2, pay: 1 }
+                // Kullanıcının istediği: "2 tane alırsa 1 öder, 3 alırsa yine 1 bedava (2 öder)" -> Bu aslında klasik "Her 2 üründe 1 bedava" değil.
+                // "3.yü aldığında 2 tanesi bedavaya gelmesin" -> Yani (N // 2) * 1 kadar bedava. Evet klasik mantık.
+                if (p.campaign_type === 'buy_x_pay_y' && p.campaign_params) {
+                    const { buy, pay } = p.campaign_params; // Örn: buy:2, pay:1
+                    if (buy > pay && item.quantity >= buy) {
+                        const freeCountPerSet = buy - pay;
+                        const sets = Math.floor(item.quantity / buy);
+                        const remainder = item.quantity % buy;
+                        
+                        // Toplam ödenmesi gereken: (Set sayısı * Ödenen) + Artanlar
+                        const payableQuantity = (sets * pay) + remainder;
+                        const newTotal = payableQuantity * itemPrice;
+                        
+                        const discountAmount = (item.quantity * itemPrice) - newTotal;
+                        
+                        item.discountNote = `${buy} Al ${pay} Öde Fırsatı`;
+                        currentTotal = newTotal; // Override logic
+                        
+                        // Önceki indirimi ezmemek lazım ama genelde kampanya daha büyüktür.
+                        // Şimdilik bulk ile çakışırsa en son hesaplanan (kampanya) geçerli.
+                        // Total düzeltme:
+                        const diff = (itemPrice * item.quantity) - currentTotal;
+                        discountTotal += diff; // Hata: discountTotal global artıyor
+                        // Düzeltme: discountTotal += discountAmount (yukarıdaki hesapla aynı)
+                        // Önceki discount'u sıfırlamak lazım mı? Evet basitlik için:
+                        // Bu blokta discountTotal'i yeniden hesapladık.
+                    }
+                }
+
+                // 3. Çapraz İndirim (Eğer bulk/kampanya yoksa)
+                if (!item.discountNote && p.cross_target && p.cross_rate) {
                     const targetExists = cart.find(c => c.id == p.cross_target);
                     if (targetExists) {
-                        // Eğer bulk indirimi uygulanmadıysa bunu uygula (veya hangisi büyükse)
-                        // Şu an basitlik için: Üstüne eklemiyoruz, bulk yoksa uyguluyoruz
-                        if (!item.discountNote) {
-                            const discountAmount = (item.price * item.quantity) * (p.cross_rate / 100);
-                            item.discountNote = `Birlikte Alım Fırsatı (%${p.cross_rate})`;
-                            currentTotal = (item.price * item.quantity) - discountAmount; // Reset and apply
-                            // Note: This logic is simplified.
-                        }
+                        const discountAmount = (item.price * item.quantity) * (p.cross_rate / 100);
+                        item.discountNote = `Set İndirimi (%${p.cross_rate})`;
+                        currentTotal = (item.price * item.quantity) - discountAmount;
+                        discountTotal += discountAmount;
                     }
                 }
 

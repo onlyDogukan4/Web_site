@@ -228,8 +228,43 @@ class ModerraAI {
 
             const data = await response.json();
 
-            if (data.candidates && data.candidates[0]) {
-                const botText = data.candidates[0].content.parts[0].text;
+
+            if (data.candidates && data.candidates[0].content) {
+                let botText = data.candidates[0].content.parts[0].text;
+
+                // --- ACTION HANDLING ---
+                // 1. [ADD_CART: ...]
+                const addCartMatch = botText.match(/\[ADD_CART:\s*(.*?)\]/);
+                if (addCartMatch) {
+                    const productKeyword = addCartMatch[1];
+                    botText = botText.replace(addCartMatch[0], ""); // Komutu metinden sil
+
+                    // Call global helper exposed in index.html
+                    if (window.addToCartByMatch) {
+                        const result = await window.addToCartByMatch(productKeyword);
+                        if (result.success) {
+                            botText += `\n\n✅ *${result.name} sepete eklendi!*`;
+                        } else {
+                            botText += `\n\n(Ürünü bulamadım ama senin için not aldım!)`;
+                        }
+                    }
+                }
+
+                // 2. [SUGGEST_PACKAGE: wedding]
+                if (botText.includes('[SUGGEST_PACKAGE: wedding]')) {
+                    botText = botText.replace('[SUGGEST_PACKAGE: wedding]', "");
+                    // Trigger visual effect
+                    setTimeout(() => {
+                        if (confirm("💍 Düğün Paketimizi İncelemek İster misiniz? \n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)")) {
+                            window.location.href = '#dugun-paketi'; // (Placeholder, or open a modal)
+                            // For now, let's just add a "Wedding Bundle" item if logic existed, 
+                            // or just scroll to concept page
+                            window.location.href = 'konsept-bardaklar.html#dugun';
+                        }
+                    }, 1000);
+                }
+                // -----------------------
+
                 this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                 this.chatHistory.push({ role: "model", parts: [{ text: botText }] });
                 this.addBotMessage(botText);
