@@ -1299,17 +1299,24 @@
             const container = document.getElementById('products-dynamic-container');
             if (!container) return;
             try {
-                // --- RACE CONDITION LOCK ---
-                if (window.isProductRendering) return;
-                window.isProductRendering = true;
-
+                let products = [];
                 try {
                     const response = await fetch('/api/products?t=' + Date.now());
-                    const products = await response.json();
-                    if (!Array.isArray(products)) throw new Error("Not array");
-                    
-                    // Always render to be safe
-                    // window.lastProductDataStr check removed to fix empty list issue
+                    if (!response.ok) throw new Error("API Error");
+                    products = await response.json();
+                } catch (apiError) {
+                    console.warn("API Fetch failed, trying fallback...", apiError);
+                    try {
+                        const fallbackResponse = await fetch('products.json?t=' + Date.now());
+                        products = await fallbackResponse.json();
+                    } catch (fallbackError) {
+                        throw new Error("Hem API hem de Products.json başarısız!");
+                    }
+                }
+
+                if (!Array.isArray(products)) throw new Error("Not array");
+                
+                // Always render to be safe. Removed complex caching/locking to ensure visibility.
                 // --------------------------
 
                 container.innerHTML = '';
@@ -1427,13 +1434,46 @@
                     </div>
                 `;
             } finally {
-                window.isProductRendering = false;
+               // Lock removed
             }
         }
         
-        // Force reset lock on load
-        window.isProductRendering = false;
-        renderProducts();
+        // --- CART & MODAL EVENT LISTENERS (SAFE BINDING) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            
+            const openCartBtn = document.getElementById('open-cart-modal');
+            const closeCartBtn = document.getElementById('close-cart-btn-modal');
+            const cartModal = document.getElementById('cart-modal');
+            
+            if(openCartBtn) {
+                openCartBtn.addEventListener('click', () => {
+                    cartModal.style.display = 'block';
+                    updateCartDisplay();
+                });
+            }
+            
+            if(closeCartBtn) {
+                closeCartBtn.addEventListener('click', () => {
+                    cartModal.style.display = 'none';
+                });
+            }
+            
+            // Close on click outside
+            window.addEventListener('click', (e) => {
+                if (e.target == cartModal) cartModal.style.display = 'none';
+                const pModal = document.getElementById('product-detail-modal');
+                if (e.target == pModal) pModal.style.display = 'none';
+            });
+            
+            // Detail Modal Close
+            const detailClose = document.querySelector('.detail-close');
+            if(detailClose) {
+                detailClose.addEventListener('click', () => {
+                    document.getElementById('product-detail-modal').style.display = 'none';
+                });
+            }
+        });
 
 
         function generateRatingStars(rating) {
