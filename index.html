@@ -1434,6 +1434,10 @@
                 window.isProductRendering = false;
             }
         }
+        
+        // Force reset lock on load
+        window.isProductRendering = false;
+        renderProducts();
 
 
         function generateRatingStars(rating) {
