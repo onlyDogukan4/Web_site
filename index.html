@@ -141,13 +141,22 @@
                 <i class="fas fa-shopping-cart" id="open-cart-modal">
                     <span id="cart-count">0</span>
                 </i>
-                <i class="fas fa-user" id="open-profile-modal"></i>
+                <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer;"></i>
                 <div class="hamburger">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
         </div>
     </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             const pm = document.getElementById('profile-modal');
+             const opm = document.getElementById('open-profile-modal');
+             const cl = document.querySelector('.profile-close');
+             if(opm) opm.addEventListener('click', () => { if(pm) pm.style.display = 'block'; });
+             if(cl) cl.addEventListener('click', () => { if(pm) pm.style.display = 'none'; });
+        });
+    </script>
 
     <main>
     <section class="slider container">
@@ -1297,42 +1306,82 @@
                 container.innerHTML = '';
                 const isEn = localStorage.getItem('lang') === 'en';
 
+                // --- YENİ KAMPANYA MANTIĞI & GÖRSELLEŞTİRME ---
+                // Kampanyaları API'den çek (Eğer yukarıda çekilmediyse, burada çekmeye gerek yok, ama garanti olsun)
+                let campaigns = [];
+                try {
+                     const cRes = await fetch('/api/campaigns');
+                     if(cRes.ok) campaigns = await cRes.json();
+                } catch(e){}
+
                 products.forEach(p => {
                     const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
                     const desc = isEn ? (p.description_en || p.description_tr) : p.description_tr;
                     
                     const card = document.createElement('div');
                     card.className = 'product-card';
+                    card.style.position = 'relative'; // Ensure positioning context
                     
-                    // Determine if Active Campaign
-                    let campaignBadge = '';
-                    let isPremium = false;
-                    
-                    // Logic: If there is a bulk discount defined, treat as campaign
-                    if (p.bulk_rate && p.bulk_threshold) {
-                        isPremium = true;
-                        card.classList.add('premium-campaign');
-                        const campText = isEn ? `%${p.bulk_rate} Sale on ${p.bulk_threshold}+` : `%${p.bulk_rate} İNDİRİM`;
-                        campaignBadge = `<div class="campaign-badge">${campText}</div>`;
+                    // Campaign Data Logic
+                    let activeCampaign = null;
+                    if (p.campaign_id && campaigns) {
+                        activeCampaign = campaigns.find(c => c.id == p.campaign_id);
                     }
                     
-                    // Discount Badge (Old Price vs Current)
-                    let discountBadge = '';
-                    if (p.old_price && parseFloat(p.old_price) > parseFloat(p.price)) {
-                        const discountRate = Math.round(((p.old_price - p.price) / p.old_price) * 100);
-                        discountBadge = `<div class="discount-badge" style="${isPremium ? 'top:50px;' : ''}">-${discountRate}%</div>`;
-                    }
+                    // Determine Styling based on Campaign
+                    let borderColor = 'transparent';
+                    let topBadge = '';
+                    let bottomBadge = '';
+                    let descHtml = '';
                     
-                    // Hot badge logic
-                    let hotBadge = '';
-                    if (p.status === 'hot') {
-                        hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
+                    if (activeCampaign) {
+                        borderColor = activeCampaign.border_color || '#ffd700'; // Default Gold
+                        const textColor = activeCampaign.text_color || '#000';
+                        
+                        // Apply Border
+                        card.style.border = `3px solid ${borderColor}`;
+                        card.style.boxShadow = `0 0 15px ${borderColor}40`; // 40 = alpha opacity
+                        
+                        // Top Badge
+                        if(activeCampaign.top_text) {
+                            topBadge = `
+                                <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; z-index:20; white-space:nowrap; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                                    ${activeCampaign.top_text}
+                                </div>
+                            `;
+                        }
+                        
+                        // Bottom Badge
+                        if(activeCampaign.bottom_text) {
+                            bottomBadge = `
+                                <div style="position:absolute; bottom:-12px; left:50%; transform:translateX(-50%); background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; z-index:20; white-space:nowrap; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                                    ${activeCampaign.bottom_text}
+                                </div>
+                            `;
+                             // Add extra padding to bottom of card to accommodate badge
+                             card.style.paddingBottom = "15px";
+                        }
+                        
+                        // Description
+                        if(activeCampaign.description) {
+                            descHtml = `<div style="font-size:11px; color:#666; font-style:italic; margin-bottom:5px;">✨ ${activeCampaign.description}</div>`;
+                        }
+                    } else if (p.bulk_rate && p.bulk_threshold) {
+                         // Default "Bulk" style if no custom campaign
+                         topBadge = `<div class="discount-badge" style="left:auto; right:auto; top:-10px; left:50%; transform:translateX(-50%); font-size:11px; padding:4px 10px;">%${p.bulk_rate} İNDİRİM</div>`;
+                         card.style.border = '2px dashed #ef4444';
                     }
 
+                    // Hot badge logic (if separate from campaign)
+                    let hotBadge = '';
+                    if (p.status === 'hot' && !activeCampaign) {
+                        hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
+                    }
+                    
+                    // Render Card
                     card.innerHTML = `
+                        ${topBadge}
                         <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
-                        ${campaignBadge}
-                        ${discountBadge}
                         ${hotBadge}
                         <div class="product-info">
                             <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
@@ -1340,7 +1389,7 @@
                                 ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price) ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
                                 ₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                             </div>
-                            ${isPremium ? `<div style="font-size:11px; color:#e11d48; font-weight:700; margin-bottom:10px;">🔥 ${p.bulk_threshold} Alana %${p.bulk_rate} İndirim!</div>` : ''}
+                            ${descHtml}
                             <div class="product-actions">
                                 <button class="add-to-cart" data-name="${p.name_tr}" onclick="addToCart('${p.id}', '${p.name_tr.replace(/'/g, "\\'")}', ${p.price})">
                                     <i class="fas fa-shopping-cart"></i> ${isEn?'Add':'Sepete Ekle'}
@@ -1350,6 +1399,7 @@
                                 </button>
                             </div>
                         </div>
+                        ${bottomBadge}
                     `;
                     
                     container.appendChild(card);
