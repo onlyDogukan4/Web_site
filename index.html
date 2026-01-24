@@ -1455,9 +1455,9 @@
 
         renderProducts();
         
-        // Aggressive Auto-Refresh (Every 5 seconds) to ensure users see updates immediately
-        window.addEventListener('focus', renderProducts);
-        setInterval(renderProducts, 5000); 
+        // Removed aggressive auto-refresh to prevent flickering
+        // window.addEventListener('focus', renderProducts);
+        // setInterval(renderProducts, 5000); 
 
         updateLanguage();
         updateCartDisplay();
