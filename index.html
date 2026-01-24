@@ -1144,8 +1144,14 @@
              }
         }
 
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id != id);
+            updateCartDisplay();
+        }
+
         function updateItemQuantity(id, change) {
-            const item = cart.find(x => x.id == id); // Loose equality for string/number match
+            const item = cart.find(x => x.id == id);
             if(!item) return;
             
             item.quantity += change;

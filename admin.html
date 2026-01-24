@@ -831,6 +831,14 @@
             document.getElementById('product-modal').style.display = 'flex'; 
         }
         
+        function openAddConcept() {
+            editConIdx=-1; curConceptBaseImg=""; curVariantData={};
+            resetConModal(); 
+            document.getElementById('con-modal-title').innerText = "Yeni Konsept Oluştur";
+            document.getElementById('con-published').checked = true; // Default to published for new
+            document.getElementById('concept-modal').style.display='flex'; 
+        }
+        
         function openEditProduct(i) {
             curIdx = i; const p = products[i];
             document.getElementById('p-modal-title').innerText = "Ürünü Düzenle";
@@ -1375,8 +1383,14 @@
                 if (type === 'all' || type === 'campaigns') { // Yeni
                     requests.push(fetch('/api/campaigns', {method:'POST', body:JSON.stringify(campaigns), headers:{'Content-Type':'application/json'}}));
                 }
-                if (type === 'all' || type === 'settings') { // Yeni
+                if (type === 'all' || type === 'settings') { 
                     requests.push(fetch('/api/settings', {method:'POST', body:JSON.stringify(settings), headers:{'Content-Type':'application/json'}}));
+                }
+                if (type === 'all' || type === 'concepts') { 
+                    requests.push(fetch('/api/concepts', {method:'POST', body:JSON.stringify(concepts), headers:{'Content-Type':'application/json'}}));
+                }
+                if (type === 'all' || type === 'packages') { 
+                    requests.push(fetch('/api/packages', {method:'POST', body:JSON.stringify(packages), headers:{'Content-Type':'application/json'}}));
                 }
                 requests.push(fetch('/api/last-update', {method:'POST', body:JSON.stringify({time:new Date().toLocaleString('tr-TR')}), headers:{'Content-Type':'application/json'}}));
 
