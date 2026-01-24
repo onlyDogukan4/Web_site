@@ -1299,11 +1299,16 @@
             const container = document.getElementById('products-dynamic-container');
             if (!container) return;
             try {
-                const response = await fetch('/api/products?t=' + Date.now());
-                const products = await response.json();
-                if (!Array.isArray(products)) throw new Error("Not array");
-                
-                // --- SMART UPDATE CHECK ---
+                // --- RACE CONDITION LOCK ---
+                if (window.isProductRendering) return;
+                window.isProductRendering = true;
+
+                try {
+                    const response = await fetch('/api/products?t=' + Date.now());
+                    const products = await response.json();
+                    if (!Array.isArray(products)) throw new Error("Not array");
+                    
+                    // --- SMART UPDATE CHECK ---
                 // Eğer veri değişmediyse DOM'u elleme (Titremeyi engeller)
                 const currentDataStr = JSON.stringify(products);
                 if (window.lastProductDataStr === currentDataStr && container.innerHTML !== '') {
@@ -1425,6 +1430,8 @@
                         <p style="color: var(--text-muted); margin-top: 10px;" data-tr="Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin." data-en="Please check your Vercel settings or refresh the page.">Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin.</p>
                     </div>
                 `;
+            } finally {
+                window.isProductRendering = false;
             }
         }
 
