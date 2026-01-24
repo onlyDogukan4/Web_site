@@ -6,6 +6,31 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
+const DEFAULT_PRODUCTS = [
+    {
+        "id": "1",
+        "name_tr": "8.5 oz Karton Bardak (1000 adet)",
+        "name_en": "8.5 oz Paper Cup (1000 pcs)",
+        "price": 1453,
+        "image": "images/bardak.png",
+        "description_tr": "En yüksek kalite standartlarında üretilmiştir.",
+        "description_en": "Produced with the highest quality standards.",
+        "rating": "5.0",
+        "bulk_threshold": 3,
+        "bulk_rate": 20
+    },
+    {
+        "id": "3",
+        "name_tr": "Ahşap Karıştırıcı (1000'li paket)",
+        "name_en": "Wooden Stirrer (1000 pcs)",
+        "price": 189.9,
+        "image": "images/karistirici.jpeg",
+        "description_tr": "Doğal ahşaptan üretilmiş karıştırıcı.",
+        "description_en": "Stirrer made from natural wood.",
+        "rating": "4.7"
+    }
+];
+
 export default async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -30,13 +55,19 @@ export default async function handler(req, res) {
             await redis.set('products', data);
             return res.status(200).json({ success: true });
         } else if (req.method === 'GET') {
-            const data = await redis.get('products');
+            let data = await redis.get('products');
+            if (!data) {
+                console.log("Redis cache miss, seeding default products...");
+                await redis.set('products', DEFAULT_PRODUCTS);
+                data = DEFAULT_PRODUCTS;
+            }
             return res.status(200).json(data || []);
         } else {
             return res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (error) {
         console.error("Products API Error:", error);
-        return res.status(500).json({ error: error.message });
+        // Fallback to default data in case of Redis error to keep site working
+        return res.status(200).json(DEFAULT_PRODUCTS);
     }
 }
