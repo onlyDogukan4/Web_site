@@ -1459,6 +1459,79 @@
         // window.addEventListener('focus', renderProducts);
         // setInterval(renderProducts, 5000); 
 
+        // --- SEARCH FUNCTIONALITY ---
+        const searchIcon = document.getElementById('open-search');
+        const searchContainer = document.getElementById('search-bar');
+        const searchInput = document.getElementById('search-input');
+        const closeSearch = document.getElementById('close-search');
+
+        if(searchIcon && searchContainer) {
+            searchIcon.addEventListener('click', () => {
+                searchContainer.classList.add('active');
+                if(searchInput) {
+                    searchInput.value = ''; // Reset on open
+                    const event = new Event('input');
+                    searchInput.dispatchEvent(event);
+                    setTimeout(() => searchInput.focus(), 100);
+                }
+            });
+        }
+        
+        if(closeSearch) {
+            closeSearch.addEventListener('click', () => {
+                 searchContainer.classList.remove('active');
+                 if(searchInput) searchInput.value = '';
+                 renderProducts(); // Reset view
+            });
+        }
+        
+        // Filter Logic
+        if(searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('.product-card');
+                const container = document.getElementById('products-dynamic-container');
+                let hasResults = false;
+                
+                // If container is empty (e.g. error state), don't filter
+                if (!container || container.children.length === 0) return;
+
+                // Remove existing 'No Results' message
+                const existingMsg = document.getElementById('no-search-results');
+                if(existingMsg) existingMsg.remove();
+
+                if (term.length > 0) {
+                    // Scroll to products if typing
+                    if(term.length === 1) document.getElementById('urunler').scrollIntoView({behavior: 'smooth', block: 'start'});
+                    
+                    cards.forEach(card => {
+                        const title = card.querySelector('.product-title').textContent.toLowerCase();
+                        // Optional: Include price check? No, title is main.
+                        if(title.includes(term)) {
+                            card.style.display = 'block';
+                            hasResults = true;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    if (!hasResults) {
+                        const msg = document.createElement('div');
+                        msg.id = 'no-search-results';
+                        msg.style.gridColumn = "1/-1";
+                        msg.style.textAlign = "center";
+                        msg.style.padding = "40px";
+                        msg.style.color = "var(--text-muted)";
+                        msg.innerHTML = `<i class="fas fa-search" style="font-size:30px; margin-bottom:10px; opacity:0.5;"></i><p>Aramanızla eşleşen ürün bulunamadı.</p>`;
+                        container.appendChild(msg);
+                    }
+                } else {
+                    // Show all
+                    cards.forEach(card => card.style.display = 'block');
+                }
+            });
+        }
+
         updateLanguage();
         updateCartDisplay();
     </script>
