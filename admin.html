@@ -277,10 +277,14 @@
                     <label>Arkaplan Rengi</label>
                     <input type="color" id="con-bg" class="editable-input" value="#ffffff">
                 </div>
-                 <div class="form-group">
-                    <label>Etiket Yazısı (Modern Label)</label>
-                    <input type="text" id="con-label" class="editable-input" placeholder="Örn: %20 İndirim veya FIRSAT">
+                 <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top:25px;">
+                    <input type="checkbox" id="con-published" style="width:20px; height:20px;">
+                    <label style="margin:0;">Sitede Yayınla</label>
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Etiket Yazısı (Modern Label)</label>
+                <input type="text" id="con-label" class="editable-input" placeholder="Örn: %20 İndirim veya FIRSAT">
             </div>
             <div class="form-group">
                 <label>Baz Görsel (Sürükle-Bırak)</label>
@@ -334,6 +338,10 @@
             <div class="form-row">
                 <div class="form-group"><label>İndirim (%)</label><input type="number" id="pkg-discount" class="editable-input"></div>
                 <div class="form-group"><label>Sıralama</label><input type="number" id="pkg-order" class="editable-input" value="0"></div>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="pkg-published" style="width:20px; height:20px;">
+                <label style="margin:0;">Sitede Yayınla (Aktif Et)</label>
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
@@ -1011,18 +1019,50 @@
         }
 
 
-        // --- DRAG & DROP FOR CONCEPTS & PACKAGES ---
-        function setupDropZones() {
-            // Concept Base
-            setupGenericDrop('con-drop-zone', 'con-file', 'con-preview', 'con-drop-text', (res) => {
-                curConceptBaseImg = res;
-            });
-            // Package Base
-            setupGenericDrop('pkg-drop-zone', 'pkg-file', 'pkg-preview', 'pkg-drop-text', (res) => {
-                curPkgImg = res;
-            });
+
+        function renderConcepts() {
+            const tbody = document.getElementById('con-table');
+            if(!tbody) return;
+            tbody.innerHTML = (concepts || []).map((c, i) => `
+                <tr>
+                    <td style="font-weight:700">
+                        <i class="fas fa-circle" style="color:${c.theme_color}; margin-right:5px;"></i> ${c.name}
+                    </td>
+                    <td><span class="status-badge" style="background:${c.published ? '#dcfce7':'#f1f5f9'}; color:${c.published ? '#166534':'#64748b'};">${c.published ? 'YAYINDA' : 'TASLAK'}</span></td>
+                    <td style="color:var(--text-muted); font-size:12px;">${c.label_text || '-'}</td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-secondary" style="padding:8px" onclick="openEditConcept(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" style="padding:8px" onclick="deleteConcept(${i})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
+        function renderPackages() {
+            const tbody = document.getElementById('pkg-table');
+            if(!tbody) return;
+            tbody.innerHTML = (packages || []).map((p, i) => `
+                <tr>
+                    <td style="font-weight:700">${p.name}</td>
+                    <td><span class="status-badge" style="background:${p.published ? '#dcfce7':'#f1f5f9'}; color:${p.published ? '#166534':'#64748b'};">${p.published ? 'YAYINDA' : 'TASLAK'}</span></td>
+                    <td style="font-size:12px; color:var(--text-muted);">%${p.discount} İndirim</td>
+                    <td style="text-align:right;">
+                        <button class="btn btn-secondary" style="padding:8px" onclick="openEditPackage(${i})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" style="padding:8px" onclick="deletePackage(${i})"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteConcept(i) { if(confirm("Silmek istediğinize emin misiniz?")) { concepts.splice(i,1); renderAll(); await syncData('concepts'); } }
+        async function deletePackage(i) { if(confirm("Silmek istediğinize emin misiniz?")) { packages.splice(i,1); renderAll(); await syncData('packages'); } }
+
+        // Global state for images and editing
+        let curConceptBaseImg = "";
+        let curPkgImg = "";
+        let curVariantData = {}; 
+
+        // --- DRAG & DROP UTILS ---
         function setupGenericDrop(zoneId, fileId, previewId, textId, callback) {
             const zone = document.getElementById(zoneId);
             const input = document.getElementById(fileId);
@@ -1053,24 +1093,16 @@
             reader.readAsDataURL(file);
         }
 
-        // Global state for images
-        let curConceptBaseImg = "";
-        let curPkgImg = "";
-        let curVariantImages = {};
-
-        // --- CONCEPT LOGIC ---
-        function openAddConcept() { 
-            editConIdx=-1; curConceptBaseImg=""; curVariantImages={};
-            resetConModal(); 
-            document.getElementById('con-modal-title').innerText = "Yeni Konsept Oluştur";
-            document.getElementById('concept-modal').style.display='flex'; 
+        function setupDropZones() {
+            setupGenericDrop('con-drop-zone', 'con-file', 'con-preview', 'con-drop-text', (res) => curConceptBaseImg = res);
+            setupGenericDrop('pkg-drop-zone', 'pkg-file', 'pkg-preview', 'pkg-drop-text', (res) => curPkgImg = res);
         }
-        
-        function fillVariationInputs(variations = {}) {
+
+        function fillVariationInputs(savedData = {}) {
             const container = document.getElementById('con-variations');
             if (!container) return;
             container.innerHTML = "";
-            curVariantImages = { ...variations };
+            curVariantData = { ...savedData };
 
             const combinations = [
                 {sz:'4oz', ld:false}, {sz:'4oz', ld:true},
@@ -1081,47 +1113,59 @@
             
             combinations.forEach(combo => {
                 const key = `${combo.sz}-${combo.ld?'lid':'nolid'}`;
-                const val = curVariantImages[key] || "";
+                const data = curVariantData[key] || { img: "", stock: 100 };
                 
                 const div = document.createElement('div');
                 div.className = "var-card";
-                div.style.cssText = "background:white; padding:10px; border-radius:10px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:5px;";
+                div.style.cssText = "background:white; padding:12px; border-radius:15px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);";
                 div.innerHTML = `
-                    <span style="font-size:11px; font-weight:700;">${combo.sz} ${combo.ld?'(Kapaklı)':'(Kapaksız)'}</span>
-                    <div class="drop-zone" id="dz-${key}" style="height:60px; padding:5px;">
-                        <img id="prev-${key}" src="${val}" style="height:100%; display:${val?'block':'none'}; margin:0 auto;">
-                        <span id="txt-${key}" style="font-size:9px; display:${val?'none':'block'}; color:#94a3b8;">Görsel Yükle</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; font-weight:800; color:var(--primary);">${combo.sz} ${combo.ld?'(Kapaklı)':'(Kapaksız)'}</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <label style="font-size:10px; font-weight:700;">STOK:</label>
+                            <input type="number" value="${data.stock}" oninput="updateVarStock('${key}', this.value)" style="width:50px; padding:4px; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; font-weight:700;">
+                        </div>
+                    </div>
+                    <div class="drop-zone" id="dz-${key}" style="height:70px; padding:5px; margin-bottom:0; background:#f8fafc; border-style:solid; border-width:1px;">
+                        <img id="prev-${key}" src="${data.img}" style="height:100%; display:${data.img?'block':'none'}; margin:0 auto;">
+                        <span id="txt-${key}" style="font-size:10px; display:${data.img?'none':'block'}; color:#94a3b8; font-weight:600;"><i class="fas fa-plus"></i> Görsel</span>
                     </div>
                     <input type="file" id="file-${key}" accept="image/*" style="display:none">
                 `;
                 container.appendChild(div);
 
-                // Setup sub-dropzone for each variation
                 setTimeout(() => {
                     setupGenericDrop(`dz-${key}`, `file-${key}`, `prev-${key}`, `txt-${key}`, (res) => {
-                        curVariantImages[key] = res;
+                        if(!curVariantData[key]) curVariantData[key] = { img: "", stock: 100 };
+                        curVariantData[key].img = res;
                     });
                 }, 0);
             });
+        }
+
+        function updateVarStock(key, val) {
+            if(!curVariantData[key]) curVariantData[key] = { img: "", stock: 100 };
+            curVariantData[key].stock = parseInt(val) || 0;
         }
         
         function openEditConcept(i) {
             editConIdx=i; const c = concepts[i];
             curConceptBaseImg = c.base_image || "";
-            curVariantImages = c.variations || {};
+            curVariantData = c.variations || {};
 
             document.getElementById('con-modal-title').innerText = "Konsepti Düzenle";
             document.getElementById('con-name').value = c.name || "";
             document.getElementById('con-color').value = c.theme_color || "#e74c3c";
             document.getElementById('con-bg').value = c.bg_color || "#ffffff";
             document.getElementById('con-label').value = c.label_text || "";
+            document.getElementById('con-published').checked = c.published || false;
             
             const prev = document.getElementById('con-preview');
             const txt = document.getElementById('con-drop-text');
             if(curConceptBaseImg) { prev.src = curConceptBaseImg; prev.style.display='block'; txt.style.display='none'; }
             else { prev.style.display='none'; txt.style.display='block'; }
 
-            fillVariationInputs(curVariantImages);
+            fillVariationInputs(curVariantData);
             document.getElementById('concept-modal').style.display='flex';
         }
 
@@ -1132,8 +1176,9 @@
                 theme_color: document.getElementById('con-color').value,
                 bg_color: document.getElementById('con-bg').value,
                 label_text: document.getElementById('con-label').value,
+                published: document.getElementById('con-published').checked,
                 base_image: curConceptBaseImg,
-                variations: curVariantImages
+                variations: curVariantData
             };
             if(!con.name) return alert("Konsept adı gerekli!");
             if(editConIdx>-1) concepts[editConIdx]=con; else concepts.push(con);
@@ -1152,6 +1197,7 @@
             document.getElementById('pkg-items').value = p.items || "";
             document.getElementById('pkg-discount').value = p.discount || 0;
             document.getElementById('pkg-order').value = p.order || 0;
+            document.getElementById('pkg-published').checked = p.published || false;
             
             const prev = document.getElementById('pkg-preview');
             const txt = document.getElementById('pkg-drop-text');
@@ -1167,6 +1213,7 @@
                 items: document.getElementById('pkg-items').value,
                 discount: parseInt(document.getElementById('pkg-discount').value)||0,
                 order: parseInt(document.getElementById('pkg-order').value)||0,
+                published: document.getElementById('pkg-published').checked,
                 image: curPkgImg
             };
             if(!pkg.name || !pkg.items) return alert("Hata");

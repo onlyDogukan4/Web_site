@@ -472,9 +472,10 @@
         async function initConcepts() {
             try {
                 const res = await fetch('/api/concepts?t=' + Date.now());
-                concepts = await res.json();
+                const raw = await res.json();
+                concepts = (raw || []).filter(c => c.published);
                 
-                if (concepts.length === 0) {
+                if (concepts.length === 0 && raw.length === 0) {
                     concepts = [{
                         id: 'yilbasi',
                         name: 'Yılbaşı',
@@ -575,19 +576,64 @@
             const scale = sizeBtn.dataset.scale || 1.0;
             const variantKey = `${oz}-${lid}`;
             
-            const cupImg = section.querySelector('.dynamic-cup');
-            const targetSrc = (concept.variations && concept.variations[variantKey]) 
+            const variantData = (concept.variations && concept.variations[variantKey]) 
                                ? concept.variations[variantKey] 
-                               : concept.base_image;
+                               : { img: concept.base_image, stock: 100 };
             
+            const targetSrc = variantData.img || concept.base_image;
+            const stock = variantData.stock !== undefined ? variantData.stock : 100;
+
+            const cupImg = section.querySelector('.dynamic-cup');
+            const preview = section.querySelector('.cup-preview');
+            
+            // Remove old OOS overlay if exists
+            const oldLayer = preview.querySelector('.oos-layer');
+            if(oldLayer) oldLayer.remove();
+
+            if (stock <= 0) {
+                cupImg.style.filter = "grayscale(1) opacity(0.3)";
+                const layer = document.createElement('div');
+                layer.className = 'oos-layer';
+                layer.style.cssText = "position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); background:#ef4444; color:white; padding:8px 15px; font-weight:900; border-radius:10px; z-index:50; box-shadow:0 10px 20px rgba(0,0,0,0.2); font-size:12px;";
+                layer.textContent = "STOKTA YOK";
+                preview.appendChild(layer);
+            } else {
+                cupImg.style.filter = "none";
+            }
+
             cupImg.style.transform = `scale(${scale})`;
             cupImg.src = targetSrc;
+
+            // Update Stock Info Text
+            const stockInfo = document.getElementById(`stock-info-${conceptId}`);
+            if(stockInfo) {
+                if(stock <= 0) {
+                    stockInfo.style.color = "var(--danger)";
+                    stockInfo.innerHTML = `<i class="fas fa-times-circle"></i> <span data-tr="Şu an stokta yok" data-en="Currently out of stock">Şu an stokta yok</span>`;
+                } else if(stock < 50) {
+                    stockInfo.style.color = "#f59e0b";
+                    stockInfo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span data-tr="Son ${stock} ürün!" data-en="Only ${stock} left!">Son ${stock} ürün!</span>`;
+                } else {
+                    stockInfo.style.color = "var(--success)";
+                    stockInfo.innerHTML = `<i class="fas fa-check-circle"></i> <span data-tr="Stokta Var - Hemen Teslim" data-en="In Stock - Fast Shipping">Stokta Var - Hemen Teslim</span>`;
+                }
+            }
 
             // Update WA
             const waBtn = document.getElementById(`wa-btn-${conceptId}`);
             if (waBtn) {
                 const name = concept.name;
-                waBtn.href = `https://wa.me/905304640120?text=Merhaba, ${name} konsepti (${oz}, ${lid === 'lid' ? 'Kapaklı' : 'Kapaksız'}) hakkında bilgi almak istiyorum.`;
+                const isEn = localStorage.getItem('lang') === 'en';
+                if(stock <= 0) {
+                    waBtn.style.opacity = "0.5";
+                    waBtn.style.pointerEvents = "none";
+                    waBtn.innerHTML = `<i class="fas fa-clock"></i> <span data-tr="STOK BEKLENİYOR" data-en="AWAITING STOCK">STOK BEKLENİYOR</span>`;
+                } else {
+                    waBtn.style.opacity = "1";
+                    waBtn.style.pointerEvents = "auto";
+                    waBtn.innerHTML = `<i class="fab fa-whatsapp"></i> <span data-tr="TEKLİF AL / SİPARİŞ VER" data-en="GET QUOTE / ORDER">TEKLİF AL / SİPARİŞ VER</span>`;
+                    waBtn.href = `https://wa.me/905304640120?text=Merhaba, ${name} konsepti (${oz}, ${lid === 'lid' ? 'Kapaklı' : 'Kapaksız'}) hakkında bilgi almak istiyorum.`;
+                }
             }
         }
 

@@ -1371,8 +1371,10 @@
                 lastPackagesSignature = currentSignature;
 
                 container.innerHTML = '';
-                // Sort by custom order field if exists
-                const sortedPkgs = (packages || []).sort((a,b) => (a.order||0) - (b.order||0));
+                // Sort by custom order field if exists and filter published
+                const sortedPkgs = (packages || [])
+                    .filter(pkg => pkg.published)
+                    .sort((a,b) => (a.order||0) - (b.order||0));
 
                 sortedPkgs.forEach(pkg => {
                     // Calculate package dynamic price
@@ -1521,8 +1523,9 @@
                     const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
                     const desc = isEn ? (p.description_en || p.description_tr) : p.description_tr;
                     
+                    const isOOS = p.status === 'oos';
                     const card = document.createElement('div');
-                    card.className = 'product-card';
+                    card.className = 'product-card' + (isOOS ? ' oos-card' : '');
                     card.style.position = 'relative';
                     
                     let activeCampaign = null;
@@ -1558,20 +1561,24 @@
                         hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
                     }
                     
+                    if (isOOS) {
+                        hotBadge = `<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; font-weight:900; z-index:30; border-radius:10px; border:2px solid #ef4444; letter-spacing:1px; font-size:14px;">TÜKENDİ</div>`;
+                    }
+                    
                     card.innerHTML = `
                         ${topBadge}
-                        <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
+                        <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" style="${isOOS?'filter:grayscale(1) opacity(0.5);':''}" loading="lazy" onclick="${isOOS?'':'openProductDetail(\''+p.id+'\')'}">
                         ${hotBadge}
                         <div class="product-info">
-                            <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
+                            <h3 class="product-title" onclick="${isOOS?'':'openProductDetail(\''+p.id+'\')'}">${name}</h3>
                             <div class="product-price">
                                 ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price) ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
                                 ₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                             </div>
                             ${descHtml}
-                            <div class="product-actions">
-                                <button class="add-to-cart" data-name="${p.name_tr}" onclick="addToCart('${p.id}', '${p.name_tr.replace(/'/g, "\\'")}', ${p.price})">
-                                    <i class="fas fa-shopping-cart"></i> ${isEn?'Add':'Sepete Ekle'}
+                            <div class="product-actions" style="${isOOS?'pointer-events:none; opacity:0.5;':''}">
+                                <button class="add-to-cart" ${isOOS?'disabled':''} data-name="${p.name_tr}" onclick="addToCart('${p.id}', '${p.name_tr.replace(/'/g, "\\'")}', ${p.price})">
+                                    <i class="fas fa-shopping-cart"></i> ${isOOS ? (isEn?'OOS':'Stok Yok') : (isEn?'Add':'Sepete Ekle')}
                                 </button>
                                 <button class="inspect-btn" onclick="openProductDetail('${p.id}')">
                                     <i class="fas fa-expand-alt"></i>
