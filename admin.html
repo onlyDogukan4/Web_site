@@ -546,18 +546,24 @@
             const pt = document.getElementById('p-table');
             pt.innerHTML = '';
             
-            // Filtreleme mantığı - Robust check
-            const searchEl = document.getElementById('search-box');
-            const catEl = document.getElementById('filter-cat');
-            const statEl = document.getElementById('filter-status');
-            
-            const search = searchEl ? searchEl.value.toLowerCase() : "";
-            const catFilter = catEl ? catEl.value : "";
-            const statusFilter = statEl ? statEl.value : "";
+            // Filtreleme mantığı - Robust check with Try-Catch
+            try {
+                const searchEl = document.getElementById('search-box');
+                const catEl = document.getElementById('filter-cat');
+                const statEl = document.getElementById('filter-status');
+                
+                const search = searchEl ? searchEl.value.toLowerCase() : "";
+                const catFilter = catEl ? catEl.value : "";
+                const statusFilter = statEl ? statEl.value : "";
 
-            if (search) filtered = filtered.filter(p => (p.name_tr && p.name_tr.toLowerCase().includes(search)) || (p.id && p.id.toString().includes(search)));
-            if (catFilter) filtered = filtered.filter(p => p.category === catFilter);
-            if (statusFilter) filtered = filtered.filter(p => p.status === statusFilter);
+                if (search) filtered = filtered.filter(p => (p.name_tr && p.name_tr.toLowerCase().includes(search)) || (p.id && p.id.toString().includes(search)));
+                if (catFilter) filtered = filtered.filter(p => p.category === catFilter);
+                if (statusFilter) filtered = filtered.filter(p => p.status === statusFilter);
+            } catch(e) {
+                console.error("Filtreleme hatası (Önemsiz):", e);
+                // Hata olsa bile tüm ürünleri göster
+                filtered = products; 
+            }
 
             if (filtered.length === 0) {
                 // Now 7 columns

@@ -1303,6 +1303,15 @@
                 const products = await response.json();
                 if (!Array.isArray(products)) throw new Error("Not array");
                 
+                // --- SMART UPDATE CHECK ---
+                // Eğer veri değişmediyse DOM'u elleme (Titremeyi engeller)
+                const currentDataStr = JSON.stringify(products);
+                if (window.lastProductDataStr === currentDataStr && container.innerHTML !== '') {
+                    return; // Değişiklik yok, çık.
+                }
+                window.lastProductDataStr = currentDataStr;
+                // --------------------------
+
                 container.innerHTML = '';
                 const isEn = localStorage.getItem('lang') === 'en';
 
@@ -1455,9 +1464,9 @@
 
         renderProducts();
         
-        // Removed aggressive auto-refresh to prevent flickering
-        // window.addEventListener('focus', renderProducts);
-        // setInterval(renderProducts, 5000); 
+        // SMART AUTO-REFRESH (Flicker-Free)
+        // Check for updates every 5 seconds, but only re-render if data CHANGED.
+        setInterval(renderProducts, 5000); 
 
         // --- SEARCH FUNCTIONALITY ---
         const searchIcon = document.getElementById('open-search');
