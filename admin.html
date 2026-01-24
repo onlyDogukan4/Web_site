@@ -320,11 +320,23 @@
                     <h1>Mevcut Ürünler</h1>
                     <p style="color: var(--text-muted); font-size: 14px;">Mağazanızda yayında olan tüm ürünler.</p>
                 </div>
-                <div style="display:flex; gap:10px">
-                    <button class="btn btn-secondary" onclick="console.log(products)">ID'leri Listele</button>
-                    <button class="btn btn-primary" onclick="openAddProduct()"><i class="fas fa-plus"></i> Yeni Ürün Ekle</button>
-                </div>
             </div>
+            
+            <!-- Filter Bar -->
+            <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; border: 1px solid var(--border);">
+                <input type="text" id="search-box" class="editable-input" placeholder="Ürün Ara..." onkeyup="renderAll()" style="flex: 2;">
+                <select id="filter-cat" class="editable-input" onchange="renderAll()" style="flex: 1; display:none;"> <!-- Hidden for now as categories aren't implemented fully -->
+                    <option value="">Tüm Kategoriler</option>
+                </select>
+                <select id="filter-status" class="editable-input" onchange="renderAll()" style="flex: 1;">
+                    <option value="">Tüm Durumlar</option>
+                    <option value="active">Aktif</option>
+                    <option value="oos">Stok Yok</option>
+                    <option value="hot">Kampanya</option>
+                </select>
+                <button class="btn btn-primary" onclick="openAddProduct()" style="white-space: nowrap;"><i class="fas fa-plus"></i> Yeni Ürün</button>
+            </div>
+
             <div class="section-card">
                 <div style="overflow-x: auto;">
                     <table>
@@ -534,7 +546,7 @@
             const pt = document.getElementById('p-table');
             pt.innerHTML = '';
             
-            // Filtreleme mantığı - Element Kontrolü Ekli
+            // Filtreleme mantığı - Robust check
             const searchEl = document.getElementById('search-box');
             const catEl = document.getElementById('filter-cat');
             const statEl = document.getElementById('filter-status');
