@@ -1335,18 +1335,22 @@
                     let descHtml = '';
                     
                     if (activeCampaign) {
-                        borderColor = activeCampaign.border_color || '#ffd700'; // Default Gold
+                    if (activeCampaign) {
+                        const borderColor = activeCampaign.border_color || '#ffd700'; // Default Gold
                         const textColor = activeCampaign.text_color || '#000';
                         
-                        // Apply Border
-                        card.style.border = `3px solid ${borderColor}`;
-                        card.style.boxShadow = `0 0 15px ${borderColor}40`; // 40 = alpha opacity
+                        // Apply Styles (Reverted to CSS class + Badges)
+                        if (activeCampaign.theme === 'premium') card.classList.add('premium-campaign');
+                        // Custom border color variable for CSS to use if needed, but avoiding inline solid borders
+                        card.style.setProperty('--campaign-color', borderColor);
                         
                         // Top Badge
                         if(activeCampaign.top_text) {
                             topBadge = `
-                                <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; z-index:20; white-space:nowrap; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-                                    ${activeCampaign.top_text}
+                                <div style="position:absolute; top:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;">
+                                    <span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">
+                                        ${activeCampaign.top_text}
+                                    </span>
                                 </div>
                             `;
                         }
@@ -1354,17 +1358,17 @@
                         // Bottom Badge
                         if(activeCampaign.bottom_text) {
                             bottomBadge = `
-                                <div style="position:absolute; bottom:-12px; left:50%; transform:translateX(-50%); background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:800; z-index:20; white-space:nowrap; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-                                    ${activeCampaign.bottom_text}
+                                <div style="position:absolute; bottom:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;">
+                                    <span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">
+                                        ${activeCampaign.bottom_text}
+                                    </span>
                                 </div>
                             `;
-                             // Add extra padding to bottom of card to accommodate badge
-                             card.style.paddingBottom = "15px";
                         }
                         
-                        // Description
+                        // Description (Appended to name or price area)
                         if(activeCampaign.description) {
-                            descHtml = `<div style="font-size:11px; color:#666; font-style:italic; margin-bottom:5px;">✨ ${activeCampaign.description}</div>`;
+                            descHtml = `<div style="font-size:11px; color:#e11d48; font-weight:600; margin-bottom:5px;">${activeCampaign.description}</div>`;
                         }
                     } else if (p.bulk_rate && p.bulk_threshold) {
                          // Default "Bulk" style if no custom campaign

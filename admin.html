@@ -222,23 +222,35 @@
                 <input type="text" id="c-desc" class="editable-input" placeholder="Örn: Bardak alana kaşık bedava" oninput="updateCampaignPreview()">
             </div>
 
-            <!-- PREVIEW BOX -->
-            <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-                <label style="margin-bottom:10px; display:block;">Önizleme (Temsili):</label>
-                <div id="c-preview-box" style="width:200px; height:280px; background:#fff; border:4px solid #ffd700; border-radius:15px; position:relative; margin:0 auto; box-shadow:0 10px 20px rgba(0,0,0,0.1); display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <!-- REAL-TIME PREVIEW BOX -->
+            <div style="background:#f8f9fa; border:1px dashed #cbd5e1; border-radius:16px; padding:20px; margin-top:20px; text-align:center;">
+                <label style="display:block; margin-bottom:15px; font-weight:700; color:#475569;">Görünüm Önizlemesi</label>
+                
+                <div id="c-preview-card" style="width:220px; height:320px; background:white; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.1); position:relative; margin:0 auto; overflow:hidden; transition:0.3s;">
                     
-                    <div id="c-preview-top" style="position:absolute; top:-12px; background:#ffd700; color:#000; padding:2px 10px; border-radius:10px; font-size:10px; font-weight:800; letter-spacing:1px;">FIRSAT</div>
-                    
-                    <img src="images/bardak.png" style="width:100px; height:100px; object-fit:contain; margin-bottom:10px;">
-                    
-                    <div style="font-weight:700; font-size:14px; margin-bottom:5px;">Ürün Adı</div>
-                    <div style="color:green; font-weight:800;">₺100.00</div>
-                    
-                    <div id="c-preview-desc" style="font-size:10px; color:#666; text-align:center; padding:5px; margin-top:5px;">Kampanya detayı buraya</div>
+                    <!-- Top Badge -->
+                    <div id="c-preview-top" style="position:absolute; top:12px; left:0; right:0; text-align:center; z-index:10;">
+                        <span style="display:inline-block; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:800; box-shadow:0 4px 6px rgba(0,0,0,0.1);">ÜST YAZI</span>
+                    </div>
 
-                    <div id="c-preview-bottom" style="position:absolute; bottom:-12px; background:#ffd700; color:#000; padding:2px 10px; border-radius:10px; font-size:10px; font-weight:800; letter-spacing:1px;">%20 İNDİRİM</div>
+                    <img src="images/bardak.png" style="width:100%; height:180px; object-fit:contain; margin-top:30px;">
+                    
+                    <div style="padding:15px;">
+                        <div style="height:14px; background:#e2e8f0; border-radius:4px; margin-bottom:8px; width:80%;"></div>
+                        <div style="height:20px; background:#e2e8f0; border-radius:4px; width:40%;"></div>
+                        
+                        <!-- Description Preview -->
+                        <div id="c-preview-desc" style="font-size:10px; font-weight:700; color:#e11d48; margin-top:8px;"></div>
+                    </div>
+
+                    <!-- Bottom Badge -->
+                    <div id="c-preview-bottom" style="position:absolute; bottom:15px; left:0; right:0; text-align:center;">
+                         <span style="display:inline-block; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:800; box-shadow:0 4px 6px rgba(0,0,0,0.1);">ALT YAZI</span>
+                    </div>
                 </div>
+                <p style="font-size:11px; color:#94a3b8; margin-top:10px;">*Temsili ürün görünümüdür.</p>
             </div>
+
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button class="btn btn-secondary" onclick="closeModal('campaign-modal')">İptal</button>
                 <button class="btn btn-primary" onclick="handleCampaignSave()">Kampanyayı Kaydet</button>
@@ -711,21 +723,39 @@
         }
 
         function updateCampaignPreview() {
-             const top = document.getElementById('c-top-text').value || "ÜST YAZI";
-             const bottom = document.getElementById('c-bottom-text').value || "ALT YAZI";
-             const desc = document.getElementById('c-desc').value || "Kampanya açıklaması...";
+             const top = document.getElementById('c-top-text').value;
+             const bottom = document.getElementById('c-bottom-text').value;
+             const desc = document.getElementById('c-desc').value;
              const border = document.getElementById('c-border-color').value;
              const text = document.getElementById('c-text-color').value;
              
-             const box = document.getElementById('c-preview-box');
-             const tEl = document.getElementById('c-preview-top');
-             const bEl = document.getElementById('c-preview-bottom');
-             const dEl = document.getElementById('c-preview-desc');
+             // Elements
+             const tSpan = document.querySelector('#c-preview-top span');
+             const bSpan = document.querySelector('#c-preview-bottom span');
+             const dDiv = document.getElementById('c-preview-desc');
              
-             if(box) box.style.borderColor = border;
-             if(tEl) { tEl.innerText = top; tEl.style.backgroundColor = border; tEl.style.color = text; }
-             if(bEl) { bEl.innerText = bottom; bEl.style.backgroundColor = border; bEl.style.color = text; }
-             if(dEl) dEl.innerText = desc;
+             // Update Top Badge
+             if(top) {
+                 tSpan.parentElement.style.display = 'block';
+                 tSpan.innerText = top;
+                 tSpan.style.background = border;
+                 tSpan.style.color = text;
+             } else {
+                 tSpan.parentElement.style.display = 'none';
+             }
+
+             // Update Bottom Badge
+             if(bottom) {
+                 bSpan.parentElement.style.display = 'block';
+                 bSpan.innerText = bottom;
+                 bSpan.style.background = border;
+                 bSpan.style.color = text;
+             } else {
+                 bSpan.parentElement.style.display = 'none';
+             }
+             
+             // Update Description
+             dDiv.innerText = desc;
         }
         
         function handleCampaignSave() {
