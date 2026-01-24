@@ -536,34 +536,27 @@
                 renderAll();
             } catch(e) { 
                 console.error("Yükleme hatası:", e); 
-                document.getElementById('p-table').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red">Ürünler Yüklenemedi!</td></tr>`;
+                document.getElementById('p-table').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding: 40px; color:red;">
+                            <i class="fas fa-exclamation-circle fa-2x"></i><br><br>
+                            Veriler yüklenirken hata oluştu!<br>
+                            <small>${e.message}</small>
+                        </td>
+                    </tr>`;
             }
         }
 
         function renderAll() {
-            // Ürünleri Çiz
-            // Ürünleri Çiz
+            // Ürünleri Çiz (Defensive)
+            if(!Array.isArray(products)) products = [];
+            
             const pt = document.getElementById('p-table');
+            if(!pt) return; // DOM not ready
+            
             pt.innerHTML = '';
             
-            // Filtreleme mantığı - Robust check with Try-Catch
-            try {
-                const searchEl = document.getElementById('search-box');
-                const catEl = document.getElementById('filter-cat');
-                const statEl = document.getElementById('filter-status');
-                
-                const search = searchEl ? searchEl.value.toLowerCase() : "";
-                const catFilter = catEl ? catEl.value : "";
-                const statusFilter = statEl ? statEl.value : "";
-
-                if (search) filtered = filtered.filter(p => (p.name_tr && p.name_tr.toLowerCase().includes(search)) || (p.id && p.id.toString().includes(search)));
-                if (catFilter) filtered = filtered.filter(p => p.category === catFilter);
-                if (statusFilter) filtered = filtered.filter(p => p.status === statusFilter);
-            } catch(e) {
-                console.error("Filtreleme hatası (Önemsiz):", e);
-                // Hata olsa bile tüm ürünleri göster
-                filtered = products; 
-            }
+            let filtered = [...products]; // Create copy to avoid ref issues
 
             if (filtered.length === 0) {
                 // Now 7 columns
