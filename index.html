@@ -1356,6 +1356,7 @@
                         if (activeCampaign.theme === 'premium') card.classList.add('premium-campaign');
                         // Custom border color variable for CSS to use if needed, but avoiding inline solid borders
                         card.style.setProperty('--campaign-color', borderColor);
+                        card.style.border = '1px solid transparent'; // Remove visible border as requested but keep size
                         
                         // Top Badge
                         if(activeCampaign.top_text) {
