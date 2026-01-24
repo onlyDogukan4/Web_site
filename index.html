@@ -1295,10 +1295,14 @@
             }
         };
 
+
+        let lastRenderedDataSignature = ""; // Global cache for flicker prevention
+
         async function renderProducts() {
             const container = document.getElementById('products-dynamic-container');
             if (!container) return;
             try {
+                // 1. Fetch Products
                 let products = [];
                 try {
                     const response = await fetch('/api/products?t=' + Date.now());
@@ -1315,20 +1319,24 @@
                 }
 
                 if (!Array.isArray(products)) throw new Error("Not array");
-                
-                // Always render to be safe. Removed complex caching/locking to ensure visibility.
-                // --------------------------
 
-                container.innerHTML = '';
-                const isEn = localStorage.getItem('lang') === 'en';
-
-                // --- YENİ KAMPANYA MANTIĞI & GÖRSELLEŞTİRME ---
-                // Kampanyaları API'den çek (Eğer yukarıda çekilmediyse, burada çekmeye gerek yok, ama garanti olsun)
+                // 2. Fetch Campaigns (Moved up for diffing)
                 let campaigns = [];
                 try {
-                     const cRes = await fetch('/api/campaigns');
+                     const cRes = await fetch('/api/campaigns?t=' + Date.now());
                      if(cRes.ok) campaigns = await cRes.json();
                 } catch(e){}
+
+                // 3. Smart Refresh Check
+                const currentLang = localStorage.getItem('lang') || 'tr';
+                const currentSignature = JSON.stringify({ p: products, c: campaigns, l: currentLang });
+                
+                if (currentSignature === lastRenderedDataSignature) return; // Stop if no change
+                lastRenderedDataSignature = currentSignature;
+
+                // 4. Render
+                container.innerHTML = '';
+                const isEn = currentLang === 'en';
 
                 products.forEach(p => {
                     const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
@@ -1424,6 +1432,13 @@
                     
                     container.appendChild(card);
                 });
+
+                // Re-apply search filter if user was searching
+                const activeSearch = document.getElementById('search-input');
+                if(activeSearch && activeSearch.value.trim().length > 0) {
+                     setTimeout(() => activeSearch.dispatchEvent(new Event('input')), 50);
+                }
+
             } catch (e) {
                 console.error("Ürünler yüklenemedi", e);
                 container.innerHTML = `
