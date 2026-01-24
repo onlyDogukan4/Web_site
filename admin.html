@@ -534,11 +534,14 @@
             const pt = document.getElementById('p-table');
             pt.innerHTML = '';
             
-            // Filtreleme mantığı
-            let filtered = products;
-            const search = document.getElementById('search-box') ? document.getElementById('search-box').value.toLowerCase() : "";
-            const catFilter = document.getElementById('filter-cat') ? document.getElementById('filter-cat').value : "";
-            const statusFilter = document.getElementById('filter-status') ? document.getElementById('filter-status').value : "";
+            // Filtreleme mantığı - Element Kontrolü Ekli
+            const searchEl = document.getElementById('search-box');
+            const catEl = document.getElementById('filter-cat');
+            const statEl = document.getElementById('filter-status');
+            
+            const search = searchEl ? searchEl.value.toLowerCase() : "";
+            const catFilter = catEl ? catEl.value : "";
+            const statusFilter = statEl ? statEl.value : "";
 
             if (search) filtered = filtered.filter(p => (p.name_tr && p.name_tr.toLowerCase().includes(search)) || (p.id && p.id.toString().includes(search)));
             if (catFilter) filtered = filtered.filter(p => p.category === catFilter);

@@ -647,14 +647,19 @@ button {
 
 .product-card {
     background-color: var(--card-bg);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
     border: 1px solid var(--border);
     position: relative;
     padding: 0;
-    /* Changed back to padding 0 for the old look */
+    overflow: visible;
+    /* Allow badges to hang out */
+}
+
+.product-card .product-img {
+    border-radius: 15px 15px 0 0;
+    /* Maintain rounded corners visually */
+}
+
+/* Changed back to padding 0 for the old look */
 }
 
 .product-card:hover {
