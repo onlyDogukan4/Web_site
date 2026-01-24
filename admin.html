@@ -464,6 +464,8 @@
         let orders = [];
         let campaigns = []; // Yeni
         let settings = { minOrder: 500 }; // Yeni
+        let curIdx = -1; // Global state for product editing
+        let curImg = ""; // Global state for product image editing
 
         function checkLogin() { 
             if(document.getElementById('admin-pass').value === PASS) { 
