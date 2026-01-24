@@ -1308,13 +1308,8 @@
                     const products = await response.json();
                     if (!Array.isArray(products)) throw new Error("Not array");
                     
-                    // --- SMART UPDATE CHECK ---
-                // Eğer veri değişmediyse DOM'u elleme (Titremeyi engeller)
-                const currentDataStr = JSON.stringify(products);
-                if (window.lastProductDataStr === currentDataStr && container.innerHTML !== '') {
-                    return; // Değişiklik yok, çık.
-                }
-                window.lastProductDataStr = currentDataStr;
+                    // Always render to be safe
+                    // window.lastProductDataStr check removed to fix empty list issue
                 // --------------------------
 
                 container.innerHTML = '';
