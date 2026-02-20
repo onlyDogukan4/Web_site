@@ -385,7 +385,10 @@
             <div class="nav-icons">
                 <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
                 <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                <a href="index.html" style="text-decoration:none; color:inherit; margin-left:20px;"><i class="fas fa-shopping-cart"></i></a>
+                <div id="open-cart-modal" style="position:relative; cursor:pointer; margin-left:20px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" style="position:absolute; -top:8px; -right:10px; background:#ef4444; color:white; font-size:10px; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; font-weight:bold;">0</span>
+                </div>
                 <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer; margin-left:20px;"></i>
                 <div class="hamburger"><i class="fas fa-bars"></i></div>
             </div>
@@ -414,16 +417,43 @@
     <!-- Static sections are removed to be handled dynamically -->
 
     <!-- Zoom Modal -->
-    <div id="zoom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center; cursor: zoom-out;" onclick="closeZoomModal()">
-        <div id="zoom-card" style="position: relative; width: 550px; height: 700px; background: white; border-radius: 40px; overflow: hidden; transform: scale(1.1);">
-            <img id="zoom-base" src="images/special.png" style="width: 100%; height: 100%; object-fit: contain;">
-            <div id="zoom-design-overlay" style="position: absolute; top: 53.5%; left: 53%; transform: translate(-50%, -50%) perspective(1000px) rotateY(15deg) rotateZ(-1deg); width: 230px; height: 260px; mix-blend-mode: multiply; opacity: 0.9; mask-image: radial-gradient(ellipse at center, black 70%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse at center, black 70%, transparent 100%);">
-                <div class="cup-highlight"></div>
-                <img id="zoom-user-img" src="" style="width: 80%; height: auto; display: none; margin: 0 auto; filter: contrast(1.1) brightness(0.95);">
-            </div>
+    <!-- Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer" style="display:none; position:fixed; top:0; right:0; width:450px; height:100%; background:white; z-index:10000; box-shadow:-10px 0 30px rgba(0,0,0,0.1); border-left:1px solid #eee;">
+        <div class="cart-header" style="padding:25px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background:#fff;">
+            <h2 style="margin:0; font-size:20px; font-weight:800; color:#1e293b;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:24px; color:#cbd5e1; transition:0.3s;" onclick="document.getElementById('cart-modal').style.display='none'; document.getElementById('cart-overlay').style.display='none';">&times;</div>
         </div>
-        <div style="position: absolute; top: 30px; right: 40px; color: white; font-size: 50px; cursor: pointer;">&times;</div>
+        
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; height:calc(100% - 250px);">
+            <!-- Items injected by JS -->
+        </div>
+
+        <div class="cart-footer" style="position:absolute; bottom:0; padding:25px; width:100%; background:white; border-top:1px solid #f1f5f9;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:800; color:#1e293b;">
+                <span>Toplam</span>
+                <span id="cart-total-price">₺0,00</span>
+            </div>
+            <button id="whatsapp-checkout" class="order-btn" style="width:100%; margin:0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); box-shadow:0 10px 20px rgba(22, 163, 74, 0.2); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800;">
+                <i class="fab fa-whatsapp" style="font-size:20px;"></i> SİPARİŞİ TAMAMLA
+            </button>
+        </div>
     </div>
+    <div id="cart-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:9999; backdrop-filter:blur(5px);" onclick="document.getElementById('cart-modal').style.display='none'; this.style.display='none';"></div>
+
+    <style>
+        .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
+        #cart-modal[style*="display: block"], #cart-modal[style*="display:block"] { transform: translateX(0); }
+        .cart-item { animation: slideInCart 0.3s ease-out; }
+        @keyframes slideInCart { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .vip-concept-frame {
+            border: 2px solid transparent;
+            background: linear-gradient(#fff, #fff) padding-box, linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2) !important;
+            animation: vip-glow 3s infinite;
+        }
+        @keyframes vip-glow { 0%, 100% { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); } 50% { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.4); } }
+        @media (max-width: 500px) { .cart-modal-content { width: 100%; height: 100%; border-radius: 0; } }
+    </style>
 
 
 
@@ -677,6 +707,92 @@
             });
         }
 
+        // --- SHARED CART SYSTEM ---
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        function calculateCartTotal() {
+            let total = 0;
+            cart.forEach(item => { total += (item.price * item.quantity); });
+            return { total };
+        }
+
+        async function updateCartDisplay() {
+            const list = document.getElementById('cart-items-list');
+            const totalEl = document.getElementById('cart-total-price');
+            const countEl = document.getElementById('cart-count');
+            if(!list) return;
+
+            list.innerHTML = '';
+            const { total } = calculateCartTotal();
+
+            if (cart.length === 0) {
+                list.innerHTML = '<p style="text-align:center; padding:40px; color:#64748b;">Sepetiniz boş.</p>';
+                if(countEl) countEl.style.display = 'none';
+            } else {
+                cart.forEach((item, index) => {
+                    const el = document.createElement('div');
+                    el.className = 'cart-item';
+                    el.style.cssText = item.isConcept ? 
+                        "display:flex; flex-direction:column; padding:15px; margin-bottom:15px; border-radius:18px; position:relative; gap:8px;" :
+                        "display:flex; flex-direction:column; padding:15px; border-bottom:1px solid #f1f5f9; gap:8px;";
+                    
+                    if(item.isConcept) el.classList.add('vip-concept-frame');
+
+                    el.innerHTML = `
+                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                            <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                                <div style="position:relative;">
+                                    <img src="${item.image}" style="width:50px; height:50px; object-fit:contain; border-radius:10px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'};">
+                                    ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; top:-8px; left:-8px; color:#d4af37; font-size:12px;"></i>` : ''}
+                                </div>
+                                <div>
+                                    <div style="font-weight:800; font-size:13px; color:#1e293b;">${item.name}</div>
+                                    ${item.isConcept ? `<div style="font-size:10px; color:#d4af37; font-weight:800;">PREMIUM CONCEPT</div>`:''}
+                                    ${item.note ? `<div style="font-size:11px; color:#64748b; font-style:italic;">"${item.note}"</div>`:''}
+                                    <div class="quantity-control" style="margin-top:5px;">
+                                        <button class="qty-btn" style="width:20px; height:20px;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                        <span style="font-size:12px; font-weight:800; min-width:20px; text-align:center;">${item.quantity}</span>
+                                        <button class="qty-btn" style="width:20px; height:20px;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:800; color:${item.isConcept ? '#d4af37':'var(--primary)'};">₺${(item.price * item.quantity).toFixed(2)}</div>
+                                <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:12px; margin-top:8px;"></i>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(el);
+                });
+                if(countEl) {
+                    const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
+                    countEl.innerText = totalQty;
+                    countEl.style.display = 'flex';
+                }
+            }
+            if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function updateItemQuantity(id, delta) {
+            const item = cart.find(x => x.id === id);
+            if(item) {
+                item.quantity = Math.max(1, item.quantity + delta);
+                updateCartDisplay();
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(x => x.id !== id);
+            updateCartDisplay();
+        }
+
+        document.getElementById('open-cart-modal').onclick = () => {
+            document.getElementById('cart-modal').style.display = 'block';
+            document.getElementById('cart-overlay').style.display = 'block';
+            updateCartDisplay();
+        };
+
         function addToCartConcept(conceptId) {
             const concept = concepts.find(c => c.id == conceptId);
             if(!concept) return;
@@ -684,35 +800,51 @@
             const section = document.getElementById(conceptId);
             const sizeBtn = section.querySelector('.size-btn.active');
             const oz = sizeBtn.dataset.oz;
-            const price = concept.price || 15.0; // Fallback price
-            const note = document.getElementById(`note-${conceptId}`).value;
+            const price = parseFloat(concept.price) || 15.0;
+            const noteArea = document.getElementById(`note-${conceptId}`);
+            const note = noteArea ? noteArea.value : "";
 
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const itemId = `concept-${concept.id}-${oz}-${Date.now()}`; // Unique enough
+            const itemId = `concept-${concept.id}-${oz}-${Date.now()}`;
             
             cart.push({
                 id: itemId,
-                baseId: concept.id,
                 name: `${concept.name_tr} (${oz})`,
                 image: concept.base_image,
                 price: price,
                 quantity: 1,
                 note: note,
-                isConcept: true // Trigger VIP style in index.html cart
+                isConcept: true
             });
             
-            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
             
-            // Show toast 
+            // Premium Toast
             const toast = document.createElement('div');
             toast.style.cssText = "position:fixed; top:20px; right:20px; background:linear-gradient(45deg,#d4af37,#f7ef8a); color:#2c2c2c; padding:15px 30px; border-radius:15px; z-index:10000; font-weight:800; border:2px solid white; box-shadow:0 10px 30px rgba(0,0,0,0.2); animation:slideIn 0.5s ease-out;";
             toast.innerHTML = `<i class="fas fa-crown"></i> PREMIUM CONCEPT SEPETE EKLENDİ!`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2500);
+
+            // Open cart
+            document.getElementById('open-cart-modal').click();
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', initConcepts);
+        document.getElementById('whatsapp-checkout').onclick = () => {
+             let message = "Merhaba Moderra, sepetimdekiler için sipariş vermek istiyorum:\n\n";
+             cart.forEach(item => {
+                 message += `• ${item.quantity}x ${item.name}\n`;
+                 if(item.note) message += `   Not: ${item.note}\n`;
+             });
+             const { total } = calculateCartTotal();
+             message += `\nToplam Tutar: ₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+             window.open(`https://wa.me/905304640120?text=${encodeURIComponent(message)}`, '_blank');
+        };
+
+        // Initialize Call
+        document.addEventListener('DOMContentLoaded', () => {
+            initConcepts();
+            updateCartDisplay();
+        });
 
         const langToggle = document.getElementById('lang-toggle');
         let currentLang = localStorage.getItem('lang') || 'tr';

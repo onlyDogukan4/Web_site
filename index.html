@@ -1484,18 +1484,23 @@
                             </div>
                         </div>
                         <div style="flex:1;">
-                            <h4 style="font-size:12px; text-transform:uppercase; color:var(--primary); font-weight:800; margin-bottom:10px; opacity:0.7;">Paket İçeriği:</h4>
-                            <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                            <h4 style="font-size:12px; text-transform:uppercase; color:var(--primary); font-weight:800; margin-bottom:15px; opacity:0.7;">Paketi Özelleştir:</h4>
+                            <div style="display:flex; flex-direction:column; gap:10px;">
                                 ${itemIds.map(id => {
                                     const p = products.find(x => x.id == id);
                                     if(!p) return '';
                                     const itemName = isEn ? (p.name_en || p.name_tr) : p.name_tr;
                                     return `
-                                        <div style="display:flex; flex-direction:column; align-items:center; gap:5px; width:70px;">
-                                            <div style="width:60px; height:60px; background:#f1f5f9; border-radius:12px; padding:5px; border:1px solid var(--border);">
-                                                <img src="${p.image || 'images/bardak.png'}" style="width:100%; height:100%; object-fit:contain;">
+                                        <div style="display:flex; align-items:center; justify-content:space-between; background:#f8fafc; padding:8px 15px; border-radius:12px; border:1px solid #f1f5f9;">
+                                            <div style="display:flex; align-items:center; gap:10px;">
+                                                <img src="${p.image || 'images/bardak.png'}" style="width:30px; height:30px; object-fit:contain;">
+                                                <span style="font-size:12px; font-weight:700;">${itemName}</span>
                                             </div>
-                                            <span style="font-size:10px; font-weight:700; text-align:center; color:var(--text); line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${itemName}</span>
+                                            <div class="quantity-control" style="background:white; border:1px solid #e2e8f0; height:28px; padding:2px;">
+                                                <button class="qty-btn" style="width:22px; height:22px;" onclick="adjustOnCardQuantity('${pkg.id}', '${p.id}', -1)">-</button>
+                                                <span id="qty-${pkg.id}-${p.id}" style="font-size:12px; font-weight:800; min-width:20px; text-align:center;">1</span>
+                                                <button class="qty-btn" style="width:22px; height:22px;" onclick="adjustOnCardQuantity('${pkg.id}', '${p.id}', 1)">+</button>
+                                            </div>
                                         </div>
                                     `;
                                 }).join('')}
@@ -1503,10 +1508,10 @@
                         </div>
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:20px; border-top:1px solid #f1f5f9;">
                             <div>
-                                <div style="text-decoration:line-through; font-size:14px; color:#94a3b8;">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
                                 <div style="font-size:24px; font-weight:900; color:var(--primary);">₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                                <div style="font-size:10px; color:#94a3b8;">Set Avantajı ile tasarruf edin!</div>
                             </div>
-                            <button class="btn-primary" style="padding:12px 25px; border-radius:15px; font-size:14px;" onclick="addPackageToCart('${pkg.id}')">
+                            <button class="btn-primary" style="padding:15px 30px; border-radius:18px; font-size:15px; font-weight:800; box-shadow:0 10px 20px rgba(99, 102, 241, 0.2);" onclick="addPackageToCart('${pkg.id}')">
                                 <i class="fas fa-cart-plus"></i> ${isEn ? 'Buy Set' : 'Seti Al'}
                             </button>
                         </div>
@@ -1616,6 +1621,15 @@
         const ITEMS_PER_PAGE = 6; // Sayfa başına ürün sayısı
         let lastRenderedProductSignature = '';
 
+        window.onCardQuantities = {};
+        function adjustOnCardQuantity(pkgId, prodId, delta) {
+            const key = `${pkgId}-${prodId}`;
+            if(!window.onCardQuantities[key]) window.onCardQuantities[key] = 1;
+            window.onCardQuantities[key] = Math.max(1, window.onCardQuantities[key] + delta);
+            const el = document.getElementById(`qty-${key}`);
+            if(el) el.innerText = window.onCardQuantities[key];
+        }
+
         async function addPackageToCart(packageId) {
             try {
                 const res = await fetch('/api/packages');
@@ -1630,7 +1644,10 @@
                 const packageItems = [];
                 itemIds.forEach(id => {
                     const p = products.find(x => x.id == id);
-                    if(p) packageItems.push({ id: p.id, name: p.name_tr, price: p.price, image: p.image, quantity: 1 });
+                    if(p) {
+                        const qty = window.onCardQuantities[`${packageId}-${p.id}`] || 1;
+                        packageItems.push({ id: p.id, name: p.name_tr, price: p.price, image: p.image, quantity: qty });
+                    }
                 });
 
                 // Fly to cart
