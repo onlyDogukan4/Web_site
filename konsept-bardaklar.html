@@ -533,60 +533,8 @@
             </div>
         </div>
     </div>
-    <!-- Cart Drawer -->
-    <div id="cart-modal" class="cart-drawer" style="display:none; position:fixed; top:0; right:0; width:450px; height:100%; background:white; z-index:10000; box-shadow:-10px 0 30px rgba(0,0,0,0.1); border-left:1px solid #eee;">
-        <div class="cart-header" style="padding:25px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background:#fff;">
-            <h2 style="margin:0; font-size:20px; font-weight:800; color:#1e293b;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
-            <div class="cart-close-drawer" style="cursor:pointer; font-size:24px; color:#cbd5e1; transition:0.3s;" onclick="document.getElementById('cart-modal').style.display='none'; document.getElementById('cart-overlay').style.display='none';">&times;</div>
-        </div>
-        
-        <div id="cart-items-list" style="padding:20px; overflow-y:auto; height:calc(100% - 250px);">
-            <!-- Items injected by JS -->
-        </div>
-
-        <div class="cart-footer" style="position:absolute; bottom:0; padding:25px; width:100%; background:white; border-top:1px solid #f1f5f9;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:800; color:#1e293b;">
-                <span>Toplam</span>
-                <span id="cart-total-price">₺0,00</span>
-            </div>
-            <button id="whatsapp-checkout" class="order-btn" style="width:100%; margin:0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); box-shadow:0 10px 20px rgba(22, 163, 74, 0.2); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800;">
-                <i class="fab fa-whatsapp" style="font-size:20px;"></i> SİPARİŞİ TAMAMLA
-            </button>
-        </div>
-    </div>
-    <div id="cart-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:9999; backdrop-filter:blur(5px);" onclick="document.getElementById('cart-modal').style.display='none'; this.style.display='none';"></div>
 
     <style>
-        .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 480px;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 10000;
-            box-shadow: -20px 0 50px rgba(0,0,0,0.15);
-            transform: translateX(100%);
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid rgba(255,255,255,0.3);
-        }
-        #cart-modal[style*="display: block"], #cart-modal[style*="display:block"] { transform: translateX(0); }
-        .cart-item-card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #f1f5f9;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-            animation: slideInCart 0.3s ease-out;
-        }
-        .cart-item-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-
         .modal {
             display: none;
             position: fixed;
@@ -912,210 +860,6 @@
             }
         }
 
-        function setupObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        updateThemeColors(entry.target);
-                        document.querySelectorAll('.dot').forEach(dot => 
-                            dot.classList.toggle('active', dot.dataset.target === entry.target.id)
-                        );
-                    }
-                });
-            }, { threshold: 0.6 });
-
-            document.querySelectorAll('.concept-section').forEach(s => observer.observe(s));
-
-            // Search Bar Logic
-            const sb = document.getElementById('search-bar');
-            const openSearch = document.getElementById('open-search');
-            const closeSearch = document.getElementById('close-search');
-            if(openSearch) openSearch.onclick = () => sb.classList.add('active');
-            if(closeSearch) closeSearch.onclick = () => sb.classList.remove('active');
-
-            // Navbar Active Tab
-            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                 if(link.getAttribute('href') === currentPath) link.classList.add('active');
-            });
-        }
-
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-        function calculateCartTotal() {
-            let subTotal = 0;
-            let discountTotal = 0;
-            
-            cart.forEach(item => {
-                let itemTotal = 0;
-                if (item.packageItems) {
-                    item.packageItems.forEach(si => {
-                        itemTotal += (parseFloat(si.price) * si.quantity);
-                    });
-                    subTotal += itemTotal * item.quantity;
-                    discountTotal += (itemTotal * item.quantity) * (parseFloat(item.discount || 0) / 100);
-                } else {
-                    itemTotal = (parseFloat(item.price) * item.quantity);
-                    subTotal += itemTotal;
-                }
-            });
-            
-            return { subTotal, discountTotal, total: subTotal - discountTotal };
-        }
-
-        async function updateCartDisplay() {
-            const list = document.getElementById('cart-items-list');
-            const totalEl = document.getElementById('cart-total-price');
-            const countEl = document.getElementById('cart-count');
-            if(!list) return;
-
-            list.innerHTML = '';
-            const { subTotal, discountTotal, total } = calculateCartTotal();
-
-            if (cart.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding:60px 20px;"><i class="fas fa-shopping-basket" style="font-size:48px; color:#e2e8f0; margin-bottom:20px; display:block;"></i><p style="color:#64748b; font-weight:600;">Sepetiniz şu an boş.</p></div>';
-                if(countEl) countEl.style.display = 'none';
-            } else {
-                cart.forEach((item, index) => {
-                    const el = document.createElement('div');
-                    el.className = 'cart-item-card';
-                    if(item.isConcept) el.classList.add('vip-concept-frame');
-
-                    let itemTotal = 0;
-                    if(item.packageItems) {
-                        item.packageItems.forEach(si => itemTotal += (parseFloat(si.price) * si.quantity));
-                    } else {
-                        itemTotal = (parseFloat(item.price) * item.quantity);
-                    }
-
-                    el.innerHTML = `
-                        ${item.isConcept ? `<div class="vip-badge"><i class="fas fa-crown"></i> PREMIUM CONCEPT</div>` : ''}
-                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:15px;">
-                            <div style="display:flex; align-items:center; gap:15px; flex:1;">
-                                <div style="position:relative;">
-                                    <img src="${item.image || 'images/bardak.png'}" style="width:60px; height:60px; object-fit:contain; border-radius:18px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'}; padding:5px;">
-                                    ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; top:-8px; left:-8px; color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>` : ''}
-                                </div>
-                                <div style="flex:1;">
-                                    <div style="font-weight:900; font-size:15px; color:${item.isConcept ? '#1a1a1a':'#1e293b'}; line-height:1.2; display:flex; align-items:center; gap:8px;">
-                                        ${item.name}
-                                    </div>
-                                    ${item.isConcept ? `
-                                        <div style="font-size:10px; color:#d4af37; font-weight:900; display:flex; align-items:center; gap:4px; margin-top:4px;">
-                                            <i class="fas fa-magic"></i> ÖZEL TASARIM
-                                        </div>
-                                        ${item.note ? `<div style="font-size:11px; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:10px; margin-top:8px; font-style:italic; border-left:3px solid #d4af37; line-height:1.4;">"${item.note}"</div>`:''}
-                                    `:''}
-                                    ${item.packageItems ? `
-                                        <details style="margin-top:10px; background:#f8fafc; border-radius:12px; border:1px solid #eee;">
-                                            <summary style="padding:8px 12px; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; list-style:none;">Paket İçeriği <i class="fas fa-chevron-down"></i></summary>
-                                            <div style="padding:10px;">
-                                                ${item.packageItems.map(si => `
-                                                    <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px;">
-                                                        <span>${si.name}</span>
-                                                        <span style="font-weight:800;">x${si.quantity}</span>
-                                                    </div>
-                                                `).join('')}
-                                            </div>
-                                        </details>
-                                    ` : ''}
-                                    <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px; display:inline-flex; align-items:center;">
-                                        <button class="qty-btn" style="width:24px; height:24px; border:none; background:white; border-radius:6px; cursor:pointer;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
-                                        <span style="font-weight:900; font-size:14px; min-width:30px; text-align:center;">${item.quantity}</span>
-                                        <button class="qty-btn" style="width:24px; height:24px; border:none; background:white; border-radius:6px; cursor:pointer;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="font-size:18px; font-weight:900; color:${item.isConcept ? '#d4af37':'var(--primary)'};">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                                <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:14px; margin-top:12px; transition:0.3s; padding:5px;"></i>
-                            </div>
-                        </div>
-                    `;
-                    list.appendChild(el);
-                });
-                if(countEl) {
-                    const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
-                    countEl.innerText = totalQty;
-                    countEl.style.display = 'flex';
-                }
-            }
-            if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        function updateSubItemQuantity(pId, sId, delta) {
-            const item = cart.find(x => x.id === pId);
-            if(item && item.packageItems) {
-                const sub = item.packageItems.find(x => x.id === sId);
-                if(sub) {
-                    sub.quantity = Math.max(1, sub.quantity + delta);
-                    updateCartDisplay();
-                }
-            }
-        }
-
-        window.onCardQuantities = {};
-        function adjustOnCardQuantity(pkgId, prodId, delta) {
-            const key = `${pkgId}-${prodId}`;
-            if(!window.onCardQuantities[key]) window.onCardQuantities[key] = 1;
-            window.onCardQuantities[key] = Math.max(1, window.onCardQuantities[key] + delta);
-            const el = document.getElementById(`qty-${key}`);
-            if(el) el.innerText = window.onCardQuantities[key];
-            
-            // Dynamics Price Update on Card
-            updateOnCardPrice(pkgId);
-        }
-
-        async function updateOnCardPrice(pkgId) {
-            try {
-                const res = await fetch('/api/packages');
-                const packages = await res.json();
-                const pkg = packages.find(p => p.id == pkgId);
-                if(!pkg) return;
-
-                const prodRes = await fetch('/api/products');
-                const products = await prodRes.json();
-                const itemIds = (pkg.items || "").split(',').map(id => id.trim());
-
-                let subTotal = 0;
-                itemIds.forEach(id => {
-                    const p = products.find(x => x.id == id);
-                    if(p) {
-                        const qty = window.onCardQuantities[`${pkgId}-${p.id}`] || 1;
-                        subTotal += (parseFloat(p.price) * qty);
-                    }
-                });
-
-                const discount = parseFloat(pkg.discount || 0);
-                const discountedPrice = subTotal * (1 - discount / 100);
-                
-                const priceEl = document.querySelector(`.package-card[onclick*="${pkgId}"] .package-card-price, .package-card button[onclick*="addPackageToCart('${pkgId}')"]`).parentElement.querySelector('div[style*="font-size:32px"]');
-                if(priceEl) {
-                    priceEl.innerText = `₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-                }
-            } catch(e) {}
-        }
-
-        function updateItemQuantity(id, delta) {
-            const item = cart.find(x => x.id === id);
-            if(item) {
-                item.quantity = Math.max(1, item.quantity + delta);
-                updateCartDisplay();
-            }
-        }
-
-        function removeFromCart(id) {
-            cart = cart.filter(x => x.id !== id);
-            updateCartDisplay();
-        }
-
-        document.getElementById('open-cart-modal').onclick = () => {
-            document.getElementById('cart-modal').style.display = 'block';
-            document.getElementById('cart-overlay').style.display = 'block';
-            updateCartDisplay();
-        };
-
         function addToCartConcept(conceptId) {
             const concept = concepts.find(c => c.id == conceptId);
             if(!concept) return;
@@ -1134,6 +878,8 @@
 
             // Show Confirmation Modal
             const modal = document.getElementById('confirm-modal');
+            const currentLang = localStorage.getItem('lang') || 'tr';
+            
             document.getElementById('conf-name').innerText = concept.name;
             document.getElementById('conf-size').innerText = oz.replace('oz', ' oz');
             document.getElementById('conf-lid').innerText = lid === 'lid' ? (currentLang === 'tr' ? 'Kapaklı' : 'With Lid') : (currentLang === 'tr' ? 'Kapaksız' : 'No Lid');
@@ -1166,25 +912,48 @@
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 2500);
 
-                // Open cart
-                document.getElementById('open-cart-modal').click();
+                // Open global cart
+                if(typeof toggleCart === 'function') toggleCart(true);
             };
         }
 
-        document.getElementById('whatsapp-checkout').onclick = () => {
-             let message = "Merhaba Moderra, sepetimdekiler için sipariş vermek istiyorum:\n\n";
-             cart.forEach(item => {
-                 message += `• ${item.quantity}x ${item.name}\n`;
-                 if(item.note) message += `   Not: ${item.note}\n`;
-             });
-             const { total } = calculateCartTotal();
-             message += `\nToplam Tutar: ₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-             window.open(`https://wa.me/905304640120?text=${encodeURIComponent(message)}`, '_blank');
-        };
+        function setupObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        updateThemeColors(entry.target);
+                        document.querySelectorAll('.dot').forEach(dot => 
+                            dot.classList.toggle('active', dot.dataset.target === entry.target.id)
+                        );
+                    }
+                });
+            }, { threshold: 0.6 });
+
+            document.querySelectorAll('.concept-section').forEach(s => observer.observe(s));
+
+            // Search Bar Logic
+            const sb = document.getElementById('search-bar');
+            const openSearch = document.getElementById('open-search');
+            const closeSearch = document.getElementById('close-search');
+            const searchInput = document.getElementById('search-input');
+
+            if(openSearch) openSearch.onclick = () => {
+                sb.classList.add('active');
+                setTimeout(() => searchInput.focus(), 100);
+            };
+            if(closeSearch) closeSearch.onclick = () => sb.classList.remove('active');
+
+            // Navbar Active Tab
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                 if(link.getAttribute('href') === currentPath) link.classList.add('active');
+            });
+        }
 
         // Initialize Call
         document.addEventListener('DOMContentLoaded', () => {
             initConcepts();
+            setupObserver();
             updateCartDisplay();
 
             // Profile Modal Logic
@@ -1289,6 +1058,7 @@
             }
         })();
     </script>
+    <script src="global-cart.js"></script>
     <script src="chatbot.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>

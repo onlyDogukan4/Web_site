@@ -277,37 +277,16 @@
         <div id="product-pagination" style="display:flex; gap:8px; justify-content:center; margin-top:32px; flex-wrap:wrap;"></div>
     </section>
 
-    <!-- ÖZEL PAKETLER BÖLÜMÜ (YENİ) -->
+    <!-- MODERRA SUPER PACKAGES SECTION -->
     <section class="container" id="paketler" style="margin-top: 80px;">
         <h2 class="section-title" data-tr="Moderra Süper Paketler" data-en="Moderra Super Bundles">Moderra Süper Paketler</h2>
         <p style="text-align:center; color:var(--text-muted); margin-top:-20px; margin-bottom:40px;" data-tr="İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!" data-en="Everything you need in one package, at more advantageous prices!">İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!</p>
         <div id="packages-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
-            <!-- JS ile doldurulacak -->
+            <!-- JS dynamically -->
         </div>
     </section>
     </main>
-    
-    <!-- Sepet Modalı (Eski Hali) -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content cart-modal-content" style="max-width:800px; margin: 5% auto; border-radius:30px;">
-            <span class="close-btn cart-close" id="close-cart-btn-modal" style="top: 15px; right: 20px;">&times;</span>
-            <div class="cart-header" style="padding:25px; border-bottom:1px solid #eee;">
-                <h3 style="display:flex; align-items:center; gap:10px;"><i class="fas fa-shopping-cart"></i> <span data-tr="Sepetim" data-en="My Cart">Sepetim</span></h3>
-            </div>
-            <div id="cart-items-list" style="padding:20px; max-height:400px; overflow-y:auto;">
-                <p class="empty-cart-message" data-tr="Sepetinizde ürün bulunmamaktadır." data-en="Your cart is empty.">Sepetinizde ürün bulunmamaktadır.</p>
-            </div>
-            <div class="cart-footer" style="padding:25px; border-top:1px solid #eee; background:#f9fafb;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size:20px;">
-                    <span data-tr="Toplam:" data-en="Total:">Toplam:</span>
-                    <span id="cart-total-price">₺0,00</span>
-                </div>
-                <button id="whatsapp-checkout" class="btn" style="width:100%; padding:15px; border-radius:12px; background:#25d366; color:white; font-size:16px;">
-                    <i class="fab fa-whatsapp"></i> <span data-tr="WhatsApp ile Sipariş Ver" data-en="Order via WhatsApp">WhatsApp ile Sipariş Ver</span>
-                </button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Modern Profil Modalı -->
     <div id="profile-modal" class="modal">
@@ -462,218 +441,9 @@
             navLinks.classList.toggle('active');
         });
 
-        // --- Sepet İşlevi ---
-        let cart = [];
-        const cartCount = document.getElementById('cart-count');
-        const cartModal = document.getElementById('cart-modal');
-        const openCartModal = document.getElementById('open-cart-modal');
-        const cartCloseBtn = document.querySelector('.cart-close-drawer');
-        const cartItemsList = document.getElementById('cart-items-list');
-        const cartTotalPrice = document.getElementById('cart-total-price');
-        const whatsappCheckout = document.getElementById('whatsapp-checkout');
+        // Sepet İşlemleri global-cart.js tarafından yönetilir.
+        // updateCartDisplay(), addToCart(), removeFromCart() vb. globaldir.
 
-        async function updateCartDisplay() {
-            cartItemsList.innerHTML = '';
-            
-            // Get Settings
-            let minOrder = 500;
-            let freeShip = 1000;
-            try {
-                const s = localStorage.getItem('settings');
-                if(s) { 
-                    const parsed = JSON.parse(s);
-                    minOrder = parsed.minOrder || 500;
-                    freeShip = parsed.freeShipping || 1000;
-                }
-            } catch(e){}
-            
-            const { total, subTotal, discountTotal } = calculateCartTotal();
-
-            // Progress Bar Logic
-            const shipProgress = Math.min((total / freeShip) * 100, 100);
-            const remainingShip = freeShip - total;
-            
-            const minProgress = Math.min((total / minOrder) * 100, 100);
-            const remainingMin = minOrder - total;
-
-            // Header Messages
-            let headerHTML = '';
-            
-            // 1. Min Sipariş Barı
-            if (total < minOrder) {
-                headerHTML += `
-                    <div id="min-order-bar" style="padding: 15px; background: #fff1f2; border-bottom: 1px solid #ffe4e6; transition:0.3s; cursor:pointer;" onclick="this.classList.remove('validation-shake')">
-                        <div style="font-size:13px; color:#9f1239; margin-bottom:5px; font-weight:700;">
-                            <i class="fas fa-exclamation-circle"></i> Siparişi Onaylamak İçin: ₺${remainingMin.toLocaleString('tr-TR')}
-                        </div>
-                        <div style="width:100%; height:8px; background:#ffe4e6; border-radius:4px; overflow:hidden;">
-                            <div style="width:${minProgress}%; height:100%; background:#f43f5e; transition: width 0.5s;"></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // 2. Kargo Barı
-            if (total >= minOrder) {
-                if (total < freeShip) {
-                     headerHTML += `
-                        <div id="free-ship-bar" style="padding: 15px; background: ${shipBgColor}; border-bottom: 1px solid ${shipBorderColor}; transition:0.3s;">
-                            <div style="font-size:13px; color:${shipTextColor}; margin-bottom:5px; font-weight:800;">
-                                🚀 Ücretsiz Kargo İçin: ₺${remainingShip.toLocaleString('tr-TR')}
-                            </div>
-                            <div style="width:100%; height:8px; background:white; border-radius:4px; overflow:hidden; border:1px solid ${shipBorderColor}">
-                                <div style="width:${shipProgress}%; height:100%; background:${shipBarColor}; transition: width 0.5s;"></div>
-                            </div>
-                            <div style="font-size:11px; margin-top:5px; color:${shipTextColor}; font-style:italic;">Hadi, bu fırsatı kaçırma!</div>
-                        </div>
-                    `;
-                } else {
-                    // Green Success
-                    headerHTML += `
-                        <div style="padding: 15px; background: #ecfccb; border-bottom: 1px solid #d9f99d; text-align:center;">
-                            <div style="font-size:14px; color:#365314; font-weight:800;">
-                                🎉 TEBRİKLER! KARGONUZ ÜCRETSİZ
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-
-            // Insert Header
-            const existingHeader = document.getElementById('cart-progress-container');
-            if(existingHeader) existingHeader.remove();
-            
-            const progressContainer = document.createElement('div');
-            progressContainer.id = 'cart-progress-container';
-            progressContainer.innerHTML = headerHTML;
-            cartItemsList.parentNode.insertBefore(progressContainer, cartItemsList);
-
-
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
-                cartCount.style.display = 'none';
-                whatsappCheckout.style.display = 'none';
-            } else {
-                cart.forEach((item, index) => {
-                     const itemTotal = (item.price * item.quantity); 
-                    
-                    const itemElement = document.createElement('div');
-                    itemElement.classList.add('cart-item');
-                    itemElement.innerHTML = `
-                        <div class="item-info">
-                            <div class="item-name">${item.name}</div>
-                            <div class="quantity-control">
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
-                                <span style="font-size:14px; font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
-                            </div>
-                            <div style="font-size:11px; color:#64748b; margin-top:5px;">Birim: ₺${item.price.toFixed(2)}</div>
-                             ${item.discountNote ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${item.discountNote}</div>` : ''}
-                        </div>
-                        <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
-                        <i class="fas fa-trash-alt item-remove" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#ef4444; margin-left:15px;"></i>
-                    `;
-                    cartItemsList.appendChild(itemElement);
-                });
-                
-                // --- MR. KARTON SMART UPSELL ---
-                if (total >= minOrder && total < freeShip) {
-                    try {
-                        const res = await fetch('/api/products?t='+Date.now());
-                        const allProds = await res.json();
-                        const gap = freeShip - total;
-                        
-                        let bestMatch = null;
-                        let quantityToSuggest = 1;
-                        let pitchText = "Bunu da ekleyelim mi?";
-                        
-                        const hasCups = cart.some(i => i.name.toLowerCase().includes('bardak'));
-                        const hasLids = cart.some(i => i.name.toLowerCase().includes('kapak'));
-                        
-                        if(hasCups && !hasLids) {
-                            bestMatch = allProds.find(p => p.name_tr.toLowerCase().includes('kapak'));
-                            if(bestMatch) pitchText = "Bardaklarınızın kapağı eksik kalmasın!";
-                        }
-                        
-                        if(!bestMatch) {
-                            const sorted = allProds.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
-                            bestMatch = sorted.find(p => parseFloat(p.price) <= gap);
-                            if(!bestMatch) bestMatch = sorted[0]; 
-                            
-                            if(bestMatch) {
-                                const price = parseFloat(bestMatch.price);
-                                if(price < gap) {
-                                    quantityToSuggest = Math.ceil(gap / price);
-                                    if(quantityToSuggest > 1) {
-                                        pitchText = `Sadece ${quantityToSuggest} tane daha ekle, kargo BEDAVA!`;
-                                    } else {
-                                        pitchText = "Kargo ödemek yerine bunu al!";
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if(bestMatch) {
-                           const upsellHTML = `
-                                <div class="upsell-container" onclick="addToCart('${bestMatch.id}', '${bestMatch.name_tr.replace(/'/g, "\\'")}', ${bestMatch.price}); updateItemQuantity('${bestMatch.id}', ${quantityToSuggest-1});">
-                                    <div style="position: absolute; top:0; left:0; bottom:0; width:60px; display:flex; align-items:flex-end; justify-content:center; overflow:visible;">
-                                        <img src="images/mr_karton_leaning.png" style="width:140px;height:auto; transform: translateX(-10px) translateY(10px);">
-                                    </div>
-                                    <div style="padding-left: 35px; flex:1;">
-                                        <div class="mr-karton-bubble" style="top:-10px; right:auto; left:48px; background:var(--primary); color:white; border:none; border-radius:10px 10px 10px 0;">
-                                            Dr. Karton Öneriyor 💡
-                                        </div>
-                                        <div style="font-size:12px; font-weight:600; color:#334155; margin-top:8px;">
-                                            "${pitchText}" <br>
-                                            <span style="color:#64748b; font-weight:400;">(${bestMatch.name_tr} x ${quantityToSuggest})</span>
-                                        </div>
-                                    </div>
-                                    <div style="text-align:right;">
-                                        <div style="font-weight:800; color:var(--primary)">+₺${(parseFloat(bestMatch.price)*quantityToSuggest).toLocaleString('tr-TR')}</div>
-                                        <i class="fas fa-plus-circle" style="color:var(--primary); margin-top:5px;"></i>
-                                    </div>
-                                </div>
-                           `;
-                           const div = document.createElement('div');
-                           div.innerHTML = upsellHTML;
-                           cartItemsList.appendChild(div);
-                        }
-                    } catch(e) {}
-                }
-
-                const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.textContent = totalCount;
-                if(totalCount > 0) {
-                     cartCount.style.display = 'flex';
-                } else {
-                     cartCount.style.display = 'none';
-                }
-                
-                whatsappCheckout.style.display = 'block';
-            }
-            
-            const totalFormatted = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-            if (discountTotal > 0) {
-                cartTotalPrice.innerHTML = `
-                    <div style="font-size:14px; text-decoration:line-through; color:#94a3b8">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                    <div style="color:var(--primary); font-size:20px;">${totalFormatted}</div>
-                    <div style="font-size:12px; color:var(--success)">Toplam İndirim: ₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                `;
-            } else {
-                cartTotalPrice.textContent = totalFormatted;
-            }
-        }
-
-        function updateItemQuantity(id, change) {
-            const item = cart.find(x => x.id == id);
-            if(!item) return;
-            item.quantity += change;
-            if(item.quantity <= 0) {
-                removeFromCart(id);
-            } else {
-                updateCartDisplay();
-            }
-        }
 
         whatsappCheckout.onclick = async (e) => {
             e.preventDefault();
@@ -1235,118 +1005,8 @@
         }
 
 
-        function removeFromCart(id) {
-            cart = cart.filter(item => item.id != id);
-            updateCartDisplay();
-        }
-
-        function updateItemQuantity(id, change) {
-            const item = cart.find(x => x.id == id);
-            if(!item) return;
-            
-            item.quantity += change;
-            if(item.quantity <= 0) {
-                removeFromCart(id);
-            } else {
-                updateCartDisplay();
-            }
-        }
-        
-        // --- Sepet Modal Kontrolleri ---
-        openCartModal.onclick = () => { 
-            cartModal.style.display = 'block'; 
-            document.body.classList.add('cart-open');
-            
-            // 1. Önce mevcut ayarlarla göster (Hız için)
-            updateCartDisplay();
-
-            // 2. Sunucudan EN GÜNCEL ayarları çek zorla
-            fetch('/api/settings?t=' + Date.now(), { cache: "no-store" })
-                .then(r => r.json())
-                .then(s => {
-                    console.log("Güncel Ayarlar İndirildi:", s);
-                    localStorage.setItem('settings', JSON.stringify(s));
-                    // 3. Ekranı TAZELENMİŞ ayarlarla tekrar güncelle
-                    updateCartDisplay(); 
-                })
-                .catch(e => console.error("Ayarlar çekilemedi:", e));
-        };
-        const cartCloseBtnOld = document.querySelector('.cart-close');
-        if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
-            cartModal.style.display = 'none'; 
-            document.body.classList.remove('cart-open');
-        };
-        window.onclick = (e) => { 
-            if(e.target === cartModal) {
-                cartModal.style.display = 'none'; 
-                document.body.classList.remove('cart-open');
-            }
-            if(e.target === profileModal) profileModal.style.display = 'none';
-        };
-        
-        // --- Ürün Detay Modalı (Lightbox) İşlemleri ---
-        const detailModal = document.getElementById('product-detail-modal');
-        const detailCloseBtn = document.querySelector('.detail-close');
-        const detailImg = document.getElementById('detail-img');
-        const detailTitle = document.getElementById('detail-title');
-        const detailPrice = document.getElementById('detail-price');
-        const detailAddBtn = document.getElementById('detail-add-btn');
-        const detailRating = document.getElementById('detail-rating');
-
-        // Ürün kartına tıklama işlevi
-        document.querySelectorAll('.view-btn, .product-img-wrapper, .product-title').forEach(element => {
-            element.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const card = e.target.closest('.product-card');
-                
-                // Verileri kart üzerinden çek
-                const imgSrc = card.querySelector('.product-img').src;
-                const title = card.querySelector('.product-title').textContent;
-                const priceText = card.querySelector('.current-price').textContent;
-                const addToCartBtn = card.querySelector('.add-to-cart');
-                const priceVal = parseFloat(addToCartBtn.dataset.price);
-                const id = parseInt(addToCartBtn.dataset.id);
-                const ratingHTML = card.querySelector('.product-rating').innerHTML;
-                
-                // Modale doldur
-                detailImg.src = imgSrc;
-                detailTitle.textContent = title;
-                detailPrice.textContent = priceText;
-                detailRating.innerHTML = ratingHTML;
-                
-                // Detay modalındaki "Sepete Ekle" butonunu ayarla
-                detailAddBtn.onclick = () => {
-                    addToCart(id, title, priceVal);
-                    detailModal.style.display = 'none';
-                };
-
-                detailModal.style.display = 'block';
-            });
-        });
-
-        detailCloseBtn.onclick = () => { detailModal.style.display = 'none'; };
-
-        // Pencere dışına tıklama (Her iki modal için)
-        window.onclick = (event) => {
-            if (event.target === cartModal) {
-                cartModal.style.display = 'none';
-                document.body.classList.remove('cart-open');
-            }
-            if (event.target === profileModal) {
-                profileModal.style.display = 'none';
-            }
-            if (event.target === detailModal) {
-                detailModal.style.display = 'none';
-            }
-        };
-
-        // Sepetten Çıkar (Delegation)
-        cartItemsList.addEventListener('click', (e) => {
-            if (e.target.classList.contains('item-remove')) {
-                const id = parseInt(e.target.dataset.id);
-                removeFromCart(id);
-            }
-        });
+        // Sepet İşlemleri global-cart.js tarafından yönetilir.
+        // updateCartDisplay(), addToCart(), removeFromCart() vb. globaldir.
 
         // --- Dil Değiştirme Sistemi ---
         const langToggle = document.getElementById('lang-toggle');
@@ -1723,19 +1383,19 @@
                 const img = card ? card.querySelector('img') : null;
                 if(img) flyToCart(img);
 
-                const existingIndex = cart.findIndex(x => x.id === pkg.id);
+                const existingIndex = window.cart.findIndex(x => x.id === pkg.id);
                 const isSuper = pkg.name.toLowerCase().includes('süper');
 
                 if(existingIndex > -1) {
                     if(isSuper) {
                         // Limit to 1, update contents instead
-                        cart[existingIndex].packageItems = packageItems;
-                        cart[existingIndex].quantity = 1;
+                        window.cart[existingIndex].packageItems = packageItems;
+                        window.cart[existingIndex].quantity = 1;
                     } else {
-                        cart[existingIndex].quantity++;
+                        window.cart[existingIndex].quantity++;
                     }
                 } else {
-                    cart.push({
+                    window.cart.push({
                         id: pkg.id,
                         name: pkg.name,
                         image: pkg.image || 'images/box.png',
@@ -1747,20 +1407,19 @@
                 }
                 
                 setTimeout(() => {
-                    updateCartDisplay();
-                    cartModal.style.display = 'block';
-                    document.body.classList.add('cart-open');
+                    window.updateCartDisplay();
+                    window.toggleCart(true);
                 }, 800);
             } catch (e) { console.error("Could not add package", e); }
         }
 
         function updateSubItemQuantity(pkgId, subId, delta) {
-            const pkg = cart.find(x => x.id === pkgId);
+            const pkg = window.cart.find(x => x.id === pkgId);
             if(!pkg || !pkg.packageItems) return;
             const item = pkg.packageItems.find(si => si.id === subId);
             if(!item) return;
             item.quantity = Math.max(1, item.quantity + delta);
-            updateCartDisplay();
+            window.updateCartDisplay();
         }
 
         window.addToCartByMatch = async function(keyword) {
@@ -2124,6 +1783,7 @@
     </script>
 
     <script src="fiyat-guncelle.js"></script>
+    <script src="global-cart.js"></script>
     <script src="chatbot.js"></script>
     
     <!-- Vercel Speed Insights -->
