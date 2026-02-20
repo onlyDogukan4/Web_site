@@ -647,6 +647,19 @@
 
         // Theme Toggle Logic
         const themeToggle = document.getElementById('theme-toggle');
+
+        // ✅ Sayfa yüklendiğinde dark mode'u otomatik uygula
+        (function applyStoredTheme() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                if (themeToggle) themeToggle.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                if (themeToggle) themeToggle.classList.replace('fa-sun', 'fa-moon');
+            }
+        })();
+
         themeToggle.onclick = () => {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             if (isDark) {

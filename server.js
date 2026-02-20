@@ -40,12 +40,12 @@ async function seedData() {
 }
 seedData();
 
-// .env dosyasından API anahtarını manuel oku (Vercel'de process.env kullanılır)
-function getApiKey() {
-    if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
+// Grok API Key — xAI platformu
+function getGrokApiKey() {
+    if (process.env.GROK_API_KEY) return process.env.GROK_API_KEY;
     try {
         const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf-8');
-        const match = envContent.match(/GEMINI_API_KEY=(.*)/);
+        const match = envContent.match(/GROK_API_KEY=(.*)/);
         return match ? match[1].trim() : null;
     } catch (e) {
         return null;
@@ -197,42 +197,62 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
-    // API Route'u simüle et
+    // API Route'u — xAI Grok
     if (req.url === '/api/chat' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
             try {
                 const { prompt, chatHistory, siteContext } = JSON.parse(body);
-                const API_KEY = getApiKey();
+                const API_KEY = getGrokApiKey();
 
                 if (!API_KEY) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
-                    return res.end(JSON.stringify({ error: 'API key not found in .env' }));
+                    return res.end(JSON.stringify({ error: 'GROK_API_KEY not found in .env' }));
                 }
 
-                const modelName = "gemini-1.5-flash";
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+                // Build messages array in OpenAI format (Grok is OpenAI compatible)
+                const messages = [
+                    {
+                        role: 'system',
+                        content: `Sen Dr. Karton'sun. Moderra'nın EN TUTKULU hayranısın! 🎉 Moderra karton bardak ve ambalaj şirketidir.
+KİŞİLİK: Aşırı heyecanlı, samimi, emoji kullanan, Moderra'yı seven biri. Asla soğuk bir asistan gibi konuşma.
+KISITLAMA: Cevapların her zaman kısa ve öz olsun — 2-3 cümle yeterli.
+SİTE BİLGİSİ: ${siteContext}`
+                    },
+                    // Convert chatHistory (old Gemini format) to OpenAI format
+                    ...(chatHistory || []).map(h => ({
+                        role: h.role === 'model' ? 'assistant' : h.role,
+                        content: h.parts ? h.parts[0].text : h.content
+                    })),
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ];
 
-                const apiRes = await fetch(url, {
+                const apiRes = await fetch('https://api.x.ai/v1/chat/completions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
                     body: JSON.stringify({
-                        contents: [
-                            ...chatHistory,
-                            { role: "user", parts: [{ text: "TALİMATLAR:\n" + siteContext + "\n\nSORU: " + prompt }] }
-                        ],
-                        generationConfig: { temperature: 0.7, maxOutputTokens: 800 }
+                        model: 'grok-3-mini',
+                        messages,
+                        max_tokens: 400,
+                        temperature: 0.85
                     })
                 });
 
                 const data = await apiRes.json();
+                // Return in a unified format that chatbot.js can parse
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(data));
+                res.end(JSON.stringify({ grok: true, choices: data.choices, error: data.error }));
             } catch (error) {
-                console.error("Local Server API Error:", error);
+                console.error('Grok API Error:', error);
                 res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'API fetch failure' }));
+                res.end(JSON.stringify({ error: 'Grok API fetch failure: ' + error.message }));
             }
         });
         return;

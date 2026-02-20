@@ -196,9 +196,14 @@
 
     <section class="container" id="urunler"> 
         <h2 class="section-title">Popüler Ürünler</h2>
+        <!-- Kategori Navigasyonu -->
+        <div id="product-category-nav" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:28px;"></div>
+        <!-- Ürün Izgarası -->
         <div class="products" id="products-dynamic-container">
             <!-- JS ile doldurulacak -->
         </div>
+        <!-- Sayfalandırma -->
+        <div id="product-pagination" style="display:flex; gap:8px; justify-content:center; margin-top:32px; flex-wrap:wrap;"></div>
     </section>
 
     <!-- ÖZEL PAKETLER BÖLÜMÜ (YENİ) -->
@@ -1485,6 +1490,14 @@
         }
 
 
+        // ---- ÜRÜN KATEGORi + SAYFALANDIRMA ----
+        let _allProducts = [];
+        let _allCampaigns = [];
+        let _currentCategory = 'Tümü';
+        let _currentPage = 1;
+        const ITEMS_PER_PAGE = 6; // Sayfa başına ürün sayısı
+        let lastRenderedProductSignature = '';
+
         async function renderProducts() {
             const container = document.getElementById('products-dynamic-container');
             if (!container) return;
@@ -1496,7 +1509,6 @@
                     if (!response.ok) throw new Error("API Error");
                     products = await response.json();
                 } catch (apiError) {
-                    console.warn("API Fetch failed, trying fallback...", apiError);
                     try {
                         const fallbackResponse = await fetch('products.json?t=' + Date.now());
                         products = await fallbackResponse.json();
@@ -1504,73 +1516,128 @@
                         throw new Error("Hem API hem de Products.json başarısız!");
                     }
                 }
-
                 if (!Array.isArray(products)) throw new Error("Not array");
 
                 // 2. Fetch Campaigns
                 let campaigns = [];
                 try {
-                     const cRes = await fetch('/api/campaigns?t=' + Date.now());
-                     if(cRes.ok) campaigns = await cRes.json();
+                    const cRes = await fetch('/api/campaigns?t=' + Date.now());
+                    if (cRes.ok) campaigns = await cRes.json();
                 } catch(e){}
 
                 // 3. Smart Refresh Check
                 const currentLang = localStorage.getItem('lang') || 'tr';
-                const currentSignature = JSON.stringify({ p: products, c: campaigns, l: currentLang });
-                
-                if (currentSignature === lastRenderedDataSignature) return; 
-                lastRenderedDataSignature = currentSignature;
+                const currentSignature = JSON.stringify({ p: products.length, c: campaigns.length, l: currentLang });
+                if (currentSignature === lastRenderedProductSignature) return;
+                lastRenderedProductSignature = currentSignature;
 
-                // 4. Render
-                container.innerHTML = '';
-                const isEn = currentLang === 'en';
+                _allProducts = products;
+                _allCampaigns = campaigns;
 
-                products.forEach(p => {
+                // 4. Build categories from products (using status field or name-based)
+                renderProductCategories();
+                renderProductPage();
+
+            } catch (e) {
+                console.error("Ürünler yüklenemedi", e);
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);"><i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i><h3>Veritabanı Hatası</h3></div>`;
+            }
+        }
+
+        function renderProductCategories() {
+            const nav = document.getElementById('product-category-nav');
+            if (!nav) return;
+
+            // Build categories: Tümü + unique status labels
+            const catMap = { 'active': 'Standart', 'hot': 'Fırsat', 'discount': 'İndirimli', 'oos': 'Stok Dışı' };
+            const cats = ['Tümü'];
+            _allProducts.forEach(p => {
+                const label = catMap[p.status] || 'Standart';
+                if (!cats.includes(label)) cats.push(label);
+            });
+
+            nav.innerHTML = cats.map(cat => `
+                <button onclick="filterProductCategory('${cat}')" id="cat-btn-${cat.replace(/[^a-zA-Z0-9]/g,'_')}" style="
+                    padding: 9px 22px;
+                    border-radius: 50px;
+                    border: 2px solid ${cat === _currentCategory ? 'var(--primary)' : 'var(--border)'};
+                    background: ${cat === _currentCategory ? 'var(--primary)' : 'transparent'};
+                    color: ${cat === _currentCategory ? 'white' : 'var(--text)'};
+                    font-weight: 700;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: 0.2s;
+                ">${cat}</button>
+            `).join('');
+        }
+
+        function filterProductCategory(cat) {
+            _currentCategory = cat;
+            _currentPage = 1;
+            renderProductCategories();
+            renderProductPage();
+        }
+
+        function renderProductPage() {
+            const container = document.getElementById('products-dynamic-container');
+            const paginationEl = document.getElementById('product-pagination');
+            if (!container) return;
+
+            const catMap = { 'active': 'Standart', 'hot': 'Fırsat', 'discount': 'İndirimli', 'oos': 'Stok Dışı' };
+            const isEn = (localStorage.getItem('lang') || 'tr') === 'en';
+
+            let filtered = _allProducts;
+            if (_currentCategory !== 'Tümü') {
+                filtered = _allProducts.filter(p => (catMap[p.status] || 'Standart') === _currentCategory);
+            }
+
+            const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+            if (_currentPage > totalPages) _currentPage = 1;
+
+            const start = (_currentPage - 1) * ITEMS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+            container.innerHTML = '';
+
+            if (pageItems.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted); font-size:15px;"><i class="fas fa-box-open fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><br>Bu kategoride ürün bulunamadı.</div>`;
+            } else {
+                pageItems.forEach(p => {
                     const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
-                    const desc = isEn ? (p.description_en || p.description_tr) : p.description_tr;
-                    
                     const isOOS = p.status === 'oos';
                     const card = document.createElement('div');
                     card.className = 'product-card' + (isOOS ? ' oos-card' : '');
                     card.style.position = 'relative';
-                    
+
                     let activeCampaign = null;
-                    if (p.campaign_id && campaigns) {
-                        activeCampaign = campaigns.find(c => c.id == p.campaign_id);
+                    if (p.campaign_id && _allCampaigns) {
+                        activeCampaign = _allCampaigns.find(c => c.id == p.campaign_id);
                     }
-                    
-                    let topBadge = '';
-                    let bottomBadge = '';
-                    let descHtml = '';
-                    
+
+                    let topBadge = '', descHtml = '';
                     if (activeCampaign) {
                         const borderColor = activeCampaign.border_color || '#ffd700';
                         const textColor = activeCampaign.text_color || '#000';
                         if (activeCampaign.theme === 'premium') card.classList.add('premium-campaign');
                         card.style.setProperty('--campaign-color', borderColor);
-                        
-                        if(activeCampaign.top_text) {
+                        if (activeCampaign.top_text) {
                             topBadge = `<div style="position:absolute; top:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;"><span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">${activeCampaign.top_text}</span></div>`;
                         }
-                        if(activeCampaign.bottom_text) {
-                            bottomBadge = `<div style="position:absolute; bottom:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;"><span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">${activeCampaign.bottom_text}</span></div>`;
-                        }
-                        if(activeCampaign.description) {
+                        if (activeCampaign.description) {
                             descHtml = `<div style="font-size:11px; color:#e11d48; font-weight:600; margin-bottom:5px;">${activeCampaign.description}</div>`;
                         }
                     } else if (p.bulk_rate && p.bulk_threshold) {
-                         topBadge = `<div class="discount-badge" style="left:auto; right:auto; top:-10px; left:50%; transform:translateX(-50%); font-size:11px; padding:4px 10px;">%${p.bulk_rate} İNDİRİM</div>`;
+                        topBadge = `<div class="discount-badge" style="left:auto; right:auto; top:-10px; left:50%; transform:translateX(-50%); font-size:11px; padding:4px 10px;">%${p.bulk_rate} İNDİRİM</div>`;
                     }
 
                     let hotBadge = '';
                     if (p.status === 'hot' && !activeCampaign) {
                         hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
                     }
-                    
                     if (isOOS) {
                         hotBadge = `<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; font-weight:900; z-index:30; border-radius:10px; border:2px solid #ef4444; letter-spacing:1px; font-size:14px;">TÜKENDİ</div>`;
                     }
-                    
+
                     card.innerHTML = `
                         ${topBadge}
                         <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" style="${isOOS?'filter:grayscale(1) opacity(0.5);':''}" loading="lazy" onclick="${isOOS?'':'openProductDetail(\''+p.id+'\')'}">
@@ -1591,19 +1658,39 @@
                                 </button>
                             </div>
                         </div>
-                        ${bottomBadge}
                     `;
                     container.appendChild(card);
                 });
+            }
 
-                const activeSearch = document.getElementById('search-input');
-                if(activeSearch && activeSearch.value.trim().length > 0) {
-                     setTimeout(() => activeSearch.dispatchEvent(new Event('input')), 50);
+            // Pagination buttons
+            if (paginationEl) {
+                paginationEl.innerHTML = '';
+                if (totalPages > 1) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        const btn = document.createElement('button');
+                        btn.textContent = i;
+                        btn.style.cssText = `
+                            width: 42px; height: 42px; border-radius: 50%;
+                            border: 2px solid ${i === _currentPage ? 'var(--primary)' : 'var(--border)'};
+                            background: ${i === _currentPage ? 'var(--primary)' : 'transparent'};
+                            color: ${i === _currentPage ? 'white' : 'var(--text)'};
+                            font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.2s;
+                        `;
+                        btn.onclick = () => {
+                            _currentPage = i;
+                            renderProductPage();
+                            document.getElementById('urunler').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        };
+                        paginationEl.appendChild(btn);
+                    }
                 }
+            }
 
-            } catch (e) {
-                console.error("Ürünler yüklenemedi", e);
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);"><i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i><h3 data-tr="Veritabanı Hatası" data-en="Database Error">Veritabanı Hatası</h3></div>`;
+            // Re-apply search filter if active
+            const activeSearch = document.getElementById('search-input');
+            if (activeSearch && activeSearch.value.trim().length > 0) {
+                setTimeout(() => activeSearch.dispatchEvent(new Event('input')), 50);
             }
         }
         

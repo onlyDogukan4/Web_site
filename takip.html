@@ -274,6 +274,10 @@
                     <span>Tahmini Teslimat</span>
                     <p id="display-delivery">-</p>
                 </div>
+                <div class="detail-item">
+                    <span>Toplam Tutar</span>
+                    <p id="display-price" style="color: #6366f1; font-size: 20px;">-</p>
+                </div>
                 <div class="detail-item" style="grid-column: span 2;">
                     <span>İçerik</span>
                     <p id="display-items">-</p>
@@ -334,6 +338,12 @@
             document.getElementById('display-customer').textContent = order.customerName;
             document.getElementById('display-delivery').textContent = order.estimatedDelivery || "Bilgi Bekleniyor";
             document.getElementById('display-items').textContent = order.items;
+            const priceEl = document.getElementById('display-price');
+            if (order.totalPrice && parseFloat(order.totalPrice) > 0) {
+                priceEl.textContent = '₺' + parseFloat(order.totalPrice).toLocaleString('tr-TR', {minimumFractionDigits: 2});
+            } else {
+                priceEl.textContent = 'Bilgi Bekleniyor';
+            }
             
             const statusMap = {
                 'alindi': 'SİPARİŞ ALINDI',

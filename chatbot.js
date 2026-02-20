@@ -183,7 +183,7 @@ class ModerraAI {
     }
 
     welcomeUser() {
-        this.addBotMessage("Hoş geldiniz! Ben **Dr. Karton**, Moderra'nın en sadık hayranı! Size rehberlik etmek için sabırsızlanıyorum.");
+        this.addBotMessage("Yo! Ben **Dr. Karton** 🎉 Moderra'nın en köklü hayranıyım! Sorularınızı sormak için buradaydınız mı? Hemen yardımcı olurà!");
     }
 
     addBotMessage(text) {
@@ -221,57 +221,58 @@ class ModerraAI {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 if (response.status === 404) {
-                    throw new Error("Chat servisi bulunamadı (404). Lütfen Vercel deployment'ı kontrol edin.");
+                    throw new Error("Chat servisi bulunamadı (404). Lütfen sunucunun çalıştığından emin olun.");
                 }
                 throw new Error(errorData.error || `Bağlantı Hatası (${response.status})`);
             }
 
             const data = await response.json();
 
+            if (data.error) throw new Error(data.error);
 
-            if (data.candidates && data.candidates[0].content) {
-                let botText = data.candidates[0].content.parts[0].text;
+            // Grok format: { grok: true, choices: [{ message: { content: '...' } }] }
+            let botText = '';
+            if (data.grok && data.choices && data.choices[0]?.message?.content) {
+                botText = data.choices[0].message.content;
+                // Legacy Gemini format fallback
+            } else if (data.candidates && data.candidates[0]?.content) {
+                botText = data.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error('Geçersiz yanıt formatı.')
+            }
 
-                // --- ACTION HANDLING ---
-                // 1. [ADD_CART: ...]
-                const addCartMatch = botText.match(/\[ADD_CART:\s*(.*?)\]/);
-                if (addCartMatch) {
-                    const productKeyword = addCartMatch[1];
-                    botText = botText.replace(addCartMatch[0], ""); // Komutu metinden sil
-
-                    // Call global helper exposed in index.html
-                    if (window.addToCartByMatch) {
-                        const result = await window.addToCartByMatch(productKeyword);
-                        if (result.success) {
-                            botText += `\n\n✅ *${result.name} sepete eklendi!*`;
-                        } else {
-                            botText += `\n\n(Ürünü bulamadım ama senin için not aldım!)`;
-                        }
+            // --- ACTION HANDLING ---
+            const addCartMatch = botText.match(/\[ADD_CART:\s*(.*?)\]/);
+            if (addCartMatch) {
+                const productKeyword = addCartMatch[1];
+                botText = botText.replace(addCartMatch[0], '');
+                if (window.addToCartByMatch) {
+                    const result = await window.addToCartByMatch(productKeyword);
+                    if (result.success) {
+                        botText += `\n\n✅ *${result.name} sepete eklendi!*`;
+                    } else {
+                        botText += `\n\n(Senin için not aldım!)`;
                     }
                 }
-
-                // 2. [SUGGEST_PACKAGE: wedding]
-                if (botText.includes('[SUGGEST_PACKAGE: wedding]')) {
-                    botText = botText.replace('[SUGGEST_PACKAGE: wedding]', "");
-                    // Trigger visual effect
-                    setTimeout(() => {
-                        const bundleSection = document.getElementById('paketler');
-                        if (bundleSection && confirm("💍 Düğün Paketimizi İncelemek İster misiniz? \n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)")) {
-                            bundleSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }, 1000);
-                }
-                // -----------------------
-
-                this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                this.chatHistory.push({ role: "model", parts: [{ text: botText }] });
-                this.addBotMessage(botText);
-            } else {
-                throw new Error("Geçersiz yanıt formatı.");
             }
+
+            if (botText.includes('[SUGGEST_PACKAGE: wedding]')) {
+                botText = botText.replace('[SUGGEST_PACKAGE: wedding]', '');
+                setTimeout(() => {
+                    const bundleSection = document.getElementById('paketler');
+                    if (bundleSection && confirm('💍 Düğün Paketimizi İncelemek İster misiniz?\n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)')) {
+                        bundleSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 1000);
+            }
+
+            // Save to chat history (OpenAI format)
+            this.chatHistory.push({ role: 'user', content: prompt });
+            this.chatHistory.push({ role: 'assistant', content: botText });
+            this.addBotMessage(botText);
         } catch (e) {
-            console.error("Chat Error:", e);
-            this.addBotMessage(`⚠️ **Hata:** ${e.message}\n\n*Not: Eğer bu hata devam ediyorsa Vercel dashboard üzerinden GEMINI_API_KEY ayarlarını ve deployment durumunu kontrol edin.*`);
+            console.error('Chat Error:', e);
+            this.addBotMessage(`⚠️ **Hata:** ${e.message}`);
         } finally {
             this.isThinking = false;
             if (typingIndicator) typingIndicator.style.display = 'none';
