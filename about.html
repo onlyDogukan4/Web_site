@@ -73,12 +73,15 @@
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons">
-                <i class="fas fa-search" id="open-search"></i>
+            <div class="nav-icons" style="display: flex; align-items: center;">
+                <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
                 <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'" style="margin-left: 20px;"></i>
-                <i class="fas fa-user" id="open-profile-modal" style="margin-left: 20px;"></i>
-                <div class="hamburger">
+                <div id="open-cart-modal" style="position:relative; cursor:pointer; margin-left:20px;">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" style="position:absolute; -top:8px; -right:10px; background:#ef4444; color:white; font-size:10px; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; font-weight:bold;">0</span>
+                </div>
+                <i class="fas fa-user-circle" id="open-profile-modal" style="margin-left: 20px; cursor: pointer;"></i>
+                <div class="hamburger" style="margin-left:20px; cursor:pointer;">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
@@ -334,5 +337,76 @@
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
+    <!-- Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer" style="display:none; position:fixed; top:0; right:0; width:450px; height:100%; background:white; z-index:10000; box-shadow:-10px 0 30px rgba(0,0,0,0.1); border-left:1px solid #eee;">
+        <div class="cart-header" style="padding:25px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0; font-size:20px; font-weight:800; color:#1e293b;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:24px; color:#cbd5e1;" onclick="document.getElementById('cart-modal').style.display='none'; document.getElementById('cart-overlay').style.display='none';">&times;</div>
+        </div>
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; height:calc(100% - 250px);"></div>
+        <div class="cart-footer" style="position:absolute; bottom:0; padding:25px; width:100%; background:white; border-top:1px solid #f1f5f9;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:800; color:#1e293b;">
+                <span>Toplam</span>
+                <span id="cart-total-price">₺0,00</span>
+            </div>
+            <button id="whatsapp-checkout" style="width:100%; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800;">
+                <i class="fab fa-whatsapp"></i> SİPARİŞİ TAMAMLA
+            </button>
+        </div>
+    </div>
+    <div id="cart-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:9999; backdrop-filter:blur(5px);" onclick="document.getElementById('cart-modal').style.display='none'; this.style.display='none';"></div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        function updateCartDisplay() {
+            const list = document.getElementById('cart-items-list');
+            const totalEl = document.getElementById('cart-total-price');
+            const countEl = document.getElementById('cart-count');
+            if(!list) return;
+            list.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += (item.price * item.quantity);
+                const el = document.createElement('div');
+                el.style.cssText = "display:flex; align-items:center; justify-content:space-between; padding:15px; border-bottom:1px solid #f1f5f9; gap:10px;";
+                el.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <img src="${item.image}" style="width:40px; height:40px; object-fit:contain; border-radius:8px; background:#f8fafc;">
+                        <div>
+                            <div style="font-weight:700; font-size:13px;">${item.name}</div>
+                            <div style="font-size:12px; color:#64748b;">${item.quantity} x ₺${item.price.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:12px;"></i>
+                `;
+                list.appendChild(el);
+            });
+            if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+            if(countEl) {
+                const qty = cart.reduce((s,i)=>s+i.quantity,0);
+                countEl.innerText = qty;
+                countEl.style.display = qty > 0 ? 'flex' : 'none';
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        function removeFromCart(id) {
+            cart = cart.filter(x => x.id !== id);
+            updateCartDisplay();
+        }
+        document.getElementById('open-cart-modal').onclick = () => {
+            document.getElementById('cart-modal').style.display = 'block';
+            document.getElementById('cart-overlay').style.display = 'block';
+            updateCartDisplay();
+        };
+        document.getElementById('whatsapp-checkout').onclick = () => {
+             let msg = "Merhaba Moderra, Hakkımızda sayfasından geliyorum. Sipariş vermek istiyorum.\n";
+             window.open(`https://wa.me/905304640120?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+        window.addEventListener('load', updateCartDisplay);
+    </script>
+    <style>
+        .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
+        #cart-modal[style*="display: block"] { transform: translateX(0); }
+    </style>
 </body>
 </html>
