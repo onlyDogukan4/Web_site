@@ -242,6 +242,80 @@
             z-index: 10;
             border: 2px solid rgba(255,255,255,0.3);
         }
+
+        /* Yeni Pagination ve Kategori Stilleri */
+        .category-nav {
+            background: var(--glass-bg);
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 80px;
+            z-index: 90;
+            backdrop-filter: blur(10px);
+        }
+
+        .cat-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--theme-color);
+            background: transparent;
+            color: var(--theme-text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cat-btn.active {
+            background: var(--theme-color);
+            color: white;
+        }
+
+        .pagination-container {
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            background: var(--bg-body);
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .page-btn.active {
+            background: var(--theme-color);
+            color: white;
+            border-color: var(--theme-color);
+        }
+
+        .resource-report {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: #00ff00;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            z-index: 10000;
+            pointer-events: none;
+            border: 1px solid #333;
+        }
     </style>
 </head>
 <body data-scroll-container>
@@ -266,188 +340,30 @@
         </div>
     </nav>
 
-    <div class="scroll-indicator">
+    <div class="category-nav" id="category-nav">
+        <!-- Kategoriler JS ile gelecek -->
+    </div>
+
+    <div id="concepts-wrapper">
+        <!-- Ürünler (Paginated) JS ile gelecek -->
+    </div>
+
+    <div class="pagination-container" id="pagination">
+        <!-- Sayfa numaraları JS ile gelecek -->
+    </div>
+
+    <div class="resource-report" id="resource-report">
+        RAM: -- MB | CPU: --
+    </div>
+
+    <div class="scroll-indicator" style="display: none;">
         <div class="dot active" data-target="yilbasi"></div>
         <div class="dot" data-target="dugun"></div>
         <div class="dot" data-target="dogumgunu"></div>
         <div class="dot" data-target="ozeltasarim"></div>
     </div>
 
-    <!-- Yılbaşı Section -->
-    <section class="concept-section" id="yilbasi" data-color="#e74c3c" data-bg="#fff" data-text="#2c3e50">
-        <div class="concept-container">
-            <div class="concept-visual">
-                <div class="cup-preview">
-                    <img src="images/newyear.png" alt="Yılbaşı" class="dynamic-cup">
-                </div>
-            </div>
-            <div class="concept-details">
-                <h1 data-tr="YILBAŞI" data-en="NEW YEAR">Yılbaşı</h1>
-                <p data-tr="Yeni yılın ruhunu sofralarınıza taşıyın. Özel tasarım yılbaşı bardaklarımızla kutlamalarınızı renklendirin." data-en="Bring the spirit of the new year to your tables. Color your celebrations with our specially designed new year cups.">Yeni yılın ruhunu sofralarınıza taşıyın.</p>
-                
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
-                    <div class="option-list">
-                        <button class="size-btn active" data-scale="0.8">4 oz</button>
-                        <button class="size-btn" data-scale="0.9">7 oz</button>
-                        <button class="size-btn" data-scale="1.0">8 oz</button>
-                        <button class="size-btn" data-scale="1.2">12 oz</button>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
-                    <div class="option-list">
-                        <button class="lid-btn active" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
-                        <button class="lid-btn" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="AURA RENGİ" data-en="AURA COLOR">Aura Rengi</span>
-                    <div class="option-list">
-                        <div class="color-swatch active" style="background: #e74c3c;" data-bg="#fff" data-text="#2c3e50"></div>
-                        <div class="color-swatch" style="background: #27ae60;" data-bg="#f0fff4" data-text="#1b4332"></div>
-                        <div class="color-swatch" style="background: #2980b9;" data-bg="#ebf8ff" data-text="#2c5282"></div>
-                    </div>
-                </div>
-
-                <a href="https://wa.me/905304640120" class="order-btn"><i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span></a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Düğün Section -->
-    <section class="concept-section" id="dugun" data-color="#9b59b6" data-bg="#fdfaf3" data-text="#5d4037">
-        <div class="concept-container">
-            <div class="concept-visual">
-                <div class="cup-preview">
-                    <img src="images/wedding.png" alt="Düğün" class="dynamic-cup">
-                </div>
-            </div>
-            <div class="concept-details">
-                <h1 data-tr="DÜĞÜN" data-en="WEDDING">Düğün</h1>
-                <p data-tr="En özel gününüzde her detay kusursuz olsun. Şık ve zarif düğün konseptli bardaklarımızla fark yaratın." data-en="Let every detail be perfect on your most special day. Make a difference with our stylish and elegant wedding concept cups.">En özel gününüzde her detay kusursuz olsun.</p>
-                
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
-                    <div class="option-list">
-                        <button class="size-btn active" data-scale="0.8">4 oz</button>
-                        <button class="size-btn" data-scale="0.9">7 oz</button>
-                        <button class="size-btn" data-scale="1.0">8 oz</button>
-                        <button class="size-btn" data-scale="1.2">12 oz</button>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
-                    <div class="option-list">
-                        <button class="lid-btn active" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
-                        <button class="lid-btn" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="AURA RENGİ" data-en="AURA COLOR">Aura Rengi</span>
-                    <div class="option-list">
-                        <div class="color-swatch active" style="background: #9b59b6;" data-bg="#fdfaf3" data-text="#5d4037"></div>
-                        <div class="color-swatch" style="background: #e67e22;" data-bg="#fffaf0" data-text="#7b341e"></div>
-                        <div class="color-swatch" style="background: #ecf0f1;" data-bg="#fff" data-text="#2c3e50"></div>
-                    </div>
-                </div>
-
-                <a href="https://wa.me/905304640120" class="order-btn"><i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span></a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Doğum Günü Section -->
-    <section class="concept-section" id="dogumgunu" data-color="#ff6b6b" data-bg="#fff" data-text="#2c3e50">
-        <div class="concept-container">
-            <div class="concept-visual">
-                <div class="cup-preview">
-                    <img src="images/birthday.png" alt="Doğum Günü" class="dynamic-cup">
-                </div>
-            </div>
-            <div class="concept-details">
-                <h1 data-tr="DOĞUM GÜNÜ" data-en="BIRTHDAY">Doğum Günü</h1>
-                <p data-tr="Rengarenk ve enerji dolu bir kutlama için... Doğum günü konseptli baskılı bardaklarımızla eğlenceyi katlayın." data-en="For a colorful and energetic celebration... Double the fun with our birthday concept printed cups.">Rengarenk ve enerji dolu bir kutlama için...</p>
-                
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
-                    <div class="option-list">
-                        <button class="size-btn active" data-scale="0.8">4 oz</button>
-                        <button class="size-btn" data-scale="0.9">7 oz</button>
-                        <button class="size-btn" data-scale="1.0">8 oz</button>
-                        <button class="size-btn" data-scale="1.2">12 oz</button>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="KAPAK" data-en="LID">Kapak</span>
-                    <div class="option-list">
-                        <button class="lid-btn active" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
-                        <button class="lid-btn" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="AURA RENGİ" data-en="AURA COLOR">Aura Rengi</span>
-                    <div class="option-list">
-                        <div class="color-swatch active" style="background: #ff6b6b;" data-bg="#fff" data-text="#2c3e50"></div>
-                        <div class="color-swatch" style="background: #f1c40f;" data-bg="#fffdf0" data-text="#744210"></div>
-                        <div class="color-swatch" style="background: #3498db;" data-bg="#f0f9ff" data-text="#2a4365"></div>
-                    </div>
-                </div>
-
-                <a href="https://wa.me/905304640120" class="order-btn"><i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span></a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Özel Tasarım Section -->
-    <section class="concept-section" id="ozeltasarim" data-color="#10b981" data-bg="#f0fdf4" data-text="#064e3b">
-        <div class="concept-container">
-            <div class="concept-visual">
-                <div class="cup-preview">
-                    <!-- Sabit bardak şablonu -->
-                    <img src="images/special.png" alt="Özel Tasarım" class="dynamic-cup" id="base-cup-img" style="cursor: zoom-in;" onclick="openZoomModal()">
-                    <!-- Kullanıcının tasarımı buraya gelecek -->
-                    <div id="design-overlay">
-                        <!-- Parlama efekti -->
-                        <div class="cup-highlight"></div>
-                        <!-- Tasarım Resmi -->
-                        <img id="user-design-preview" style="display: none;">
-                    </div>
-                </div>
-            </div>
-            <div class="concept-details">
-                <h1 data-tr="ÖZEL TASARIM" data-en="CUSTOM DESIGN">Özel Tasarım</h1>
-                <p data-tr="Kendi tasarımınızı yükleyin, bardağın üzerinde nasıl duracağını görün. PDF veya Resim formatında yükleyebilirsiniz." data-en="Upload your own design and see how it looks on the cup. You can upload in PDF or Image format.">Kendi tasarımınızı yükleyin!</p>
-                
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="TASARIMINIZI YÜKLEYİN" data-en="UPLOAD YOUR DESIGN">Tasarımınızı Yükleyin</span>
-                    <div style="margin-top: 10px;">
-                        <input type="file" id="design-upload" accept="image/*,application/pdf" style="display: none;">
-                        <label for="design-upload" class="size-btn" style="display: inline-block; cursor: pointer; border-style: dashed;">
-                            <i class="fas fa-file-upload"></i> <span data-tr="Dosya Seç" data-en="Choose File">Dosya Seç</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="customize-group">
-                    <span class="customize-label" data-tr="BOYUT" data-en="SIZE">Boyut</span>
-                    <div class="option-list">
-                        <button class="size-btn active" data-scale="0.8">4 oz</button>
-                        <button class="size-btn" data-scale="1.1">8 oz</button>
-                        <button class="size-btn" data-scale="1.3">12 oz</button>
-                    </div>
-                </div>
-
-                <a href="https://wa.me/905304640120" class="order-btn" id="custom-design-order"><i class="fab fa-whatsapp"></i><span data-tr="TASARIMLA SİPARİŞ VER" data-en="ORDER WITH DESIGN">SİPARİŞ VER</span></a>
-            </div>
-        </div>
-    </section>
+    <!-- Static sections are removed to be handled dynamically -->
 
     <!-- Zoom Modal -->
     <div id="zoom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; justify-content: center; align-items: center; cursor: zoom-out;" onclick="closeZoomModal()">
@@ -466,8 +382,9 @@
     <script>
         const root = document.documentElement;
         let concepts = [];
-        let currentConceptIndex = 0;
-
+        let itemsPerPage = 2; // Bir sayfada kaç ürün görünecek
+        let currentPage = 1;
+        let currentCategory = 'Tümü';
 
         async function initConcepts() {
             try {
@@ -476,28 +393,54 @@
                 concepts = (raw || []).filter(c => c.published);
                 
                 if (concepts.length === 0 && raw.length === 0) {
-                    concepts = [{
-                        id: 'yilbasi',
-                        name: 'Yılbaşı',
-                        theme_color: '#e74c3c',
-                        bg_color: '#ffffff',
-                        text_color: '#2c3e50',
-                        label_text: '%20 İndirim',
-                        base_image: 'images/newyear.png',
-                        variations: {}
-                    }];
+                    concepts = [
+                        { id: 'yilbasi', name: 'Yılbaşı', category: 'Kutlama', theme_color: '#e74c3c', bg_color: '#ffffff', text_color: '#2c3e50', base_image: 'images/newyear.png', published: true },
+                        { id: 'dugun', name: 'Düğün', category: 'Etkinlik', theme_color: '#9b59b6', bg_color: '#fdfaf3', text_color: '#5d4037', base_image: 'images/wedding.png', published: true },
+                        { id: 'dogum-gunu', name: 'Doğum Günü', category: 'Kutlama', theme_color: '#ff6b6b', bg_color: '#ffffff', text_color: '#2c3e50', base_image: 'images/birthday.png', published: true },
+                        { id: 'ozeltasarim', name: 'Özel Tasarım', category: 'Özel', theme_color: '#10b981', bg_color: '#f0fdf4', text_color: '#064e3b', base_image: 'images/special.png', published: true }
+                    ];
                 }
 
+                renderCategories();
                 renderConceptSections();
+                startResourceMonitoring();
             } catch (e) { console.error(e); }
         }
 
-        function renderConceptSections() {
-            const indicator = document.querySelector('.scroll-indicator');
-            document.querySelectorAll('.concept-section').forEach(s => s.remove());
-            indicator.innerHTML = '';
+        function renderCategories() {
+            const nav = document.getElementById('category-nav');
+            const categories = ['Tümü', ...new Set(concepts.map(c => c.category || 'Diğer'))];
+            
+            nav.innerHTML = categories.map(cat => `
+                <button class="cat-btn ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>
+            `).join('');
+        }
 
-            concepts.forEach((c, idx) => {
+        function filterCategory(cat) {
+            currentCategory = cat;
+            currentPage = 1;
+            renderCategories();
+            renderConceptSections();
+        }
+
+        function renderConceptSections() {
+            const wrapper = document.getElementById('concepts-wrapper');
+            const filtered = currentCategory === 'Tümü' 
+                ? concepts 
+                : concepts.filter(c => (c.category || 'Diğer') === currentCategory);
+
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentItems = filtered.slice(start, end);
+
+            wrapper.innerHTML = '';
+            
+            if (currentItems.length === 0) {
+                wrapper.innerHTML = '<div style="text-align:center; padding:100px; font-size:24px; opacity:0.5;">Bu kategoride ürün bulunamadı.</div>';
+            }
+
+            currentItems.forEach((c, idx) => {
                 const section = document.createElement('section');
                 section.className = 'concept-section';
                 section.id = c.id;
@@ -506,7 +449,7 @@
 
                 const isEn = localStorage.getItem('lang') === 'en';
                 const name = isEn ? (c.name_en || c.name) : c.name;
-                const desc = isEn ? (c.desc_en || c.desc_tr) : c.desc_tr;
+                const desc = isEn ? (c.desc_en || c.desc_tr) : (c.desc_tr || 'Özel tasarım bardaklar.');
 
                 section.innerHTML = `
                     <div class="concept-container">
@@ -524,43 +467,64 @@
                                 <span class="customize-label" data-tr="BOYUT SEÇİMİ" data-en="SIZE SELECTION">Boyut Seçimi</span>
                                 <div class="option-list" data-concept-id="${c.id}">
                                     <button class="size-btn active" data-oz="4oz" data-scale="0.8">4 oz</button>
-                                    <button class="size-btn" data-oz="6oz" data-scale="0.9">6 oz</button>
                                     <button class="size-btn" data-oz="7oz" data-scale="1.0">7 oz</button>
                                     <button class="size-btn" data-oz="8oz" data-scale="1.1">8 oz</button>
+                                    <button class="size-btn" data-oz="12oz" data-scale="1.2">12 oz</button>
                                 </div>
                             </div>
 
-                            <div class="customize-group">
-                                <span class="customize-label" data-tr="KAPAK TERCİHİ" data-en="LID PREFERENCE">Kapak Tercihi</span>
-                                <div class="option-list" data-concept-id="${c.id}">
-                                    <button class="lid-btn active" data-lid="nolid" data-tr="Kapaksız" data-en="No Lid">Kapaksız</button>
-                                    <button class="lid-btn" data-lid="lid" data-tr="Kapaklı" data-en="With Lid">Kapaklı</button>
-                                </div>
-                            </div>
-
-                            <div class="customize-group" style="margin-top:20px;">
-                                <div id="stock-info-${c.id}" style="font-size:12px; font-weight:700; color:var(--success);">
-                                    <i class="fas fa-check-circle"></i> <span data-tr="Stokta Var - Hemen Teslim" data-en="In Stock - Fast Shipping">Stokta Var - Hemen Teslim</span>
-                                </div>
-                            </div>
-
-                            <a href="https://wa.me/905304640120?text=Merhaba, ${name} konsepti hakkında bilgi almak istiyorum." class="order-btn" id="wa-btn-${c.id}">
-                                <i class="fab fa-whatsapp"></i><span data-tr="TEKLİF AL / SİPARİŞ VER" data-en="GET QUOTE / ORDER">TEKLİF AL / SİPARİŞ VER</span>
+                            <a href="https://wa.me/905304640120?text=Merhaba, ${name} hakkında bilgi almak istiyorum." class="order-btn">
+                                <i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span>
                             </a>
                         </div>
                     </div>
                 `;
-                document.body.appendChild(section);
-
-                const dot = document.createElement('div');
-                dot.className = 'dot' + (idx === 0 ? ' active' : '');
-                dot.dataset.target = c.id;
-                dot.onclick = () => document.getElementById(c.id).scrollIntoView({ behavior: 'smooth' });
-                indicator.appendChild(dot);
+                wrapper.appendChild(section);
             });
 
-            bindConceptEvents();
+            renderPagination(totalPages);
             setupObserver();
+            // Scroll to top of wrapper when changing page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPagination(totalPages) {
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                pag.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>
+                `;
+            }
+            pag.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderConceptSections();
+        }
+
+        function startResourceMonitoring() {
+            const report = document.getElementById('resource-report');
+            setInterval(() => {
+                let ram = '--';
+                if (performance.memory) {
+                    ram = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+                }
+                
+                // CPU load simulation (approximation via task delay)
+                const start = Date.now();
+                setTimeout(() => {
+                    const delay = Date.now() - start;
+                    const cpuLoad = Math.max(0, Math.min(100, (delay / 10) * 100)).toFixed(0);
+                    report.innerHTML = `RAM: ${ram} MB | CPU Load: ~${cpuLoad}% | DOM: ${document.querySelectorAll('*').length}`;
+                }, 10);
+            }, 2000);
         }
 
         function updateCupVisual(conceptId) {
