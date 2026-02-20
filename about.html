@@ -14,23 +14,25 @@
         .search-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 5000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .search-container.active { opacity: 1; visibility: visible; }
         .search-wrapper {
-            width: 100%; max-width: 700px; padding: 0 40px; position: relative;
-            transform: translateY(50px); transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
+            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-        .search-container.active .search-wrapper { transform: translateY(0); }
+        .search-container.active .search-wrapper { transform: scale(1); }
         .search-wrapper input {
-            width: 100%; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2);
-            color: #1e293b; font-size: 32px; font-weight: 700; padding: 25px 35px; border-radius: 25px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1); outline: none; transition: 0.3s;
+            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
+            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
+            letter-spacing: -0.5px;
         }
-        .search-close { position: absolute; top: -60px; right: 40px; font-size: 30px; color: #1e293b; cursor: pointer; opacity: 0.6; transition: 0.3s; }
+        .search-close { position: absolute; top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .search-close:hover { opacity: 1; transform: rotate(90deg); }
 
         /* Re-designed Navbar Active Tab Effect (Neon Line) */
         .nav-links a {
@@ -152,27 +154,32 @@
 
     <!-- Modern Profil Modalı -->
     <div id="profile-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header-banner">
-                <span class="close-btn profile-close" style="color: white; top: 15px; right: 20px;">&times;</span>
-                <i class="fas fa-user-circle"></i>
-                <h2 data-tr="Profil Bilgilerim" data-en="My Profile" style="margin:0">Profil Bilgilerim</h2>
+                <span class="close-btn profile-close" style="color: white;">&times;</span>
+                <i class="fas fa-user-circle" style="font-size: 64px; margin-bottom: 15px;"></i>
+                <h2 data-tr="Profilim" data-en="My Profile">Profilim</h2>
+                <p style="font-size: 14px; opacity: 0.8;" data-tr="Bilgilerinizi buradan yönetebilirsiniz." data-en="You can manage your information here.">Bilgilerinizi buradan yönetebilirsiniz.</p>
             </div>
-            <div class="modal-body-padding">
+            <div class="modal-body-padding" style="padding:40px;">
                 <form id="profile-form">
-                    <div class="profile-field-item">
-                        <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
-                        <input type="text" id="user-name" placeholder="Adınız Soyadınız" required>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                        <div class="profile-field-item">
+                            <label style="display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--primary);"><i class="fas fa-id-card"></i> <span data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</span></label>
+                            <input type="text" id="user-name" placeholder="Örn: Doğan Aydın" required style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px;">
+                        </div>
+                        <div class="profile-field-item">
+                            <label style="display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--primary);"><i class="fas fa-phone-alt"></i> <span data-tr="Telefon" data-en="Phone">Telefon</span></label>
+                            <input type="tel" id="user-phone" placeholder="05XX XXX XX XX" required style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px;">
+                        </div>
+                        <div class="profile-field-item">
+                            <label style="display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--primary);"><i class="fas fa-map-marker-alt"></i> <span data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</span></label>
+                            <textarea id="user-address" rows="3" placeholder="Siparişleriniz için açık adres giriniz..." required style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px;"></textarea>
+                        </div>
                     </div>
-                    <div class="profile-field-item">
-                        <label data-tr="Telefon Numarası" data-en="Phone Number">Telefon Numarası</label>
-                        <input type="tel" id="user-phone" placeholder="05xx xxx xx xx" required>
-                    </div>
-                    <div class="profile-field-item">
-                        <label data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</label>
-                        <textarea id="user-address" rows="3" placeholder="Siparişlerinizin ulaşacağı tam adres..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%; padding: 15px; border-radius: 12px;" data-tr="DEĞİŞİKLİKLERİ KAYDET" data-en="SAVE CHANGES">DEĞİŞİKLİKLERİ KAYDET</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:800;">
+                        <i class="fas fa-save"></i> <span data-tr="GÜNCELLE" data-en="UPDATE">GÜNCELLE</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -291,44 +298,56 @@
         closeSearchBtn.onclick = () => { searchBar.classList.remove('active'); searchInput.value = ''; };
 
         // Profile logic
-        const profileModal = document.getElementById('profile-modal');
-        const openProfileBtn = document.getElementById('open-profile-modal');
-        const profileCloseBtn = document.querySelector('.profile-close');
-        const profileForm = document.getElementById('profile-form');
+        document.addEventListener('DOMContentLoaded', () => {
+            const pm = document.getElementById('profile-modal');
+            const opm = document.getElementById('open-profile-modal');
+            const cl = document.querySelector('.profile-close');
+            const profileForm = document.getElementById('profile-form');
+            
+            if(opm) opm.onclick = () => { pm.style.display = 'block'; };
+            if(cl) cl.onclick = () => { pm.style.display = 'none'; };
+            window.onclick = (e) => { if(e.target === pm) pm.style.display = 'none'; };
 
-        openProfileBtn.onclick = () => {
-            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
-            if (userData.name) document.getElementById('user-name').value = userData.name;
-            if (userData.phone) document.getElementById('user-phone').value = userData.phone;
-            if (userData.address) document.getElementById('user-address').value = userData.address;
-            profileModal.style.display = 'block';
-        };
+            // Load saved profile
+            const savedData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+            if(savedData.name) document.getElementById('user-name').value = savedData.name;
+            if(savedData.phone) document.getElementById('user-phone').value = savedData.phone;
+            if(savedData.address) document.getElementById('user-address').value = savedData.address;
 
-        profileCloseBtn.onclick = () => { profileModal.style.display = 'none'; };
+            if(profileForm) {
+                profileForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    const data = {
+                        name: document.getElementById('user-name').value,
+                        phone: document.getElementById('user-phone').value,
+                        address: document.getElementById('user-address').value
+                    };
+                    localStorage.setItem('moderra_user_data', JSON.stringify(data));
+                    alert(currentLang === 'tr' ? 'Profil güncellendi!' : 'Profile updated!');
+                    pm.style.display = 'none';
+                };
+            }
 
-        profileForm.onsubmit = (e) => {
-            e.preventDefault();
-            const userData = {
-                name: document.getElementById('user-name').value,
-                phone: document.getElementById('user-phone').value,
-                address: document.getElementById('user-address').value
+            // Navbar Active Tab
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if(link.getAttribute('href') === currentPath) link.classList.add('active');
+            });
+
+            // Search Logic
+            const searchIcon = document.getElementById('open-search');
+            const searchContainer = document.getElementById('search-bar');
+            const closeSearch = document.getElementById('close-search');
+            const searchInput = document.getElementById('search-input');
+
+            if(searchIcon) searchIcon.onclick = () => {
+                searchContainer.classList.add('active');
+                setTimeout(() => searchInput.focus(), 100);
             };
-            localStorage.setItem('moderra_user_data', JSON.stringify(userData));
-            alert(currentLang === 'tr' ? "Profil kaydedildi!" : "Profile saved!");
-            profileModal.style.display = 'none';
-        };
-
-        window.onclick = (e) => {
-            if (e.target === profileModal) profileModal.style.display = 'none';
-        };
+            if(closeSearch) closeSearch.onclick = () => searchContainer.classList.remove('active');
+        });
 
         updateLanguage();
-
-        // Navbar Active Tab
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            if(link.getAttribute('href') === currentPath) link.classList.add('active');
-        });
     </script>
     <script src="env.js"></script>
     <script src="chatbot.js"></script>
