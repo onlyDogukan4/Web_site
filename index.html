@@ -777,63 +777,45 @@
             let discountTotal = 0;
 
             cart.forEach(item => {
-                const p = item.productRaw || {};
-                let itemPrice = item.price;
-                let currentTotal = itemPrice * item.quantity;
-                subTotal += currentTotal;
-                
-                // 1. Çoklu Alım İndirimi (Bulk) - İSTEK: Kapsayıcı (>=) olsun
-                if (p.bulk_threshold && p.bulk_rate && item.quantity >= p.bulk_threshold) {
-                    const discountAmount = currentTotal * (p.bulk_rate / 100);
-                    item.discountNote = `%${p.bulk_rate} İndirim (${p.bulk_threshold} ve üzeri)`;
-                    currentTotal -= discountAmount;
-                    discountTotal += discountAmount;
-                }
-                
-                // 2. Özel Kampanya Mantığı (1 Alana 1 Bedava vb.)
-                // p.campaign_type = 'buy_x_pay_y' (Örn: 2 al 1 öde)
-                // Adminden şu formatta gelecek: campaign_params: { buy: 2, pay: 1 }
-                // Kullanıcının istediği: "2 tane alırsa 1 öder, 3 alırsa yine 1 bedava (2 öder)" -> Bu aslında klasik "Her 2 üründe 1 bedava" değil.
-                // "3.yü aldığında 2 tanesi bedavaya gelmesin" -> Yani (N // 2) * 1 kadar bedava. Evet klasik mantık.
-                if (p.campaign_type === 'buy_x_pay_y' && p.campaign_params) {
-                    const { buy, pay } = p.campaign_params; // Örn: buy:2, pay:1
-                    if (buy > pay && item.quantity >= buy) {
-                        const freeCountPerSet = buy - pay;
-                        const sets = Math.floor(item.quantity / buy);
-                        const remainder = item.quantity % buy;
-                        
-                        // Toplam ödenmesi gereken: (Set sayısı * Ödenen) + Artanlar
-                        const payableQuantity = (sets * pay) + remainder;
-                        const newTotal = payableQuantity * itemPrice;
-                        
-                        const discountAmount = (item.quantity * itemPrice) - newTotal;
-                        
-                        item.discountNote = `${buy} Al ${pay} Öde Fırsatı`;
-                        currentTotal = newTotal; // Override logic
-                        
-                        // Önceki indirimi ezmemek lazım ama genelde kampanya daha büyüktür.
-                        // Şimdilik bulk ile çakışırsa en son hesaplanan (kampanya) geçerli.
-                        // Total düzeltme:
-                        const diff = (itemPrice * item.quantity) - currentTotal;
-                        discountTotal += diff; // Hata: discountTotal global artıyor
-                        // Düzeltme: discountTotal += discountAmount (yukarıdaki hesapla aynı)
-                        // Önceki discount'u sıfırlamak lazım mı? Evet basitlik için:
-                        // Bu blokta discountTotal'i yeniden hesapladık.
+                if (item.isPackage) {
+                    let pkgSubTotal = 0;
+                    (item.packageItems || []).forEach(si => {
+                        pkgSubTotal += (parseFloat(si.price) * si.quantity);
+                    });
+                    const baseTotal = pkgSubTotal * item.quantity;
+                    const discountedTotal = baseTotal * (1 - ((item.discount || 0) / 100));
+                    
+                    subTotal += baseTotal;
+                    total += discountedTotal;
+                    discountTotal += (baseTotal - discountedTotal);
+                } else {
+                    const p = item.productRaw || {};
+                    let itemPrice = parseFloat(item.price);
+                    let currentSub = itemPrice * item.quantity;
+                    let currentTotal = currentSub;
+                    subTotal += currentSub;
+                    
+                    if (p.bulk_threshold && p.bulk_rate && item.quantity >= p.bulk_threshold) {
+                        const discount = currentSub * (p.bulk_rate / 100);
+                        currentTotal -= discount;
+                        discountTotal += discount;
                     }
-                }
-
-                // 3. Çapraz İndirim (Eğer bulk/kampanya yoksa)
-                if (!item.discountNote && p.cross_target && p.cross_rate) {
-                    const targetExists = cart.find(c => c.id == p.cross_target);
-                    if (targetExists) {
-                        const discountAmount = (item.price * item.quantity) * (p.cross_rate / 100);
-                        item.discountNote = `Set İndirimi (%${p.cross_rate})`;
-                        currentTotal = (item.price * item.quantity) - discountAmount;
-                        discountTotal += discountAmount;
+                    else if (p.campaign_type === 'buy_x_pay_y' && p.campaign_params) {
+                        const { buy, pay } = p.campaign_params;
+                        if (buy > pay && item.quantity >= buy) {
+                            const sets = Math.floor(item.quantity / buy);
+                            const remainder = item.quantity % buy;
+                            currentTotal = ((sets * pay) + remainder) * itemPrice;
+                            discountTotal += (currentSub - currentTotal);
+                        }
                     }
+                    else if (p.cross_target && p.cross_rate && cart.find(c => c.id == p.cross_target)) {
+                        const discount = currentSub * (p.cross_rate / 100);
+                        currentTotal -= discount;
+                        discountTotal += discount;
+                    }
+                    total += currentTotal;
                 }
-
-                total += currentTotal;
             });
 
             return { total, subTotal, discountTotal };
@@ -928,68 +910,95 @@
                 whatsappCheckout.style.display = 'none';
             } else {
                 cart.forEach((item, index) => {
-                    // Calculate Item Details
-                    const p = item.productRaw || {};
-                    let basePrice = item.price;
-                    let finalPrice = basePrice;
-                    let discountAmount = 0;
-                    let discountLabel = "";
-                    
-                    // Re-apply logic locally for display purposes (redundant but safe)
-                    // Note: calculateCartTotal() does the math for the total, here we do it for the UI
-                    if (p.bulk_threshold && p.bulk_rate && item.quantity >= p.bulk_threshold) {
-                        const rate = p.bulk_rate / 100;
-                        const totalBase = basePrice * item.quantity;
-                        discountAmount = totalBase * rate;
-                        finalPrice = basePrice * (1 - rate); // Per unit reduced
-                        discountLabel = `%${p.bulk_rate} İndirim`;
-                    }
-                    else if (p.cross_target && p.cross_rate && cart.find(c => c.id == p.cross_target)) {
-                         // Simplify for display: just show it applied
-                         const rate = p.cross_rate / 100;
-                         discountAmount = (basePrice * item.quantity) * rate;
-                         finalPrice = basePrice * (1 - rate);
-                         discountLabel = "Fırsat İndirimi";
-                    }
-
-                    const itemTotal = finalPrice * item.quantity;
-                    const baseTotal = basePrice * item.quantity;
-
                     const itemElement = document.createElement('div');
                     itemElement.classList.add('cart-item');
-                    itemElement.style.cssText = "display:flex; align-items:center; justify-content:space-between; padding:15px; border-bottom:1px solid #f1f5f9;";
+                    itemElement.style.cssText = "display:flex; flex-direction:column; padding:15px; border-bottom:1px solid #f1f5f9; gap:8px;";
                     
-                    // Generate HTML
-                    itemElement.innerHTML = `
-                        <div class="item-info" style="flex:1;">
-                            <div class="item-name" style="font-weight:700; font-size:15px; color:#1e293b;">${item.name}</div>
-                            <div class="quantity-control" style="margin:5px 0;">
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
-                                <span style="font-size:14px; font-weight:700; min-width:30px; text-align:center;">${item.quantity}</span>
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                    if (item.isPackage) {
+                        let pkgSubTotal = 0;
+                        item.packageItems.forEach(si => pkgSubTotal += (si.price * si.quantity));
+                        const pkgTotal = pkgSubTotal * (1 - (item.discount / 100));
+
+                        itemElement.innerHTML = `
+                            <div style="display:flex; align-items:center; justify-content:space-between;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <img src="${item.image}" style="width:40px; height:40px; object-fit:contain; border-radius:8px; border:1px solid #eee;">
+                                    <div>
+                                        <div style="font-weight:800; font-size:15px; color:#1e293b;">${item.name}</div>
+                                        <div style="font-size:10px; background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:10px; display:inline-block; font-weight:700;">SÜPER PAKET</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                        <span style="font-weight:700;">${item.quantity}</span>
+                                        <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                                    </div>
+                                    <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1;"></i>
+                                </div>
                             </div>
                             
-                            <div style="font-size:12px; color:#64748b;">
-                                ${discountAmount > 0 
-                                  ? `<span style="text-decoration:line-through; margin-right:5px;">₺${basePrice.toFixed(2)}</span> <span style="color:#16a34a; font-weight:700;">₺${finalPrice.toFixed(2)}</span>` 
-                                  : `Birim: ₺${basePrice.toFixed(2)}`}
-                            </div>
-                        </div>
-                        
-                        <div style="text-align:right; min-width:80px;">
-                            ${discountAmount > 0 ? `
-                                <div style="font-size:12px; color:#ef4444; text-decoration:line-through;">₺${baseTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                                <div style="font-size:16px; font-weight:800; color:#16a34a;">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                                <div style="font-size:10px; background:#dcfce7; color:#16a34a; padding:2px 5px; border-radius:4px; display:inline-block; margin-top:2px;">
-                                    ${discountLabel}: -₺${discountAmount.toLocaleString('tr-TR', {minimumFractionDigits:2})}
+                            <div style="background:#f8fafc; padding:12px; border-radius:12px; margin-top:5px;">
+                                <div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Paket İçeriği</div>
+                                ${item.packageItems.map(si => `
+                                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                                        <div style="font-size:13px; color:#334155; display:flex; align-items:center; gap:5px;">
+                                            <span style="font-weight:700; color:var(--primary);">${si.quantity}x</span> ${si.name}
+                                        </div>
+                                        <div class="quantity-control" style="background:white; border:1px solid #e2e8f0; height:24px; padding:2px;">
+                                            <button class="qty-btn" style="width:18px; height:18px; font-size:10px;" onclick="updateSubItemQuantity('${item.id}', '${si.id}', -1)">-</button>
+                                            <button class="qty-btn" style="width:18px; height:18px; font-size:10px;" onclick="updateSubItemQuantity('${item.id}', '${si.id}', 1)">+</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                
+                                <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                                    <div style="font-size:11px; color:#ef4444; font-weight:700;">Paket İndirimi: %${item.discount}</div>
+                                    <div style="text-align:right;">
+                                        <div style="font-size:11px; color:#64748b; text-decoration:line-through;">₺${(pkgSubTotal * item.quantity).toFixed(2)}</div>
+                                        <div style="font-size:16px; font-weight:800; color:#16a34a;">₺${(pkgTotal * item.quantity).toFixed(2)}</div>
+                                    </div>
                                 </div>
-                            ` : `
-                                <div style="font-size:16px; font-weight:800; color:#334155;">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                            `}
-                        </div>
+                            </div>
+                        `;
+                    } else {
+                        const p = item.productRaw || {};
+                        let basePrice = parseFloat(item.price);
+                        let finalPrice = basePrice;
+                        let discountLabel = "";
                         
-                        <i class="fas fa-trash-alt item-remove" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; margin-left:15px; transition:0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#cbd5e1'"></i>
-                    `;
+                        if (p.bulk_threshold && item.quantity >= p.bulk_threshold) {
+                            finalPrice = basePrice * (1 - (p.bulk_rate / 100));
+                            discountLabel = `%${p.bulk_rate} İndirim`;
+                        } else if (p.campaign_type === 'buy_x_pay_y' && item.quantity >= p.campaign_params?.buy) {
+                             discountLabel = "Kampanya Uygulandı";
+                             // Price calculation is complex for UI, just show total below
+                        }
+
+                        const itemTotal = (finalPrice * item.quantity); // simplified for simple items
+
+                        itemElement.innerHTML = `
+                            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                                <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                                    <img src="${item.image || 'images/bardak.png'}" style="width:45px; height:45px; object-fit:contain; border-radius:8px; background:#f8fafc; border:1px solid #eee;">
+                                    <div>
+                                        <div style="font-weight:700; font-size:14px; color:#1e293b; line-height:1.2;">${item.name}</div>
+                                        <div class="quantity-control" style="margin-top:5px;">
+                                            <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                            <span style="font-weight:800; font-size:13px; min-width:24px; text-align:center;">${item.quantity}</span>
+                                            <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="text-align:right;">
+                                    <div style="font-size:15px; font-weight:800; color:var(--primary);">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                                    ${discountLabel ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${discountLabel}</div>` : ''}
+                                    <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:12px; margin-top:5px;"></i>
+                                </div>
+                            </div>
+                        `;
+                    }
                     cartItemsList.appendChild(itemElement);
                 });
                 
@@ -1406,6 +1415,7 @@
                     const discountedPrice = subTotal * (1 - ((pkg.discount||0) / 100));
 
                     const div = document.createElement('div');
+                    div.className = 'package-card';
                     div.style.cssText = "background:var(--bg-card); border-radius:32px; padding:30px; border:1px solid var(--border); box-shadow:var(--shadow); transition:0.3s; display:flex; flex-direction:column; gap:20px; position:relative; overflow:hidden;";
                     div.innerHTML = `
                         <div style="position:absolute; top:20px; right:-35px; background:var(--primary); color:white; padding:5px 40px; transform:rotate(45deg); font-weight:800; font-size:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">%${pkg.discount||0} İNDİRİM</div>
@@ -1451,6 +1461,43 @@
 
         // Global session flag
         window.packageOffered = false;
+
+        function flyToCart(img) {
+            const cartBtn = document.getElementById('open-cart-modal');
+            const flyingImg = img.cloneNode();
+            const startRect = img.getBoundingClientRect();
+            const endRect = cartBtn.getBoundingClientRect();
+
+            flyingImg.style.cssText = `
+                position: fixed;
+                z-index: 10000;
+                top: ${startRect.top}px;
+                left: ${startRect.left}px;
+                width: ${startRect.width}px;
+                height: ${startRect.height}px;
+                pointer-events: none;
+                transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+                border-radius: 12px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                object-fit: contain;
+                background: white;
+            `;
+            document.body.appendChild(flyingImg);
+
+            requestAnimationFrame(() => {
+                flyingImg.style.top = `${endRect.top}px`;
+                flyingImg.style.left = `${endRect.left}px`;
+                flyingImg.style.width = '20px';
+                flyingImg.style.height = '20px';
+                flyingImg.style.opacity = '0.4';
+            });
+
+            setTimeout(() => {
+                flyingImg.remove();
+                cartBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
+            }, 800);
+        }
 
         async function addToCart(productId, productName, productPrice) {
             // ... (Restored and fixed addToCart logic below)
@@ -1522,12 +1569,17 @@
                 const prodRes = await fetch('/api/products');
                 const products = await prodRes.json();
                 const itemIds = (pkg.items || "").split(',').map(id => id.trim());
-                let subTotal = 0;
+                
+                const packageItems = [];
                 itemIds.forEach(id => {
                     const p = products.find(x => x.id == id);
-                    if(p) subTotal += parseFloat(p.price);
+                    if(p) packageItems.push({ id: p.id, name: p.name_tr, price: p.price, image: p.image, quantity: 1 });
                 });
-                const finalPrice = subTotal * (1 - ((pkg.discount||0) / 100));
+
+                // Fly to cart
+                const card = document.querySelector(`button[onclick*="addPackageToCart('${packageId}')"]`)?.closest('.package-card');
+                const img = card ? card.querySelector('img') : null;
+                if(img) flyToCart(img);
 
                 const existingIndex = cart.findIndex(x => x.id === pkg.id);
                 if(existingIndex > -1) {
@@ -1536,25 +1588,29 @@
                     cart.push({
                         id: pkg.id,
                         name: pkg.name,
-                        price: finalPrice,
                         image: pkg.image || 'images/box.png',
+                        discount: pkg.discount || 0,
                         quantity: 1,
-                        isPackage: true
+                        isPackage: true,
+                        packageItems: packageItems
                     });
                 }
                 
-                updateCartDisplay();
-                cartModal.style.display = 'block';
-                document.body.classList.add('cart-open');
-                
-                // Success Toast
-                const toast = document.getElementById('cart-toast');
-                if(toast) { 
-                    toast.innerHTML = `<i class="fas fa-check-circle"></i> ${pkg.name} eklendi!`;
-                    toast.classList.add('show');
-                    setTimeout(() => toast.classList.remove('show'), 2500);
-                }
+                setTimeout(() => {
+                    updateCartDisplay();
+                    cartModal.style.display = 'block';
+                    document.body.classList.add('cart-open');
+                }, 800);
             } catch (e) { console.error("Could not add package", e); }
+        }
+
+        function updateSubItemQuantity(pkgId, subId, delta) {
+            const pkg = cart.find(x => x.id === pkgId);
+            if(!pkg || !pkg.packageItems) return;
+            const item = pkg.packageItems.find(si => si.id === subId);
+            if(!item) return;
+            item.quantity = Math.max(1, item.quantity + delta);
+            updateCartDisplay();
         }
 
         window.addToCartByMatch = async function(keyword) {
@@ -1923,30 +1979,5 @@
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
-    <div id="resource-report" style="position:fixed; bottom:20px; left:20px; z-index:2000; background:rgba(0,0,0,0.8); color:#00ff00; padding:5px 12px; border-radius:8px; font-family:monospace; font-size:10px; pointer-events:none; border:1px solid rgba(0,255,0,0.2); backdrop-filter:blur(3px); opacity:0.6; transition:0.3s;">
-        Sistem Raporu...
-    </div>
-    <script>
-        function startResourceMonitoring() {
-            const report = document.getElementById('resource-report');
-            if(!report) return;
-            setInterval(async () => {
-                let ram = '--';
-                if (performance && performance.memory) ram = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
-                let serverStats = { serverRam: '...', serverLoad: '...' };
-                try {
-                    const sRes = await fetch('/api/system-stats');
-                    if(sRes.ok) serverStats = await sRes.json();
-                } catch(e) {}
-                const start = performance.now();
-                setTimeout(() => {
-                    const delay = performance.now() - start;
-                    const cpuLoad = Math.max(0, Math.min(100, (delay / 2) * 100)).toFixed(0);
-                    report.innerHTML = `💻 %${cpuLoad} CPU | 🧠 ${ram}MB | ☁️ ${serverStats.serverRam} SRV`;
-                }, 10);
-            }, 10000);
-        }
-        document.addEventListener('DOMContentLoaded', startResourceMonitoring);
-    </script>
 </body>
 </html>

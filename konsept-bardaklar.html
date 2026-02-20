@@ -361,10 +361,6 @@
         <!-- Sayfa numaraları JS ile gelecek -->
     </div>
 
-    <div class="resource-report" id="resource-report">
-        RAM: -- MB | CPU: --
-    </div>
-
     <div class="scroll-indicator" style="display: none;">
         <div class="dot active" data-target="yilbasi"></div>
         <div class="dot" data-target="dugun"></div>
@@ -504,41 +500,7 @@
             renderConceptSections();
         }
 
-        function startResourceMonitoring() {
-            const report = document.getElementById('resource-report');
-            setInterval(async () => {
-                let ram = '--';
-                if (performance && performance.memory) {
-                    ram = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
-                }
-                
-                // Client-side approximation
-                const start = performance.now();
-                let serverStats = { serverRam: '...', serverLoad: '...' };
-                try {
-                    const sRes = await fetch('/api/system-stats');
-                    if(sRes.ok) serverStats = await sRes.json();
-                } catch(e) {}
-
-                setTimeout(() => {
-                    const delay = performance.now() - start;
-                    const cpuLoad = Math.max(0, Math.min(100, (delay / 2) * 100)).toFixed(0);
-                    report.querySelector('span').innerHTML = `
-                        <b>Tarayıcı:</b> ${ram}MB RAM / %${cpuLoad} CPU | 
-                        <b>Sunucu:</b> ${serverStats.serverRam} / %${serverStats.serverLoad} Yük / ${serverStats.uptime} Saat
-                    `;
-                }, 10);
-            }, 5000);
-        }
-
-        function selectSize(btn) {
-            const container = btn.parentNode;
-            container.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateCupVisual(container.dataset.conceptId);
-        }
-
-        function selectLid(btn) {
+        async function selectLid(btn) {
             const container = btn.parentNode;
             container.querySelectorAll('.lid-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
