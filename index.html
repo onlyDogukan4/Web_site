@@ -1658,6 +1658,44 @@
             window.onCardQuantities[key] = Math.max(1, window.onCardQuantities[key] + delta);
             const el = document.getElementById(`qty-${key}`);
             if(el) el.innerText = window.onCardQuantities[key];
+
+            // Update price on the card dynamically
+            updateOnCardPrice(pkgId);
+        }
+
+        async function updateOnCardPrice(pkgId) {
+            try {
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                const pkg = packages.find(p => p.id == pkgId);
+                if (!pkg) return;
+
+                const prodRes = await fetch('/api/products');
+                const products = await prodRes.json();
+                const itemIds = (pkg.items || "").split(',').map(id => id.trim());
+
+                let subTotal = 0;
+                itemIds.forEach(id => {
+                    const p = products.find(x => x.id == id);
+                    if(p) {
+                        const qty = window.onCardQuantities[`${pkgId}-${p.id}`] || 1;
+                        subTotal += (parseFloat(p.price) * qty);
+                    }
+                });
+
+                const discountedPrice = subTotal * (1 - (pkg.discount || 0) / 100);
+                
+                // Find all pricing elements for this package in the UI
+                const container = document.querySelector(`button[onclick*="addPackageToCart('${pkgId}')"]`)?.parentElement;
+                if(container) {
+                    const priceDisplay = container.querySelector('div[style*="font-size:32px"]');
+                    if(priceDisplay) {
+                        priceDisplay.innerText = `₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+                    }
+                }
+            } catch (e) {
+                console.error("Price update failed", e);
+            }
         }
 
         async function addPackageToCart(packageId) {

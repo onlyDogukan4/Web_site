@@ -357,6 +357,21 @@
             border-color: var(--theme-color);
         }
 
+        .size-btn.oos {
+            position: relative;
+            opacity: 0.5;
+            cursor: not-allowed;
+            overflow: hidden;
+        }
+        .size-btn.oos::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: -10%;
+            width: 120%; height: 2px;
+            background: #ef4444;
+            transform: rotate(-15deg);
+        }
+
         .resource-report {
             position: fixed;
             bottom: 20px;
@@ -577,6 +592,8 @@
                 const name = isEn ? (c.name_en || c.name) : c.name;
                 const desc = isEn ? (c.desc_en || c.desc_tr) : (c.desc_tr || 'Özel tasarım bardaklar.');
 
+                const variants = c.variations || {};
+                
                 section.innerHTML = `
                     <div class="concept-container">
                         <div class="concept-visual">
@@ -592,10 +609,11 @@
                             <div class="customize-group">
                                 <span class="customize-label" data-tr="BOYUT SEÇİMİ" data-en="SIZE SELECTION">Boyut Seçimi</span>
                                 <div class="option-list" data-concept-id="${c.id}">
-                                    <button class="size-btn active" data-oz="4oz" data-scale="0.8" onclick="selectSize(this)">4 oz</button>
-                                    <button class="size-btn" data-oz="7oz" data-scale="1.0" onclick="selectSize(this)">7 oz</button>
-                                    <button class="size-btn" data-oz="8oz" data-scale="1.1" onclick="selectSize(this)">8 oz</button>
-                                    <button class="size-btn" data-oz="12oz" data-scale="1.2" onclick="selectSize(this)">12 oz</button>
+                                    ${['4oz', '7oz', '8oz', '12oz'].map(oz => {
+                                        const isOOS = variants[`${oz}-nolid`]?.stock === 0;
+                                        return `<button class="size-btn ${oz === '4oz' ? 'active' : ''} ${isOOS ? 'oos' : ''}" 
+                                            data-oz="${oz}" onclick="selectSize(this)" ${isOOS ? 'disabled' : ''}>${oz.replace('oz', ' oz')}</button>`;
+                                    }).join('')}
                                 </div>
                             </div>
 
@@ -621,7 +639,9 @@
                                     <textarea id="note-${c.id}" placeholder="Üzerine ne yazılmasını istersiniz? Veya diğer özel istekleriniz..." style="width:100%; height:80px; padding:12px; border-radius:12px; border:2px solid var(--theme-color); background:rgba(255,255,255,0.1); color:var(--theme-text); font-family:inherit; font-size:13px; outline:none; resize:none;"></textarea>
                                 </div>
 
-                                <button onclick="addToCartConcept('${c.id}')" class="order-btn" style="background:var(--theme-color); color:white; border:none; width:100%; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; padding:18px; margin-top:10px;">
+                                <div id="price-display-${c.id}" style="font-size:32px; font-weight:900; color:var(--theme-color); margin-bottom:15px;">₺15,00</div>
+
+                                <button onclick="addToCartConcept('${c.id}')" id="add-btn-${c.id}" class="order-btn" style="background:var(--theme-color); color:white; border:none; width:100%; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; padding:18px; margin-top:10px;">
                                     <i class="fas fa-crown"></i><span data-tr="PREMIUM SEPETE EKLE" data-en="ADD PREMIUM TO CART">PREMIUM SEPETE EKLE</span>
                                 </button>
                             </div>
@@ -630,6 +650,8 @@
                 `;
 
                 wrapper.appendChild(section);
+                // Initial price refresh
+                setTimeout(() => updateConceptPrice(c.id), 100);
             });
 
             renderPagination(totalPages);
@@ -750,6 +772,59 @@
             root.style.setProperty('--theme-text', themeText);
         }
 
+        function selectSize(btn) {
+            const list = btn.parentElement;
+            list.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const conceptId = list.dataset.conceptId;
+            updateConceptPrice(conceptId);
+
+            const oz = btn.dataset.oz;
+            const scaleMap = { '4oz': 0.8, '7oz': 1.0, '8oz': 1.1, '12oz': 1.25 };
+            const img = document.querySelector(`#${conceptId} .dynamic-cup`);
+            if(img) img.style.transform = `scale(${scaleMap[oz] || 1})`;
+        }
+
+        function selectLid(btn) {
+            const list = btn.parentElement;
+            list.querySelectorAll('.lid-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const conceptId = list.dataset.conceptId;
+            updateConceptPrice(conceptId);
+        }
+
+        function updateConceptPrice(conceptId) {
+            const concept = concepts.find(c => c.id == conceptId);
+            if(!concept) return;
+
+            const section = document.getElementById(conceptId);
+            const size = section.querySelector('.size-btn.active').dataset.oz;
+            const lid = section.querySelector('.lid-btn.active').dataset.lid;
+            const variantKey = `${size}-${lid}`;
+            const variant = (concept.variations && concept.variations[variantKey]) || {};
+            
+            const price = variant.price || 15.0;
+            const stock = variant.stock === undefined ? 999 : variant.stock;
+
+            const priceEl = document.getElementById(`price-display-${conceptId}`);
+            if(priceEl) priceEl.innerText = `₺${parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+
+            const addBtn = document.getElementById(`add-btn-${conceptId}`);
+            if(addBtn) {
+                if(stock <= 0) {
+                    addBtn.disabled = true;
+                    addBtn.style.opacity = "0.5";
+                    addBtn.innerHTML = `<i class="fas fa-times-circle"></i> STOKTA YOK`;
+                } else {
+                    addBtn.disabled = false;
+                    addBtn.style.opacity = "1";
+                    addBtn.innerHTML = `<i class="fas fa-crown"></i> ${localStorage.getItem('lang') === 'en' ? 'ADD PREMIUM TO CART' : 'PREMIUM SEPETE EKLE'}`;
+                }
+            }
+        }
+
         function setupObserver() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -803,20 +878,21 @@
                 cart.forEach((item, index) => {
                     const el = document.createElement('div');
                     el.className = 'cart-item-card';
-                    if(item.isConcept) el.classList.add('vip-concept-frame');
+                    if(item.isConcept) el.style.border = "1px solid #d4af37";
 
                     const itemTotal = (item.price * item.quantity);
 
                     el.innerHTML = `
+                        ${item.isConcept ? `<div style="background:linear-gradient(45deg,#d4af37,#b45309); color:white; font-size:9px; font-weight:900; padding:4px 10px; border-radius:10px; display:inline-flex; align-items:center; gap:5px; margin-bottom:10px; text-transform:uppercase;"><i class="fas fa-crown"></i> PREMIUM CONCEPT</div>` : ''}
                         <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:15px;">
                             <div style="display:flex; align-items:center; gap:15px; flex:1;">
                                 <div style="position:relative;">
                                     <img src="${item.image || 'images/bardak.png'}" style="width:60px; height:60px; object-fit:contain; border-radius:18px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'}; padding:5px;">
+                                    ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; top:-8px; left:-8px; color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>` : ''}
                                 </div>
                                 <div>
                                     <div style="font-weight:900; font-size:15px; color:${item.isConcept ? '#1a1a1a':'#1e293b'}; line-height:1.2; display:flex; align-items:center; gap:8px;">
                                         ${item.name}
-                                        ${item.isConcept ? `<i class="fas fa-crown" style="color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));"></i>` : ''}
                                     </div>
                                     ${item.isConcept ? `
                                         <div style="font-size:10px; color:#d4af37; font-weight:900; display:flex; align-items:center; gap:4px; margin-top:4px;">
@@ -824,10 +900,10 @@
                                         </div>
                                         ${item.note ? `<div style="font-size:11px; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:10px; margin-top:8px; font-style:italic; border-left:3px solid #d4af37; line-height:1.4;">"${item.note}"</div>`:''}
                                     `:''}
-                                    <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px;">
-                                        <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                    <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px; display:inline-flex; align-items:center;">
+                                        <button class="qty-btn" style="width:24px; height:24px; border:none; background:white; border-radius:6px; cursor:pointer;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
                                         <span style="font-weight:900; font-size:14px; min-width:30px; text-align:center;">${item.quantity}</span>
-                                        <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                                        <button class="qty-btn" style="width:24px; height:24px; border:none; background:white; border-radius:6px; cursor:pointer;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
                                     </div>
                                 </div>
                             </div>
@@ -847,6 +923,48 @@
             }
             if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
             localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        window.onCardQuantities = {};
+        function adjustOnCardQuantity(pkgId, prodId, delta) {
+            const key = `${pkgId}-${prodId}`;
+            if(!window.onCardQuantities[key]) window.onCardQuantities[key] = 1;
+            window.onCardQuantities[key] = Math.max(1, window.onCardQuantities[key] + delta);
+            const el = document.getElementById(`qty-${key}`);
+            if(el) el.innerText = window.onCardQuantities[key];
+            
+            // Dynamics Price Update on Card
+            updateOnCardPrice(pkgId);
+        }
+
+        async function updateOnCardPrice(pkgId) {
+            try {
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                const pkg = packages.find(p => p.id == pkgId);
+                if(!pkg) return;
+
+                const prodRes = await fetch('/api/products');
+                const products = await prodRes.json();
+                const itemIds = (pkg.items || "").split(',').map(id => id.trim());
+
+                let subTotal = 0;
+                itemIds.forEach(id => {
+                    const p = products.find(x => x.id == id);
+                    if(p) {
+                        const qty = window.onCardQuantities[`${pkgId}-${p.id}`] || 1;
+                        subTotal += (parseFloat(p.price) * qty);
+                    }
+                });
+
+                const discount = parseFloat(pkg.discount || 0);
+                const discountedPrice = subTotal * (1 - discount / 100);
+                
+                const priceEl = document.querySelector(`.package-card[onclick*="${pkgId}"] .package-card-price, .package-card button[onclick*="addPackageToCart('${pkgId}')"]`).parentElement.querySelector('div[style*="font-size:32px"]');
+                if(priceEl) {
+                    priceEl.innerText = `₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+                }
+            } catch(e) {}
         }
 
         function updateItemQuantity(id, delta) {
