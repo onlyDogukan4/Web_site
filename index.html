@@ -1045,26 +1045,26 @@
                             <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:15px;">
                                 <div style="display:flex; align-items:center; gap:15px; flex:1;">
                                     <div style="position:relative;">
-                                    <img src="${item.image || 'images/bardak.png'}" style="width:65px; height:65px; object-fit:contain; border-radius:18px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'}; padding:5px;">
-                                </div>
-                                        <div style="font-weight:900; font-size:15px; color:${item.isConcept ? '#1a1a1a':'#1e293b'}; line-height:1.2; display:flex; align-items:center; gap:8px;">
-                                        ${item.name}
-                                        ${item.isConcept ? `<i class="fas fa-crown" style="color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));"></i>` : ''}
+                                        <img src="${item.image || 'images/bardak.png'}" style="width:65px; height:65px; object-fit:contain; border-radius:18px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'}; padding:5px;">
+                                        ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; top:-8px; left:-8px; color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>` : ''}
                                     </div>
-                                    ${item.isConcept ? `
-                                        <div style="font-size:10px; color:#d4af37; font-weight:900; display:flex; align-items:center; gap:4px; margin-top:4px;">
-                                            <i class="fas fa-magic"></i> ÖZEL TASARIM
+                                    <div style="flex:1;">
+                                        <div style="font-weight:900; font-size:15px; color:${item.isConcept ? '#1a1a1a':'#1e293b'}; line-height:1.2; display:flex; align-items:center; gap:8px;">
+                                            ${item.name}
                                         </div>
-                                        ${item.note ? `<div style="font-size:11px; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:10px; margin-top:8px; font-style:italic; border-left:3px solid #d4af37; line-height:1.4;">"${item.note}"</div>` : ''}
-                                    `:''}
-                                        <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px;">
+                                        ${item.isConcept ? `
+                                            <div style="font-size:10px; color:#d4af37; font-weight:900; display:flex; align-items:center; gap:4px; margin-top:4px;">
+                                                <i class="fas fa-magic"></i> ÖZEL TASARIM
+                                            </div>
+                                            ${item.note ? `<div style="font-size:11px; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:10px; margin-top:8px; font-style:italic; border-left:3px solid #d4af37; line-height:1.4;">"${item.note}"</div>` : ''}
+                                        `:''}
+                                        <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px; display:inline-flex;">
                                             <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
                                             <span style="font-weight:900; font-size:14px; min-width:30px; text-align:center;">${item.quantity}</span>
                                             <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <div style="text-align:right;">
                                     <div style="font-size:20px; font-weight:900; color:${item.isConcept ? '#d4af37':'var(--primary)'};">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
                                     ${discountLabel ? `<div style="font-size:10px; color:#16a34a; font-weight:800; margin-top:4px;">${discountLabel}</div>` : ''}
