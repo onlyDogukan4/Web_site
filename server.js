@@ -258,6 +258,19 @@ SİTE BİLGİSİ: ${siteContext}`
         return;
     }
 
+    // API Route'u - Sistem İstatistikleri (RAM/CPU)
+    if (req.url === '/api/system-stats' && req.method === 'GET') {
+        const os = require('os');
+        const mem = os.totalmem() - os.freemem();
+        const stats = {
+            serverRam: (mem / 1073741824).toFixed(2) + ' GB',
+            serverLoad: os.loadavg()[0].toFixed(2),
+            uptime: Math.floor(os.uptime() / 3600) + 's'
+        };
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify(stats));
+    }
+
     // Statik dosyaları sun (index.html, style.css vb.)
     let filePath = '.' + (req.url === '/' ? '/index.html' : req.url);
     const extname = path.extname(filePath);

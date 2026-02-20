@@ -283,6 +283,10 @@
                 <label>Etiket Yazısı (Modern Label)</label>
                 <input type="text" id="con-label" class="editable-input" placeholder="Örn: %20 İndirim veya FIRSAT">
             </div>
+            <div class="form-row">
+                <div class="form-group"><label>Açıklama (TR)</label><textarea id="con-desc-tr" class="editable-input" rows="2" placeholder="Konsept hakkında bilgi..."></textarea></div>
+                <div class="form-group"><label>Description (EN)</label><textarea id="con-desc-en" class="editable-input" rows="2" placeholder="Concept details in English..."></textarea></div>
+            </div>
             <div class="form-group">
                 <label>Baz Görsel (Sürükle-Bırak)</label>
                 <div class="drop-zone" id="con-drop-zone">
@@ -1119,9 +1123,9 @@
 
             const combinations = [
                 {sz:'4oz', ld:false}, {sz:'4oz', ld:true},
-                {sz:'6oz', ld:false}, {sz:'6oz', ld:true},
                 {sz:'7oz', ld:false}, {sz:'7oz', ld:true},
-                {sz:'8oz', ld:false}, {sz:'8oz', ld:true}
+                {sz:'8oz', ld:false}, {sz:'8oz', ld:true},
+                {sz:'12oz', ld:false}, {sz:'12oz', ld:true}
             ];
             
             combinations.forEach(combo => {
@@ -1171,6 +1175,8 @@
             document.getElementById('con-color').value = c.theme_color || "#e74c3c";
             document.getElementById('con-bg').value = c.bg_color || "#ffffff";
             document.getElementById('con-label').value = c.label_text || "";
+            document.getElementById('con-desc-tr').value = c.desc_tr || "";
+            document.getElementById('con-desc-en').value = c.desc_en || "";
             document.getElementById('con-published').checked = c.published || false;
             
             const prev = document.getElementById('con-preview');
@@ -1189,6 +1195,8 @@
                 theme_color: document.getElementById('con-color').value,
                 bg_color: document.getElementById('con-bg').value,
                 label_text: document.getElementById('con-label').value,
+                desc_tr: document.getElementById('con-desc-tr').value,
+                desc_en: document.getElementById('con-desc-en').value,
                 published: document.getElementById('con-published').checked,
                 base_image: curConceptBaseImg,
                 variations: curVariantData
@@ -1236,6 +1244,7 @@
 
         function resetConModal() {
             document.querySelectorAll('#concept-modal input').forEach(e=>e.value='');
+            document.querySelectorAll('#concept-modal textarea').forEach(e=>e.value='');
             document.getElementById('con-preview').style.display='none';
             document.getElementById('con-drop-text').style.display='block';
             fillVariationInputs();

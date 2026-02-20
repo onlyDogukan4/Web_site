@@ -12,7 +12,16 @@
             --theme-color: #e74c3c;
             --theme-bg: #fff;
             --theme-text: #2c3e50;
+            --danger: #ef4444;
+            --success: #10b981;
         }
+
+        @keyframes oos-shake {
+            0%, 100% { transform: scale(1); }
+            10%, 30%, 50%, 70%, 90% { transform: scale(0.95) rotate(-2deg); }
+            20%, 40%, 60%, 80% { transform: scale(1.05) rotate(2deg); }
+        }
+        .oos-active { animation: oos-shake 0.5s ease-in-out; }
 
         body {
             transition: background-color 0.8s ease, color 0.8s ease;
@@ -392,42 +401,14 @@
                 const raw = await res.json();
                 concepts = (raw || []).filter(c => c.published);
                 
-                if (concepts.length === 0 && raw.length === 0) {
-                    concepts = [
-                        { id: 'yilbasi', name: 'Yılbaşı', category: 'Kutlama', theme_color: '#e74c3c', bg_color: '#ffffff', text_color: '#2c3e50', base_image: 'images/newyear.png', published: true },
-                        { id: 'dugun', name: 'Düğün', category: 'Etkinlik', theme_color: '#9b59b6', bg_color: '#fdfaf3', text_color: '#5d4037', base_image: 'images/wedding.png', published: true },
-                        { id: 'dogum-gunu', name: 'Doğum Günü', category: 'Kutlama', theme_color: '#ff6b6b', bg_color: '#ffffff', text_color: '#2c3e50', base_image: 'images/birthday.png', published: true },
-                        { id: 'ozeltasarim', name: 'Özel Tasarım', category: 'Özel', theme_color: '#10b981', bg_color: '#f0fdf4', text_color: '#064e3b', base_image: 'images/special.png', published: true }
-                    ];
-                }
-
-                renderCategories();
                 renderConceptSections();
                 startResourceMonitoring();
             } catch (e) { console.error(e); }
         }
 
-        function renderCategories() {
-            const nav = document.getElementById('category-nav');
-            const categories = ['Tümü', ...new Set(concepts.map(c => c.category || 'Diğer'))];
-            
-            nav.innerHTML = categories.map(cat => `
-                <button class="cat-btn ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>
-            `).join('');
-        }
-
-        function filterCategory(cat) {
-            currentCategory = cat;
-            currentPage = 1;
-            renderCategories();
-            renderConceptSections();
-        }
-
         function renderConceptSections() {
             const wrapper = document.getElementById('concepts-wrapper');
-            const filtered = currentCategory === 'Tümü' 
-                ? concepts 
-                : concepts.filter(c => (c.category || 'Diğer') === currentCategory);
+            const filtered = concepts; // No more category filtering per request
 
             const totalPages = Math.ceil(filtered.length / itemsPerPage);
             const start = (currentPage - 1) * itemsPerPage;
@@ -466,15 +447,29 @@
                             <div class="customize-group">
                                 <span class="customize-label" data-tr="BOYUT SEÇİMİ" data-en="SIZE SELECTION">Boyut Seçimi</span>
                                 <div class="option-list" data-concept-id="${c.id}">
-                                    <button class="size-btn active" data-oz="4oz" data-scale="0.8">4 oz</button>
-                                    <button class="size-btn" data-oz="7oz" data-scale="1.0">7 oz</button>
-                                    <button class="size-btn" data-oz="8oz" data-scale="1.1">8 oz</button>
-                                    <button class="size-btn" data-oz="12oz" data-scale="1.2">12 oz</button>
+                                    <button class="size-btn active" data-oz="4oz" data-scale="0.8" onclick="selectSize(this)">4 oz</button>
+                                    <button class="size-btn" data-oz="7oz" data-scale="1.0" onclick="selectSize(this)">7 oz</button>
+                                    <button class="size-btn" data-oz="8oz" data-scale="1.1" onclick="selectSize(this)">8 oz</button>
+                                    <button class="size-btn" data-oz="12oz" data-scale="1.2" onclick="selectSize(this)">12 oz</button>
                                 </div>
                             </div>
 
-                            <a href="https://wa.me/905304640120?text=Merhaba, ${name} hakkında bilgi almak istiyorum." class="order-btn">
-                                <i class="fab fa-whatsapp"></i><span data-tr="SİPARİŞ VER" data-en="ORDER NOW">SİPARİŞ VER</span>
+                            <div class="customize-group">
+                                <span class="customize-label" data-tr="KAPAK SEÇENEĞİ" data-en="LID OPTION">Kapak Seçeneği</span>
+                                <div class="option-list" data-concept-id="${c.id}">
+                                    <button class="lid-btn active" data-lid="nolid" onclick="selectLid(this)">
+                                        <i class="fas fa-times"></i> <span data-tr="KAPAKSIZ" data-en="NO LID">Kapaksız</span>
+                                    </button>
+                                    <button class="lid-btn" data-lid="lid" onclick="selectLid(this)">
+                                        <i class="fas fa-coffee"></i> <span data-tr="KAPAKLI" data-en="WITH LID">Kapaklı</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="stock-info-${c.id}" style="font-weight:700; font-size:14px; margin-bottom:20px;"></div>
+
+                            <a href="https://wa.me/905304640120?text=Merhaba, ${name} hakkında bilgi almak istiyorum." class="order-btn" id="wa-btn-${c.id}">
+                                <i class="fab fa-whatsapp"></i><span data-tr="TEKLİF AL / SİPARİŞ VER" data-en="GET QUOTE / ORDER">TEKLİF AL / SİPARİŞ VER</span>
                             </a>
                         </div>
                     </div>
@@ -511,20 +506,43 @@
 
         function startResourceMonitoring() {
             const report = document.getElementById('resource-report');
-            setInterval(() => {
+            setInterval(async () => {
                 let ram = '--';
-                if (performance.memory) {
+                if (performance && performance.memory) {
                     ram = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
                 }
                 
-                // CPU load simulation (approximation via task delay)
-                const start = Date.now();
+                // Client-side approximation
+                const start = performance.now();
+                let serverStats = { serverRam: '...', serverLoad: '...' };
+                try {
+                    const sRes = await fetch('/api/system-stats');
+                    if(sRes.ok) serverStats = await sRes.json();
+                } catch(e) {}
+
                 setTimeout(() => {
-                    const delay = Date.now() - start;
-                    const cpuLoad = Math.max(0, Math.min(100, (delay / 10) * 100)).toFixed(0);
-                    report.innerHTML = `RAM: ${ram} MB | CPU Load: ~${cpuLoad}% | DOM: ${document.querySelectorAll('*').length}`;
+                    const delay = performance.now() - start;
+                    const cpuLoad = Math.max(0, Math.min(100, (delay / 2) * 100)).toFixed(0);
+                    report.querySelector('span').innerHTML = `
+                        <b>Tarayıcı:</b> ${ram}MB RAM / %${cpuLoad} CPU | 
+                        <b>Sunucu:</b> ${serverStats.serverRam} / %${serverStats.serverLoad} Yük / ${serverStats.uptime} Saat
+                    `;
                 }, 10);
-            }, 2000);
+            }, 5000);
+        }
+
+        function selectSize(btn) {
+            const container = btn.parentNode;
+            container.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateCupVisual(container.dataset.conceptId);
+        }
+
+        function selectLid(btn) {
+            const container = btn.parentNode;
+            container.querySelectorAll('.lid-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateCupVisual(container.dataset.conceptId);
         }
 
         function updateCupVisual(conceptId) {
@@ -556,13 +574,17 @@
 
             if (stock <= 0) {
                 cupImg.style.filter = "grayscale(1) opacity(0.3)";
+                preview.classList.add('oos-active');
+                setTimeout(() => preview.classList.remove('oos-active'), 600);
+                
                 const layer = document.createElement('div');
                 layer.className = 'oos-layer';
-                layer.style.cssText = "position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); background:#ef4444; color:white; padding:8px 15px; font-weight:900; border-radius:10px; z-index:50; box-shadow:0 10px 20px rgba(0,0,0,0.2); font-size:12px;";
-                layer.textContent = "STOKTA YOK";
+                layer.style.cssText = "position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); background:#ef4444; color:white; padding:12px 25px; font-weight:900; border-radius:15px; z-index:50; box-shadow:0 15px 30px rgba(239, 68, 68, 0.4); font-size:16px; border:3px solid white; pointer-events:none;";
+                layer.innerHTML = "STOKTA YOK";
                 preview.appendChild(layer);
             } else {
                 cupImg.style.filter = "none";
+                preview.classList.remove('oos-active');
             }
 
             cupImg.style.transform = `scale(${scale})`;

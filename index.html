@@ -1138,11 +1138,13 @@
                      return;
                  }
                  
-                 if(data && data.candidates && data.candidates[0].content) {
-                     textEl.innerText = data.candidates[0].content.parts[0].text;
-                 } else {
-                     textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
-                 }
+                 if(data && data.choices && data.choices[0]?.message?.content) {
+                    textEl.innerText = data.choices[0].message.content;
+                } else if(data && data.candidates && data.candidates[0].content) {
+                    textEl.innerText = data.candidates[0].content.parts[0].text;
+                } else {
+                    textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
+                }
              } catch(e) {
                  console.error(e);
                  textEl.innerText = "Bağlantı hatası. Sepetin harika görünüyor!";
@@ -1416,9 +1418,21 @@
                         </div>
                         <div style="flex:1;">
                             <h4 style="font-size:12px; text-transform:uppercase; color:var(--primary); font-weight:800; margin-bottom:10px; opacity:0.7;">Paket İçeriği:</h4>
-                            <ul style="margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:8px;">
-                                ${includedProducts.map(name => `<li style="background:#f1f5f9; padding:4px 10px; border-radius:10px; font-size:11px; font-weight:600;"><i class="fas fa-check" style="color:var(--success); margin-right:5px;"></i>${name}</li>`).join('')}
-                            </ul>
+                            <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                                ${itemIds.map(id => {
+                                    const p = products.find(x => x.id == id);
+                                    if(!p) return '';
+                                    const itemName = isEn ? (p.name_en || p.name_tr) : p.name_tr;
+                                    return `
+                                        <div style="display:flex; flex-direction:column; align-items:center; gap:5px; width:70px;">
+                                            <div style="width:60px; height:60px; background:#f1f5f9; border-radius:12px; padding:5px; border:1px solid var(--border);">
+                                                <img src="${p.image || 'images/bardak.png'}" style="width:100%; height:100%; object-fit:contain;">
+                                            </div>
+                                            <span style="font-size:10px; font-weight:700; text-align:center; color:var(--text); line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${itemName}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:20px; border-top:1px solid #f1f5f9;">
                             <div>
@@ -1497,6 +1511,64 @@
         let _currentPage = 1;
         const ITEMS_PER_PAGE = 6; // Sayfa başına ürün sayısı
         let lastRenderedProductSignature = '';
+
+        async function addPackageToCart(packageId) {
+            try {
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                const pkg = packages.find(p => p.id == packageId);
+                if (!pkg) return;
+
+                const prodRes = await fetch('/api/products');
+                const products = await prodRes.json();
+                const itemIds = (pkg.items || "").split(',').map(id => id.trim());
+                let subTotal = 0;
+                itemIds.forEach(id => {
+                    const p = products.find(x => x.id == id);
+                    if(p) subTotal += parseFloat(p.price);
+                });
+                const finalPrice = subTotal * (1 - ((pkg.discount||0) / 100));
+
+                const existingIndex = cart.findIndex(x => x.id === pkg.id);
+                if(existingIndex > -1) {
+                    cart[existingIndex].quantity++;
+                } else {
+                    cart.push({
+                        id: pkg.id,
+                        name: pkg.name,
+                        price: finalPrice,
+                        image: pkg.image || 'images/box.png',
+                        quantity: 1,
+                        isPackage: true
+                    });
+                }
+                
+                updateCartDisplay();
+                cartModal.style.display = 'block';
+                document.body.classList.add('cart-open');
+                
+                // Success Toast
+                const toast = document.getElementById('cart-toast');
+                if(toast) { 
+                    toast.innerHTML = `<i class="fas fa-check-circle"></i> ${pkg.name} eklendi!`;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 2500);
+                }
+            } catch (e) { console.error("Could not add package", e); }
+        }
+
+        window.addToCartByMatch = async function(keyword) {
+            try {
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                const found = products.find(p => p.name_tr.toLowerCase().includes(keyword.toLowerCase()));
+                if (found) {
+                    addToCart(found.id, found.name_tr, found.price);
+                    return { success: true, name: found.name_tr };
+                }
+                return { success: false };
+            } catch(e) { return { success: false }; }
+        };
 
         async function renderProducts() {
             const container = document.getElementById('products-dynamic-container');
@@ -1851,5 +1923,30 @@
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
+    <div id="resource-report" style="position:fixed; bottom:20px; left:20px; z-index:2000; background:rgba(0,0,0,0.8); color:#00ff00; padding:5px 12px; border-radius:8px; font-family:monospace; font-size:10px; pointer-events:none; border:1px solid rgba(0,255,0,0.2); backdrop-filter:blur(3px); opacity:0.6; transition:0.3s;">
+        Sistem Raporu...
+    </div>
+    <script>
+        function startResourceMonitoring() {
+            const report = document.getElementById('resource-report');
+            if(!report) return;
+            setInterval(async () => {
+                let ram = '--';
+                if (performance && performance.memory) ram = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+                let serverStats = { serverRam: '...', serverLoad: '...' };
+                try {
+                    const sRes = await fetch('/api/system-stats');
+                    if(sRes.ok) serverStats = await sRes.json();
+                } catch(e) {}
+                const start = performance.now();
+                setTimeout(() => {
+                    const delay = performance.now() - start;
+                    const cpuLoad = Math.max(0, Math.min(100, (delay / 2) * 100)).toFixed(0);
+                    report.innerHTML = `💻 %${cpuLoad} CPU | 🧠 ${ram}MB | ☁️ ${serverStats.serverRam} SRV`;
+                }, 10);
+            }, 10000);
+        }
+        document.addEventListener('DOMContentLoaded', startResourceMonitoring);
+    </script>
 </body>
 </html>
