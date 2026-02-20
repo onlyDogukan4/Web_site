@@ -441,18 +441,59 @@
     <div id="cart-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:9999; backdrop-filter:blur(5px);" onclick="document.getElementById('cart-modal').style.display='none'; this.style.display='none';"></div>
 
     <style>
-        .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 480px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.3);
+        }
         #cart-modal[style*="display: block"], #cart-modal[style*="display:block"] { transform: translateX(0); }
-        .cart-item { animation: slideInCart 0.3s ease-out; }
+        .cart-item-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            animation: slideInCart 0.3s ease-out;
+        }
+        .cart-item-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        
         @keyframes slideInCart { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
         .vip-concept-frame {
-            border: 2px solid transparent;
-            background: linear-gradient(#fff, #fff) padding-box, linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box;
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2) !important;
+            background: linear-gradient(white, white) padding-box, linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box !important;
+            border: 2px solid transparent !important;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15) !important;
             animation: vip-glow 3s infinite;
         }
         @keyframes vip-glow { 0%, 100% { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); } 50% { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.4); } }
-        @media (max-width: 500px) { .cart-modal-content { width: 100%; height: 100%; border-radius: 0; } }
+        
+        .vip-badge {
+            background: linear-gradient(45deg, #d4af37, #b45309);
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center; gap: 5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        @media (max-width: 500px) { .cart-drawer { width: 100%; } }
     </style>
 
 
@@ -635,26 +676,21 @@
             cupImg.style.transform = `scale(${scale})`;
             cupImg.src = targetSrc;
 
-            // Update Stock Info Text
-            const stockInfo = document.getElementById(`stock-info-${conceptId}`);
-            if(stockInfo) {
-                if(stock <= 0) {
-                    stockInfo.style.color = "var(--danger)";
-                    stockInfo.innerHTML = `<i class="fas fa-times-circle"></i> <span data-tr="Şu an stokta yok" data-en="Currently out of stock">Şu an stokta yok</span>`;
-                } else if(stock < 50) {
-                    stockInfo.style.color = "#f59e0b";
-                    stockInfo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span data-tr="Son ${stock} ürün!" data-en="Only ${stock} left!">Son ${stock} ürün!</span>`;
-                } else {
-                    stockInfo.style.color = "var(--success)";
-                    stockInfo.innerHTML = `<i class="fas fa-check-circle"></i> <span data-tr="Stokta Var - Hemen Teslim" data-en="In Stock - Fast Shipping">Stokta Var - Hemen Teslim</span>`;
-                }
+            // Update Price display if exists or create it
+            let priceEl = section.querySelector('.concept-price');
+            if(!priceEl) {
+                priceEl = document.createElement('div');
+                priceEl.className = 'concept-price';
+                priceEl.style.cssText = "font-size:36px; font-weight:900; color:var(--theme-color); margin-bottom:20px; letter-spacing:-1px;";
+                section.querySelector('.concept-details p').after(priceEl);
             }
+            const price = variantData.price || concept.price || 15.0;
+            priceEl.innerHTML = `₺${parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
 
             // Update WA
-            const waBtn = document.getElementById(`wa-btn-${conceptId}`);
+            const waBtn = section.querySelector('.order-btn:not([onclick*="addToCart"])'); // Find WA btn if any
             if (waBtn) {
                 const name = concept.name;
-                const isEn = localStorage.getItem('lang') === 'en';
                 if(stock <= 0) {
                     waBtn.style.opacity = "0.5";
                     waBtn.style.pointerEvents = "none";
@@ -726,39 +762,42 @@
             const { total } = calculateCartTotal();
 
             if (cart.length === 0) {
-                list.innerHTML = '<p style="text-align:center; padding:40px; color:#64748b;">Sepetiniz boş.</p>';
+                list.innerHTML = '<div style="text-align:center; padding:60px 20px;"><i class="fas fa-shopping-basket" style="font-size:48px; color:#e2e8f0; margin-bottom:20px; display:block;"></i><p style="color:#64748b; font-weight:600;">Sepetiniz şu an boş.</p></div>';
                 if(countEl) countEl.style.display = 'none';
             } else {
                 cart.forEach((item, index) => {
                     const el = document.createElement('div');
-                    el.className = 'cart-item';
-                    el.style.cssText = item.isConcept ? 
-                        "display:flex; flex-direction:column; padding:15px; margin-bottom:15px; border-radius:18px; position:relative; gap:8px;" :
-                        "display:flex; flex-direction:column; padding:15px; border-bottom:1px solid #f1f5f9; gap:8px;";
-                    
+                    el.className = 'cart-item-card';
                     if(item.isConcept) el.classList.add('vip-concept-frame');
 
+                    const itemTotal = (item.price * item.quantity);
+
                     el.innerHTML = `
-                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                            <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                        ${item.isConcept ? `<div class="vip-badge"><i class="fas fa-crown"></i> PREMIUM CONCEPT</div>` : ''}
+                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:15px;">
+                            <div style="display:flex; align-items:center; gap:15px; flex:1;">
                                 <div style="position:relative;">
-                                    <img src="${item.image}" style="width:50px; height:50px; object-fit:contain; border-radius:10px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'};">
-                                    ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; top:-8px; left:-8px; color:#d4af37; font-size:12px;"></i>` : ''}
+                                    <img src="${item.image}" style="width:60px; height:60px; object-fit:contain; border-radius:18px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'}; padding:5px;">
+                                    ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; -top:8px; -left:8px; color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>` : ''}
                                 </div>
                                 <div>
-                                    <div style="font-weight:800; font-size:13px; color:#1e293b;">${item.name}</div>
-                                    ${item.isConcept ? `<div style="font-size:10px; color:#d4af37; font-weight:800;">PREMIUM CONCEPT</div>`:''}
-                                    ${item.note ? `<div style="font-size:11px; color:#64748b; font-style:italic;">"${item.note}"</div>`:''}
-                                    <div class="quantity-control" style="margin-top:5px;">
-                                        <button class="qty-btn" style="width:20px; height:20px;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
-                                        <span style="font-size:12px; font-weight:800; min-width:20px; text-align:center;">${item.quantity}</span>
-                                        <button class="qty-btn" style="width:20px; height:20px;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                                    <div style="font-weight:900; font-size:15px; color:${item.isConcept ? '#1a1a1a':'#1e293b'}; line-height:1.2;">${item.name}</div>
+                                    ${item.isConcept ? `
+                                        <div style="font-size:10px; color:#d4af37; font-weight:900; display:flex; align-items:center; gap:4px; margin-top:4px;">
+                                            <i class="fas fa-magic"></i> ÖZEL TASARIM
+                                        </div>
+                                        ${item.note ? `<div style="font-size:11px; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:10px; margin-top:8px; font-style:italic; border-left:3px solid #d4af37; line-height:1.4;">"${item.note}"</div>`:''}
+                                    `:''}
+                                    <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px;">
+                                        <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                        <span style="font-weight:900; font-size:14px; min-width:30px; text-align:center;">${item.quantity}</span>
+                                        <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', 1)">+</button>
                                     </div>
                                 </div>
                             </div>
                             <div style="text-align:right;">
-                                <div style="font-weight:800; color:${item.isConcept ? '#d4af37':'var(--primary)'};">₺${(item.price * item.quantity).toFixed(2)}</div>
-                                <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:12px; margin-top:8px;"></i>
+                                <div style="font-size:18px; font-weight:900; color:${item.isConcept ? '#d4af37':'var(--primary)'};">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                                <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:14px; margin-top:12px; transition:0.3s; padding:5px;"></i>
                             </div>
                         </div>
                     `;
@@ -800,16 +839,22 @@
             const section = document.getElementById(conceptId);
             const sizeBtn = section.querySelector('.size-btn.active');
             const oz = sizeBtn.dataset.oz;
-            const price = parseFloat(concept.price) || 15.0;
+            const lidBtn = section.querySelector('.lid-btn.active');
+            const lid = lidBtn ? lidBtn.dataset.lid : 'nolid';
+            
+            const variantKey = `${oz}-${lid}`;
+            const variantData = (concept.variations && concept.variations[variantKey]) ? concept.variations[variantKey] : null;
+            const price = variantData ? (parseFloat(variantData.price) || 15.0) : 15.0;
+            
             const noteArea = document.getElementById(`note-${conceptId}`);
             const note = noteArea ? noteArea.value : "";
 
-            const itemId = `concept-${concept.id}-${oz}-${Date.now()}`;
+            const itemId = `concept-${concept.id}-${oz}-${lid}-${Date.now()}`;
             
             cart.push({
                 id: itemId,
-                name: `${concept.name_tr} (${oz})`,
-                image: concept.base_image,
+                name: `${concept.name} (${oz}${lid==='lid' ? ' + Kapak':''})`,
+                image: (variantData && variantData.img) ? variantData.img : concept.base_image,
                 price: price,
                 quantity: 1,
                 note: note,
