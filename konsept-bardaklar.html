@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="chatbot.css">
     <style>
         :root {
-            --theme-color: #e74c3c;
+            --theme-color: #6366f1;
             --theme-bg: #fff;
-            --theme-text: #2c3e50;
+            --theme-text: #1e293b;
             --danger: #ef4444;
             --success: #10b981;
             --primary: #6366f1;
@@ -586,6 +586,27 @@
             animation: slideInCart 0.3s ease-out;
         }
         .cart-item-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 20000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 550px;
+            position: relative;
+            animation: modalFadeIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        @keyframes modalFadeIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .close-btn { position: absolute; right: 25px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; color: #64748b; transition: 0.3s; }
+        .close-btn:hover { color: #ef4444; }
         
         @keyframes slideInCart { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -919,13 +940,27 @@
             });
         }
 
-        // --- SHARED CART SYSTEM ---
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
         function calculateCartTotal() {
-            let total = 0;
-            cart.forEach(item => { total += (item.price * item.quantity); });
-            return { total };
+            let subTotal = 0;
+            let discountTotal = 0;
+            
+            cart.forEach(item => {
+                let itemTotal = 0;
+                if (item.packageItems) {
+                    item.packageItems.forEach(si => {
+                        itemTotal += (parseFloat(si.price) * si.quantity);
+                    });
+                    subTotal += itemTotal * item.quantity;
+                    discountTotal += (itemTotal * item.quantity) * (parseFloat(item.discount || 0) / 100);
+                } else {
+                    itemTotal = (parseFloat(item.price) * item.quantity);
+                    subTotal += itemTotal;
+                }
+            });
+            
+            return { subTotal, discountTotal, total: subTotal - discountTotal };
         }
 
         async function updateCartDisplay() {
@@ -935,7 +970,7 @@
             if(!list) return;
 
             list.innerHTML = '';
-            const { total } = calculateCartTotal();
+            const { subTotal, discountTotal, total } = calculateCartTotal();
 
             if (cart.length === 0) {
                 list.innerHTML = '<div style="text-align:center; padding:60px 20px;"><i class="fas fa-shopping-basket" style="font-size:48px; color:#e2e8f0; margin-bottom:20px; display:block;"></i><p style="color:#64748b; font-weight:600;">Sepetiniz şu an boş.</p></div>';
@@ -944,19 +979,24 @@
                 cart.forEach((item, index) => {
                     const el = document.createElement('div');
                     el.className = 'cart-item-card';
-                    if(item.isConcept) el.style.border = "1px solid #d4af37";
+                    if(item.isConcept) el.classList.add('vip-concept-frame');
 
-                    const itemTotal = (item.price * item.quantity);
+                    let itemTotal = 0;
+                    if(item.packageItems) {
+                        item.packageItems.forEach(si => itemTotal += (parseFloat(si.price) * si.quantity));
+                    } else {
+                        itemTotal = (parseFloat(item.price) * item.quantity);
+                    }
 
                     el.innerHTML = `
-                        ${item.isConcept ? `<div style="background:linear-gradient(45deg,#d4af37,#b45309); color:white; font-size:9px; font-weight:900; padding:4px 10px; border-radius:10px; display:inline-flex; align-items:center; gap:5px; margin-bottom:10px; text-transform:uppercase;"><i class="fas fa-crown"></i> PREMIUM CONCEPT</div>` : ''}
+                        ${item.isConcept ? `<div class="vip-badge"><i class="fas fa-crown"></i> PREMIUM CONCEPT</div>` : ''}
                         <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:15px;">
                             <div style="display:flex; align-items:center; gap:15px; flex:1;">
                                 <div style="position:relative;">
                                     <img src="${item.image || 'images/bardak.png'}" style="width:60px; height:60px; object-fit:contain; border-radius:18px; background:#f8fafc; border:1px solid ${item.isConcept ? '#d4af37':'#eee'}; padding:5px;">
                                     ${item.isConcept ? `<i class="fas fa-crown" style="position:absolute; top:-8px; left:-8px; color:#d4af37; font-size:14px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>` : ''}
                                 </div>
-                                <div>
+                                <div style="flex:1;">
                                     <div style="font-weight:900; font-size:15px; color:${item.isConcept ? '#1a1a1a':'#1e293b'}; line-height:1.2; display:flex; align-items:center; gap:8px;">
                                         ${item.name}
                                     </div>
@@ -966,6 +1006,19 @@
                                         </div>
                                         ${item.note ? `<div style="font-size:11px; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:10px; margin-top:8px; font-style:italic; border-left:3px solid #d4af37; line-height:1.4;">"${item.note}"</div>`:''}
                                     `:''}
+                                    ${item.packageItems ? `
+                                        <details style="margin-top:10px; background:#f8fafc; border-radius:12px; border:1px solid #eee;">
+                                            <summary style="padding:8px 12px; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; list-style:none;">Paket İçeriği <i class="fas fa-chevron-down"></i></summary>
+                                            <div style="padding:10px;">
+                                                ${item.packageItems.map(si => `
+                                                    <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px;">
+                                                        <span>${si.name}</span>
+                                                        <span style="font-weight:800;">x${si.quantity}</span>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </details>
+                                    ` : ''}
                                     <div class="quantity-control" style="margin-top:12px; background:#f1f5f9; padding:2px; border-radius:8px; display:inline-flex; align-items:center;">
                                         <button class="qty-btn" style="width:24px; height:24px; border:none; background:white; border-radius:6px; cursor:pointer;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
                                         <span style="font-weight:900; font-size:14px; min-width:30px; text-align:center;">${item.quantity}</span>
@@ -989,6 +1042,17 @@
             }
             if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
             localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function updateSubItemQuantity(pId, sId, delta) {
+            const item = cart.find(x => x.id === pId);
+            if(item && item.packageItems) {
+                const sub = item.packageItems.find(x => x.id === sId);
+                if(sub) {
+                    sub.quantity = Math.max(1, sub.quantity + delta);
+                    updateCartDisplay();
+                }
+            }
         }
 
         window.onCardQuantities = {};
@@ -1129,7 +1193,7 @@
             const cl = document.querySelector('.profile-close');
             const profileForm = document.getElementById('profile-form');
             
-            if(opm) opm.onclick = () => { pm.style.display = 'block'; };
+            if(opm) opm.onclick = (e) => { e.preventDefault(); pm.style.display = 'block'; };
             if(cl) cl.onclick = () => { pm.style.display = 'none'; };
             window.onclick = (e) => { if(e.target === pm) pm.style.display = 'none'; };
 
@@ -1153,6 +1217,40 @@
                 };
             }
 
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.onclick = () => {
+                    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    if (isDark) {
+                        document.documentElement.removeAttribute('data-theme');
+                        localStorage.setItem('theme', 'light');
+                        themeToggle.classList.replace('fa-sun', 'fa-moon');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('theme', 'dark');
+                        themeToggle.classList.replace('fa-moon', 'fa-sun');
+                    }
+                    const activeSection = Array.from(document.querySelectorAll('.concept-section')).find(s => {
+                        const rect = s.getBoundingClientRect();
+                        return rect.top >= -window.innerHeight/2 && rect.top <= window.innerHeight/2;
+                    });
+                    if (activeSection) updateThemeColors(activeSection);
+                };
+            }
+
+            // Language Switch
+            const langToggle = document.getElementById('lang-toggle');
+            if (langToggle) {
+                langToggle.onclick = (e) => { 
+                    e.preventDefault(); 
+                    currentLang = (currentLang === 'tr' ? 'en' : 'tr'); 
+                    localStorage.setItem('lang', currentLang); 
+                    updateLanguage(); 
+                    renderConceptSections();
+                };
+            }
+
             // Navbar Active Tab
             const currentPath = window.location.pathname.split('/').pop() || 'index.html';
             document.querySelectorAll('.nav-links a').forEach(link => {
@@ -1172,25 +1270,16 @@
             if(closeSearch) closeSearch.onclick = () => searchContainer.classList.remove('active');
         });
 
-        const langToggle = document.getElementById('lang-toggle');
-        let currentLang = localStorage.getItem('lang') || 'tr';
         function updateLanguage() {
+            const currentLang = localStorage.getItem('lang') || 'tr';
             document.querySelectorAll('[data-tr]').forEach(el => el.textContent = el.getAttribute('data-' + currentLang));
-            langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
+            const langToggle = document.getElementById('lang-toggle');
+            if(langToggle) langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
         }
-        langToggle.onclick = (e) => { 
-            e.preventDefault(); 
-            currentLang = (currentLang === 'tr' ? 'en' : 'tr'); 
-            localStorage.setItem('lang', currentLang); 
-            updateLanguage(); 
-            renderConceptSections();
-        };
-
-        // Theme Toggle Logic
-        const themeToggle = document.getElementById('theme-toggle');
 
         (function applyStoredTheme() {
             const saved = localStorage.getItem('theme');
+            const themeToggle = document.getElementById('theme-toggle');
             if (saved === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 if (themeToggle) themeToggle.classList.replace('fa-moon', 'fa-sun');
@@ -1199,31 +1288,8 @@
                 if (themeToggle) themeToggle.classList.replace('fa-sun', 'fa-moon');
             }
         })();
-
-        themeToggle.onclick = () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                themeToggle.classList.replace('fa-sun', 'fa-moon');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.classList.replace('fa-moon', 'fa-sun');
-            }
-            const activeSection = Array.from(document.querySelectorAll('.concept-section')).find(s => {
-                const rect = s.getBoundingClientRect();
-                return rect.top >= -window.innerHeight/2 && rect.top <= window.innerHeight/2;
-            });
-            if (activeSection) updateThemeColors(activeSection);
-        };
     </script>
     <script src="chatbot.js"></script>
-    
-    <!-- Vercel Speed Insights -->
-    <script>
-        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
