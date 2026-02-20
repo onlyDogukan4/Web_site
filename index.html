@@ -1443,7 +1443,14 @@
                 let products = [];
                 try {
                     const response = await fetch('/api/products?t=' + Date.now());
-                    if (!response.ok) throw new Error("API Error");
+                    if (!response.ok) throw new Error(`API returned ${response.status}`);
+                    
+                    const contentType = response.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        const text = await response.text();
+                        throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
+                    }
+                    
                     products = await response.json();
                 } catch (apiError) {
                     try {
@@ -1476,8 +1483,18 @@
                 renderProductPage();
 
             } catch (e) {
-                console.error("Ürünler yüklenemedi", e);
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);"><i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i><h3>Veritabanı Hatası</h3></div>`;
+                console.error("Critical API Failure:", e);
+                // Also log the specific fetch error if possible
+                window.lastRenderError = e.message;
+                
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
+                        <h3>Veritabanı Hatası</h3>
+                        <p style="font-size:12px; color:#64748b; margin-top:10px;">Sunucu şu an yanıt veremiyor. Lütfen sayfayı yenilemeyi deneyin.</p>
+                        ${location.hostname === 'localhost' ? `<p style="font-size:10px; color:red;">Error: ${e.message}</p>` : ''}
+                    </div>
+                `;
             }
         }
 
@@ -1700,8 +1717,8 @@
         renderProducts();
         
         // SMART AUTO-REFRESH (Flicker-Free)
-        // Check for updates every 5 seconds, but only re-render if data CHANGED.
-        setInterval(renderProducts, 5000); 
+        // Check for updates every 60 seconds to save Upstash Redis quota
+        setInterval(renderProducts, 60000); 
 
         // --- SEARCH FUNCTIONALITY ---
         const searchIcon = document.getElementById('open-search');
