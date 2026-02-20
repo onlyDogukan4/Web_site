@@ -31,17 +31,25 @@
         }
         .search-close { position: absolute; top: -60px; right: 40px; font-size: 30px; color: #1e293b; cursor: pointer; opacity: 0.6; transition: 0.3s; }
 
-        /* Navbar Active Tab */
+        /* Re-designed Navbar Active Tab Effect (Neon Line) */
+        .nav-links a {
+            position: relative;
+            padding: 10px 20px;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+        }
+        .nav-links a::before {
+            content: '';
+            position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
+            background: var(--primary); transform: translateX(-50%);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--primary);
+        }
         .nav-links a.active {
             color: var(--primary) !important;
-            background: rgba(99, 102, 241, 0.1);
-            font-weight: 800;
-            border-radius:12px;
-            position:relative;
         }
-        .nav-links a.active::after {
-            content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
-            width: 5px; height: 5px; background: var(--primary); border-radius: 50%;
+        .nav-links a.active::before {
+            width: 80%;
         }
     </style>
 </head>

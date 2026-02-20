@@ -39,16 +39,25 @@
         }
         .search-close { position: absolute; top: -60px; right: 40px; font-size: 30px; color: #1e293b; cursor: pointer; opacity: 0.6; transition: 0.3s; }
 
-        /* Navbar Active Tab Effect */
-        .nav-links a { position: relative; padding: 8px 16px; border-radius: 12px; transition: 0.3s; }
+        /* Re-designed Navbar Active Tab Effect (Neon Line) */
+        .nav-links a {
+            position: relative;
+            padding: 10px 20px;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+        }
+        .nav-links a::before {
+            content: '';
+            position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
+            background: var(--primary); transform: translateX(-50%);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px var(--primary);
+        }
         .nav-links a.active {
             color: var(--primary) !important;
-            background: rgba(99, 102, 241, 0.1);
-            font-weight: 800;
         }
-        .nav-links a.active::after {
-            content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-            width: 6px; height: 6px; background: var(--primary); border-radius: 50%;
+        .nav-links a.active::before {
+            width: 80%;
         }
 
         @keyframes oos-shake {
@@ -498,14 +507,17 @@
 
                             <div id="stock-info-${c.id}" style="font-weight:700; font-size:14px; margin-bottom:20px;"></div>
 
-                            <div style="display:flex; flex-direction:column; gap:10px;">
-                                <button onclick="addToCartConcept('${c.id}')" class="order-btn" style="background:var(--theme-color); color:white; border:none; width:100%; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; padding:18px;">
-                                    <i class="fas fa-cart-plus"></i><span data-tr="SEPETE EKLE" data-en="ADD TO CART">SEPETE EKLE</span>
-                                </button>
+                            <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    <label style="font-size:12px; font-weight:800; color:var(--theme-text); display:flex; align-items:center; gap:5px;">
+                                        <i class="fas fa-pencil-alt"></i> <span data-tr="ÖZEL İSTEK NOTUNUZ" data-en="YOUR SPECIAL REQUEST NOTE">ÖZEL İSTEK NOTUNUZ</span>
+                                    </label>
+                                    <textarea id="note-${c.id}" placeholder="Üzerine ne yazılmasını istersiniz? Veya diğer özel istekleriniz..." style="width:100%; height:80px; padding:12px; border-radius:12px; border:2px solid var(--theme-color); background:rgba(255,255,255,0.1); color:var(--theme-text); font-family:inherit; font-size:13px; outline:none; resize:none;"></textarea>
+                                </div>
 
-                                <a href="https://wa.me/905304640120?text=Merhaba, ${name} hakkında bilgi almak istiyorum." class="order-btn" id="wa-btn-${c.id}" style="background:transparent; border:2px solid var(--theme-color); color:var(--theme-color); width:100%; border-radius:15px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:700; padding:15px;">
-                                    <i class="fab fa-whatsapp"></i><span data-tr="WHATSAPP İLE SOR" data-en="ASK VIA WHATSAPP">WHATSAPP İLE SOR</span>
-                                </a>
+                                <button onclick="addToCartConcept('${c.id}')" class="order-btn" style="background:var(--theme-color); color:white; border:none; width:100%; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; padding:18px; margin-top:10px;">
+                                    <i class="fas fa-crown"></i><span data-tr="PREMIUM SEPETE EKLE" data-en="ADD PREMIUM TO CART">PREMIUM SEPETE EKLE</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -673,23 +685,21 @@
             const sizeBtn = section.querySelector('.size-btn.active');
             const oz = sizeBtn.dataset.oz;
             const price = concept.price || 15.0; // Fallback price
+            const note = document.getElementById(`note-${conceptId}`).value;
 
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const itemId = `concept-${concept.id}-${oz}`;
+            const itemId = `concept-${concept.id}-${oz}-${Date.now()}`; // Unique enough
             
-            const existing = cart.find(x => x.id === itemId);
-            if(existing) {
-                existing.quantity++;
-            } else {
-                cart.push({
-                    id: itemId,
-                    name: `${concept.name_tr} (${oz})`,
-                    image: concept.base_image,
-                    price: price,
-                    quantity: 1,
-                    isConcept: true // Trigger VIP style in index.html cart
-                });
-            }
+            cart.push({
+                id: itemId,
+                baseId: concept.id,
+                name: `${concept.name_tr} (${oz})`,
+                image: concept.base_image,
+                price: price,
+                quantity: 1,
+                note: note,
+                isConcept: true // Trigger VIP style in index.html cart
+            });
             
             localStorage.setItem('cart', JSON.stringify(cart));
             
