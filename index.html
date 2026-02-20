@@ -8,118 +8,129 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=2.2">
     <link rel="stylesheet" href="chatbot.css">
-    <style>
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 5px;
-            background: #f3f4f6;
-            padding: 5px;
-            border-radius: 8px;
-            width: fit-content;
-        }
-        .qty-btn {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: none;
-            background: white;
-            color: var(--primary);
-            cursor: pointer;
-            font-weight: bold;
+        /* Modernized Search Bar */
+        .search-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 5000;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: 0.2s;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        .qty-btn:hover { background: var(--primary); color: white; }
-        
-        /* Upsell Style */
-        .upsell-container {
-            margin-top: 15px;
-            padding: 15px;
-            background: #eff6ff; 
-            border: 1px dashed #6366f1;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
+        .search-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .search-wrapper {
+            width: 100%;
+            max-width: 700px;
+            padding: 0 40px;
             position: relative;
-            overflow: hidden;
+            transform: translateY(50px);
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        .upsell-img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
-        
-        /* "Mr. Karton" Bubble in Cart */
-        .mr-karton-bubble {
+        .search-container.active .search-wrapper {
+            transform: translateY(0);
+        }
+        .search-wrapper input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #1e293b;
+            font-size: 32px;
+            font-weight: 700;
+            padding: 25px 35px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-wrapper input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+        }
+        .search-close {
             position: absolute;
-            bottom: 5px; right: 5px;
-            font-size: 10px;
-            background: #fff;
-            padding: 2px 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            color: #555;
+            top: -60px;
+            right: 40px;
+            font-size: 30px;
+            color: #1e293b;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
         }
-        
-        /* Cart Badge Positioning */
-        #open-cart-modal {
-            position: relative; /* Crucial for badge */
-            display: inline-flex; /* Better for sizing */
-            align-items: center;
-            justify-content: center;
+        .search-close:hover { opacity: 1; transform: rotate(90deg); }
+
+        /* Navbar Active Tab Effect */
+        .nav-links a {
+            position: relative;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        .nav-links a.active {
+            color: var(--primary) !important;
+            background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
+            font-weight: 800;
+        }
+        .nav-links a.active::after {
+            content: '';
+            position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+            width: 6px; height: 6px; background: var(--primary); border-radius: 50%;
         }
 
-        #cart-count {
+        /* VIP Concept Cart Item Style */
+        .vip-concept-frame {
+            position: relative;
+            border: 2px solid transparent;
+            background: linear-gradient(#f8fafc, #f8fafc) padding-box,
+                        linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+            animation: vip-glow 3s infinite;
+        }
+        @keyframes vip-glow {
+            0%, 100% { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); }
+            50% { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.4); }
+        }
+        .vip-badge {
             position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
+            top: -10px;
+            left: 15px;
+            background: linear-gradient(45deg, #d4af37, #f7ef8a);
+            color: #2c2c2c;
+            padding: 3px 10px;
+            border-radius: 20px;
             font-size: 10px;
-            font-weight: bold;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            border: 2px solid white; /* Make it pop */
-        }
-        
-        /* Hide Chatbot when Cart Open class is on Body */
-        body.cart-open #chatbot-container,
-        body.cart-open #chatbot-toggle-btn {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-        
-        /* Shake Animation for Validation */
-        @keyframes shake-red {
-            0% { transform: translateX(0); border-color: transparent; }
-            25% { transform: translateX(-5px); border-color: #ef4444; }
-            50% { transform: translateX(5px); border-color: #ef4444; }
-            75% { transform: translateX(-5px); border-color: #ef4444; }
-            100% { transform: translateX(0); border-color: #ef4444; }
-        }
-        .validation-shake {
-            animation: shake-red 0.5s ease-in-out;
-            border: 2px solid #ef4444 !important;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 1px solid white;
         }
     </style>
 </head>
 <body data-scroll-container>
-    <!-- Modern Search UI -->
+    <!-- Impressive Search UI -->
     <div class="search-container" id="search-bar">
         <div class="search-wrapper">
-            <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--gray);"></i>
-            <input type="text" id="search-input" placeholder="Ürün veya kategori ara..." data-tr-placeholder="Ürün veya kategori ara..." data-en-placeholder="Search products or categories...">
             <i class="fas fa-times search-close" id="close-search"></i>
+            <input type="text" id="search-input" placeholder="Hayalinizdeki ürünü arayın..." data-tr-placeholder="Hayalinizdeki ürünü arayın..." data-en-placeholder="Search your dream product...">
+            <div style="text-align:center; margin-top:30px; color:#1e293b; font-size:14px; font-weight:700; opacity:0.6;">
+                <span data-tr="Trend Aramalar: " data-en="Trending: ">Trend Aramalar: </span>
+                <span style="cursor:pointer; margin-left:10px; border-bottom:1px solid #1e293b;" onclick="document.getElementById('search-input').value='Bardak'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Bardak</span>,
+                <span style="cursor:pointer; margin-left:5px; border-bottom:1px solid #1e293b;" onclick="document.getElementById('search-input').value='Yeni Yıl'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Yeni Yıl</span>
+            </div>
         </div>
     </div>
     <nav class="navbar">
@@ -135,17 +146,17 @@
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
 
-            <div class="nav-icons">
-                <i class="fas fa-search" id="open-search"></i>
-                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal">
-                    <span id="cart-count">0</span>
-                </i>
-                <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer;"></i>
-                <div class="hamburger">
-                    <i class="fas fa-bars"></i>
+                <div class="nav-icons">
+                    <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
+                    <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
+                    <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer;">
+                        <span id="cart-count">0</span>
+                    </i>
+                    <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer;"></i>
+                    <div class="hamburger">
+                        <i class="fas fa-bars"></i>
+                    </div>
                 </div>
-            </div>
         </div>
     </nav>
     <script>
@@ -155,6 +166,16 @@
              const cl = document.querySelector('.profile-close');
              if(opm) opm.addEventListener('click', () => { if(pm) pm.style.display = 'block'; });
              if(cl) cl.addEventListener('click', () => { if(pm) pm.style.display = 'none'; });
+
+             // Navbar Active Tab
+             const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+             document.querySelectorAll('.nav-links a').forEach(link => {
+                 if(link.getAttribute('href') === currentPath) {
+                     link.classList.add('active');
+                 } else {
+                     link.classList.remove('active');
+                 }
+             });
         });
     </script>
 
@@ -912,7 +933,14 @@
                 cart.forEach((item, index) => {
                     const itemElement = document.createElement('div');
                     itemElement.classList.add('cart-item');
-                    itemElement.style.cssText = "display:flex; flex-direction:column; padding:15px; border-bottom:1px solid #f1f5f9; gap:8px;";
+                    
+                    // VIP Style for Concepts
+                    if (item.isConcept) {
+                        itemElement.classList.add('vip-concept-frame');
+                        itemElement.style.cssText = "display:flex; flex-direction:column; padding:15px; margin-bottom:15px; border-radius:18px; position:relative; gap:8px;";
+                    } else {
+                        itemElement.style.cssText = "display:flex; flex-direction:column; padding:15px; border-bottom:1px solid #f1f5f9; gap:8px;";
+                    }
                     
                     if (item.isPackage) {
                         let pkgSubTotal = 0;
@@ -970,19 +998,18 @@
                         if (p.bulk_threshold && item.quantity >= p.bulk_threshold) {
                             finalPrice = basePrice * (1 - (p.bulk_rate / 100));
                             discountLabel = `%${p.bulk_rate} İndirim`;
-                        } else if (p.campaign_type === 'buy_x_pay_y' && item.quantity >= p.campaign_params?.buy) {
-                             discountLabel = "Kampanya Uygulandı";
-                             // Price calculation is complex for UI, just show total below
                         }
 
-                        const itemTotal = (finalPrice * item.quantity); // simplified for simple items
+                        const itemTotal = (finalPrice * item.quantity);
 
                         itemElement.innerHTML = `
+                            ${item.isConcept ? `<div class="vip-badge">PREMIUM CONCEPT</div>` : ''}
                             <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
                                 <div style="display:flex; align-items:center; gap:12px; flex:1;">
-                                    <img src="${item.image || 'images/bardak.png'}" style="width:45px; height:45px; object-fit:contain; border-radius:8px; background:#f8fafc; border:1px solid #eee;">
+                                    <img src="${item.image || 'images/bardak.png'}" style="width:50px; height:50px; object-fit:contain; border-radius:10px; background:#f8fafc; border:1px solid #eee;">
                                     <div>
-                                        <div style="font-weight:700; font-size:14px; color:#1e293b; line-height:1.2;">${item.name}</div>
+                                        <div style="font-weight:800; font-size:14px; color:${item.isConcept ? '#2c3e50':'#1e293b'}; line-height:1.2;">${item.name}</div>
+                                        ${item.isConcept ? '<div style="font-size:10px; color:#d4af37; font-weight:800;">✨ Özel Tasarım / Premium</div>':''}
                                         <div class="quantity-control" style="margin-top:5px;">
                                             <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
                                             <span style="font-weight:800; font-size:13px; min-width:24px; text-align:center;">${item.quantity}</span>
@@ -992,7 +1019,7 @@
                                 </div>
                                 
                                 <div style="text-align:right;">
-                                    <div style="font-size:15px; font-weight:800; color:var(--primary);">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                                    <div style="font-size:16px; font-weight:900; color:${item.isConcept ? '#d4af37':'var(--primary)'};">₺${itemTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
                                     ${discountLabel ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${discountLabel}</div>` : ''}
                                     <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:12px; margin-top:5px;"></i>
                                 </div>
@@ -1301,16 +1328,26 @@
                 document.title = "Moderra | Premium Online Shopping";
                 if(metaDesc) metaDesc.setAttribute('content', "Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.");
             } else {
-                document.title = "Moderra | Premium Online Alışveriş";
+                document.title = "Moderra | Güvenli ve Hızlı Alışveriş";
                 if(metaDesc) metaDesc.setAttribute('content', "Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.");
             }
 
+            // Update Placeholder for search if exists
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) {
+                searchInput.placeholder = searchInput.getAttribute('data-' + currentLang + '-placeholder');
+            }
+        }
+
+        // Consolidate Search Logic at the end to avoid duplication
+
+
+        function updateLanguageUI() {
             // Slider İçerikleri
             const slides = document.querySelectorAll('.slide-content');
             if(slides[0]) {
                 slides[0].querySelector('h2').textContent = translations['slider-h1'][currentLang];
                 slides[0].querySelector('p').textContent = translations['slider-p1'][currentLang];
-                slides[0].querySelector('.btn').textContent = currentLang === 'tr' ? 'Hemen Alışverişe Başla' : 'Start Shopping Now';
             }
             if(slides[1]) {
                 slides[1].querySelector('h2').textContent = translations['slider-h2'][currentLang];
@@ -1903,26 +1940,28 @@
         if(searchIcon && searchContainer) {
             searchIcon.addEventListener('click', () => {
                 searchContainer.classList.add('active');
-                if(searchInput) {
-                    searchInput.value = ''; // Reset on open
-                    const event = new Event('input');
-                    searchInput.dispatchEvent(event);
-                    setTimeout(() => searchInput.focus(), 100);
+                const si = document.getElementById('search-input');
+                if(si) {
+                    si.value = ''; // Reset on open
+                    si.dispatchEvent(new Event('input'));
+                    setTimeout(() => si.focus(), 100);
                 }
             });
         }
         
-        if(closeSearch) {
+        if(closeSearch && searchContainer) {
             closeSearch.addEventListener('click', () => {
                  searchContainer.classList.remove('active');
-                 if(searchInput) searchInput.value = '';
+                 const si = document.getElementById('search-input');
+                 if(si) si.value = '';
                  renderProducts(); // Reset view
             });
         }
         
         // Filter Logic
-        if(searchInput) {
-            searchInput.addEventListener('input', (e) => {
+        const mainInput = document.getElementById('search-input');
+        if(mainInput) {
+            mainInput.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
                 const cards = document.querySelectorAll('.product-card');
                 const container = document.getElementById('products-dynamic-container');

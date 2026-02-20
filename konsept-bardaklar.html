@@ -14,6 +14,41 @@
             --theme-text: #2c3e50;
             --danger: #ef4444;
             --success: #10b981;
+            --primary: #6366f1;
+        }
+
+        /* Modernized Search Bar from Index */
+        .search-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 5000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .search-container.active { opacity: 1; visibility: visible; }
+        .search-wrapper {
+            width: 100%; max-width: 700px; padding: 0 40px; position: relative;
+            transform: translateY(50px); transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .search-container.active .search-wrapper { transform: translateY(0); }
+        .search-wrapper input {
+            width: 100%; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #1e293b; font-size: 32px; font-weight: 700; padding: 25px 35px; border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1); outline: none; transition: 0.3s;
+        }
+        .search-close { position: absolute; top: -60px; right: 40px; font-size: 30px; color: #1e293b; cursor: pointer; opacity: 0.6; transition: 0.3s; }
+
+        /* Navbar Active Tab Effect */
+        .nav-links a { position: relative; padding: 8px 16px; border-radius: 12px; transition: 0.3s; }
+        .nav-links a.active {
+            color: var(--primary) !important;
+            background: rgba(99, 102, 241, 0.1);
+            font-weight: 800;
+        }
+        .nav-links a.active::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+            width: 6px; height: 6px; background: var(--primary); border-radius: 50%;
         }
 
         @keyframes oos-shake {
@@ -337,14 +372,13 @@
                 <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
                 <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
-                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons text-dark">
-                <i class="fas fa-search" id="open-search" style="color: var(--text-main);"></i>
-                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer; color: var(--text-main);"></i>
-                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'" style="color: var(--text-main); margin-left: 20px;"></i>
-                <i class="fas fa-user" id="open-profile-modal" style="color: var(--text-main); margin-left: 20px;"></i>
-                <div class="hamburger"><i class="fas fa-bars" style="color: var(--text-main);"></i></div>
+            <div class="nav-icons">
+                <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
+                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
+                <a href="index.html" style="text-decoration:none; color:inherit; margin-left:20px;"><i class="fas fa-shopping-cart"></i></a>
+                <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer; margin-left:20px;"></i>
+                <div class="hamburger"><i class="fas fa-bars"></i></div>
             </div>
         </div>
     </nav>
@@ -464,12 +498,19 @@
 
                             <div id="stock-info-${c.id}" style="font-weight:700; font-size:14px; margin-bottom:20px;"></div>
 
-                            <a href="https://wa.me/905304640120?text=Merhaba, ${name} hakkında bilgi almak istiyorum." class="order-btn" id="wa-btn-${c.id}">
-                                <i class="fab fa-whatsapp"></i><span data-tr="TEKLİF AL / SİPARİŞ VER" data-en="GET QUOTE / ORDER">TEKLİF AL / SİPARİŞ VER</span>
-                            </a>
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                <button onclick="addToCartConcept('${c.id}')" class="order-btn" style="background:var(--theme-color); color:white; border:none; width:100%; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; padding:18px;">
+                                    <i class="fas fa-cart-plus"></i><span data-tr="SEPETE EKLE" data-en="ADD TO CART">SEPETE EKLE</span>
+                                </button>
+
+                                <a href="https://wa.me/905304640120?text=Merhaba, ${name} hakkında bilgi almak istiyorum." class="order-btn" id="wa-btn-${c.id}" style="background:transparent; border:2px solid var(--theme-color); color:var(--theme-color); width:100%; border-radius:15px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:700; padding:15px;">
+                                    <i class="fab fa-whatsapp"></i><span data-tr="WHATSAPP İLE SOR" data-en="ASK VIA WHATSAPP">WHATSAPP İLE SOR</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 `;
+
                 wrapper.appendChild(section);
             });
 
@@ -609,6 +650,55 @@
             }, { threshold: 0.6 });
 
             document.querySelectorAll('.concept-section').forEach(s => observer.observe(s));
+
+            // Search Bar Logic
+            const sb = document.getElementById('search-bar');
+            const openSearch = document.getElementById('open-search');
+            const closeSearch = document.getElementById('close-search');
+            if(openSearch) openSearch.onclick = () => sb.classList.add('active');
+            if(closeSearch) closeSearch.onclick = () => sb.classList.remove('active');
+
+            // Navbar Active Tab
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                 if(link.getAttribute('href') === currentPath) link.classList.add('active');
+            });
+        }
+
+        function addToCartConcept(conceptId) {
+            const concept = concepts.find(c => c.id == conceptId);
+            if(!concept) return;
+
+            const section = document.getElementById(conceptId);
+            const sizeBtn = section.querySelector('.size-btn.active');
+            const oz = sizeBtn.dataset.oz;
+            const price = concept.price || 15.0; // Fallback price
+
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const itemId = `concept-${concept.id}-${oz}`;
+            
+            const existing = cart.find(x => x.id === itemId);
+            if(existing) {
+                existing.quantity++;
+            } else {
+                cart.push({
+                    id: itemId,
+                    name: `${concept.name_tr} (${oz})`,
+                    image: concept.base_image,
+                    price: price,
+                    quantity: 1,
+                    isConcept: true // Trigger VIP style in index.html cart
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Show toast 
+            const toast = document.createElement('div');
+            toast.style.cssText = "position:fixed; top:20px; right:20px; background:linear-gradient(45deg,#d4af37,#f7ef8a); color:#2c2c2c; padding:15px 30px; border-radius:15px; z-index:10000; font-weight:800; border:2px solid white; box-shadow:0 10px 30px rgba(0,0,0,0.2); animation:slideIn 0.5s ease-out;";
+            toast.innerHTML = `<i class="fas fa-crown"></i> PREMIUM CONCEPT SEPETE EKLENDİ!`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
         }
 
         // Initialize
