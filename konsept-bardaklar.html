@@ -386,6 +386,39 @@
             pointer-events: none;
             border: 1px solid #333;
         }
+
+        /* Confirmation Modal */
+        #confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 20000;
+            align-items: center; justify-content: center;
+        }
+        .confirm-content {
+            background: white;
+            width: 100%; max-width: 500px;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .confirm-header {
+            background: linear-gradient(45deg, #d4af37, #b45309);
+            padding: 30px; color: white; text-align: center;
+        }
+        .confirm-body { padding: 40px; }
+        .confirm-item { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 15px; border-bottom: 1px dashed #eee; padding-bottom: 15px; }
+        .confirm-label { font-weight: 800; color: #64748b; }
+        .confirm-value { font-weight: 900; color: #1e293b; text-align: right; }
+        .confirm-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 40px 40px; }
+        .confirm-btn { padding: 18px; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; transition: 0.3s; }
+        .confirm-cancel { background: #f1f5f9; color: #64748b; }
+        .confirm-approve { background: var(--theme-color); color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .confirm-approve:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body data-scroll-container>
@@ -406,7 +439,8 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cart-count" style="position:absolute; -top:8px; -right:10px; background:#ef4444; color:white; font-size:10px; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; font-weight:bold;">0</span>
                 </div>
-                <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer; margin-left:20px;"></i>
+                <li class="lang-switch" style="list-style:none; margin-left:20px;"><a href="#" id="lang-toggle" style="font-weight:800; color:var(--theme-text);">EN</a></li>
+                <i class="fas fa-user-circle" id="open-profile-modal" style="cursor: pointer; margin-left:20px;"></i>
                 <div class="hamburger"><i class="fas fa-bars"></i></div>
             </div>
         </div>
@@ -464,9 +498,41 @@
         <div class="dot" data-target="ozeltasarim"></div>
     </div>
 
-    <!-- Static sections are removed to be handled dynamically -->
-
-    <!-- Zoom Modal -->
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <i class="fas fa-crown" style="font-size: 40px; margin-bottom: 10px;"></i>
+                <h2 data-tr="Sipariş Özeti" data-en="Order Summary">Sipariş Özeti</h2>
+            </div>
+            <div class="confirm-body">
+                <div class="confirm-item">
+                    <span class="confirm-label" data-tr="Konsept" data-en="Concept">Konsept</span>
+                    <span class="confirm-value" id="conf-name">Yılbaşı</span>
+                </div>
+                <div class="confirm-item">
+                    <span class="confirm-label" data-tr="Boyut" data-en="Size">Boyut</span>
+                    <span class="confirm-value" id="conf-size">4 oz</span>
+                </div>
+                <div class="confirm-item">
+                    <span class="confirm-label" data-tr="Kapak" data-en="Lid">Kapak</span>
+                    <span class="confirm-value" id="conf-lid">Kapaklı</span>
+                </div>
+                <div class="confirm-item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                    <span class="confirm-label" data-tr="Özel Notunuz" data-en="Special Note">Özel Notunuz</span>
+                    <div id="conf-note" style="font-size:13px; color:#64748b; background:#f8fafc; padding:12px; border-radius:12px; width:100%; font-style:italic;">Note here...</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px; padding-top:20px; border-top:2px solid #f8fafc;">
+                    <span style="font-weight:900; color:#1e293b;" data-tr="Toplam Tutar" data-en="Total Amount">Toplam Tutar</span>
+                    <span id="conf-price" style="font-size:28px; font-weight:900; color:var(--theme-color);">₺0,00</span>
+                </div>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn confirm-cancel" id="conf-cancel" data-tr="İPTAL" data-en="CANCEL">İPTAL</button>
+                <button class="confirm-btn confirm-approve" id="conf-approve" data-tr="ONAYLIYORUM" data-en="APPROVE">ONAYLIYORUM</button>
+            </div>
+        </div>
+    </div>
     <!-- Cart Drawer -->
     <div id="cart-modal" class="cart-drawer" style="display:none; position:fixed; top:0; right:0; width:450px; height:100%; background:white; z-index:10000; box-shadow:-10px 0 30px rgba(0,0,0,0.1); border-left:1px solid #eee;">
         <div class="cart-header" style="padding:25px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background:#fff;">
@@ -995,37 +1061,50 @@
             const oz = sizeBtn.dataset.oz;
             const lidBtn = section.querySelector('.lid-btn.active');
             const lid = lidBtn ? lidBtn.dataset.lid : 'nolid';
+            const noteArea = document.getElementById(`note-${conceptId}`);
+            const note = noteArea ? noteArea.value : "";
             
             const variantKey = `${oz}-${lid}`;
             const variantData = (concept.variations && concept.variations[variantKey]) ? concept.variations[variantKey] : null;
             const price = variantData ? (parseFloat(variantData.price) || 15.0) : 15.0;
-            
-            const noteArea = document.getElementById(`note-${conceptId}`);
-            const note = noteArea ? noteArea.value : "";
 
-            const itemId = `concept-${concept.id}-${oz}-${lid}-${Date.now()}`;
+            // Show Confirmation Modal
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('conf-name').innerText = concept.name;
+            document.getElementById('conf-size').innerText = oz.replace('oz', ' oz');
+            document.getElementById('conf-lid').innerText = lid === 'lid' ? (currentLang === 'tr' ? 'Kapaklı' : 'With Lid') : (currentLang === 'tr' ? 'Kapaksız' : 'No Lid');
+            document.getElementById('conf-note').innerText = note || (currentLang === 'tr' ? 'Not eklenmedi.' : 'No note added.');
+            document.getElementById('conf-price').innerText = `₺${parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
             
-            cart.push({
-                id: itemId,
-                name: `${concept.name} (${oz}${lid==='lid' ? ' + Kapak':''})`,
-                image: (variantData && variantData.img) ? variantData.img : concept.base_image,
-                price: price,
-                quantity: 1,
-                note: note,
-                isConcept: true
-            });
-            
-            updateCartDisplay();
-            
-            // Premium Toast
-            const toast = document.createElement('div');
-            toast.style.cssText = "position:fixed; top:20px; right:20px; background:linear-gradient(45deg,#d4af37,#f7ef8a); color:#2c2c2c; padding:15px 30px; border-radius:15px; z-index:10000; font-weight:800; border:2px solid white; box-shadow:0 10px 30px rgba(0,0,0,0.2); animation:slideIn 0.5s ease-out;";
-            toast.innerHTML = `<i class="fas fa-crown"></i> PREMIUM CONCEPT SEPETE EKLENDİ!`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+            modal.style.display = 'flex';
 
-            // Open cart
-            document.getElementById('open-cart-modal').click();
+            document.getElementById('conf-cancel').onclick = () => { modal.style.display = 'none'; };
+            document.getElementById('conf-approve').onclick = () => {
+                const itemId = `concept-${concept.id}-${oz}-${lid}-${Date.now()}`;
+                
+                cart.push({
+                    id: itemId,
+                    name: `${concept.name} (${oz}${lid==='lid' ? ' + Kapak':''})`,
+                    image: (variantData && variantData.img) ? variantData.img : concept.base_image,
+                    price: parseFloat(price),
+                    quantity: 1,
+                    note: note,
+                    isConcept: true
+                });
+                
+                modal.style.display = 'none';
+                updateCartDisplay();
+                
+                // Premium Toast
+                const toast = document.createElement('div');
+                toast.style.cssText = "position:fixed; top:20px; right:20px; background:linear-gradient(45deg,#d4af37,#f7ef8a); color:#2c2c2c; padding:15px 30px; border-radius:15px; z-index:10000; font-weight:800; border:2px solid white; box-shadow:0 10px 30px rgba(0,0,0,0.2); animation:modalPop 0.5s ease-out;";
+                toast.innerHTML = `<i class="fas fa-crown"></i> PREMIUM CONCEPT SEPETE EKLENDİ!`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+
+                // Open cart
+                document.getElementById('open-cart-modal').click();
+            };
         }
 
         document.getElementById('whatsapp-checkout').onclick = () => {
