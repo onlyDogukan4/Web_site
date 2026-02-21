@@ -1124,8 +1124,8 @@
             if (!container) return;
             try {
                 const [pkgRes, prodRes] = await Promise.all([
-                    fetch('/api/packages?t=' + Date.now()),
-                    fetch('/api/products?t=' + Date.now())
+                    fetch('/api/packages'),
+                    fetch('/api/products')
                 ]);
                 const packages = await pkgRes.json();
                 const products = await prodRes.json();
@@ -1442,30 +1442,31 @@
                 // 1. Fetch Products
                 let products = [];
                 try {
-                    const response = await fetch('/api/products?t=' + Date.now());
+                    // Zaman damgası (?t=) kaldırıldı - Edge Caching artık aktif
+                    const response = await fetch('/api/products');
                     if (!response.ok) throw new Error(`API returned ${response.status}`);
                     
                     const contentType = response.headers.get("content-type");
                     if (!contentType || !contentType.includes("application/json")) {
-                        const text = await response.text();
-                        throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
+                        throw new Error("Invalid JSON response from server");
                     }
                     
                     products = await response.json();
                 } catch (apiError) {
+                    console.warn("API failed, using local fallback...", apiError);
                     try {
-                        const fallbackResponse = await fetch('products.json?t=' + Date.now());
+                        const fallbackResponse = await fetch('/products.json');
                         products = await fallbackResponse.json();
                     } catch (fallbackError) {
-                        throw new Error("Hem API hem de Products.json başarısız!");
+                        throw new Error("Verilere şu an erişilemiyor. Lütfen daha sonra tekrar deneyin.");
                     }
                 }
-                if (!Array.isArray(products)) throw new Error("Not array");
+                if (!Array.isArray(products)) throw new Error("Veri formatı hatalı.");
 
-                // 2. Fetch Campaigns
+                // 2. Fetch Campaigns (Cached)
                 let campaigns = [];
                 try {
-                    const cRes = await fetch('/api/campaigns?t=' + Date.now());
+                    const cRes = await fetch('/api/campaigns');
                     if (cRes.ok) campaigns = await cRes.json();
                 } catch(e){}
 
