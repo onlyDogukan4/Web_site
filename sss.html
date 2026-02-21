@@ -79,10 +79,9 @@
             <div class="nav-icons" style="display: flex; align-items: center;">
                 <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
                 <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                <div id="open-cart-modal" style="position:relative; cursor:pointer; margin-left:20px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="cart-count" style="position:absolute; -top:8px; -right:10px; background:#ef4444; color:white; font-size:10px; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; font-weight:bold;">0</span>
-                </div>
+                <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer; margin-left:20px; position:relative;" onclick="document.body.classList.add('cart-open')">
+                    <span id="cart-count" style="position:absolute; top:-8px; right:-10px; background:#ef4444; color:white; font-size:10px; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; font-weight:bold;">0</span>
+                </i>
                 <i class="fas fa-user-circle" id="open-profile-modal" style="margin-left: 20px; cursor: pointer;"></i>
                 <div class="hamburger" style="margin-left:20px; cursor:pointer;">
                     <i class="fas fa-bars"></i>
@@ -90,6 +89,22 @@
             </div>
         </div>
     </nav>
+
+    <!-- Unified Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 style="margin:0; font-size:22px; font-weight:900;"><i class="fas fa-shopping-basket"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px;" onclick="document.body.classList.remove('cart-open')">&times;</div>
+        </div>
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;"></div>
+        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9;">
+            <div id="cart-total-price-area"></div>
+            <button id="whatsapp-checkout" class="btn" style="width:100%; padding:20px; border-radius:18px; background:linear-gradient(45deg, #22c55e, #16a34a); color:white; font-weight:800; border:none; cursor:pointer; margin-top:15px;">
+                <i class="fab fa-whatsapp"></i> SİPARİŞİ TAMAMLA
+            </button>
+        </div>
+    </div>
+    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
 
     <header class="page-header-premium">
         <div class="container">

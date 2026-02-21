@@ -277,6 +277,14 @@
                     <p id="display-customer">-</p>
                 </div>
                 <div class="detail-item">
+                    <span>Tahmini Kargoya Verme</span>
+                    <p id="display-ship-date">-</p>
+                </div>
+                <div class="detail-item" id="delay-note-container" style="display:none; grid-column: span 2; background: #fff1f2; border: 1px solid #ffe4e6;">
+                    <span style="color: #e11d48;"><i class="fas fa-exclamation-triangle"></i> Gecikme Bilgilendirmesi</span>
+                    <p id="display-delay-note" style="color: #9f1239; font-style: italic;"></p>
+                </div>
+                <div class="detail-item">
                     <span>Tahmini Teslimat</span>
                     <p id="display-delivery">-</p>
                 </div>
@@ -342,7 +350,17 @@
                 #${order.orderId} nolu ${order.customerName} siparişi:
             `;
             document.getElementById('display-customer').textContent = order.customerName;
+            document.getElementById('display-ship-date').textContent = order.shipmentDate || "Bilgi Bekleniyor";
             document.getElementById('display-delivery').textContent = order.estimatedDelivery || "Bilgi Bekleniyor";
+            
+            const delayBox = document.getElementById('delay-note-container');
+            if (order.delayNote) {
+                delayBox.style.display = 'block';
+                document.getElementById('display-delay-note').textContent = order.delayNote;
+            } else {
+                delayBox.style.display = 'none';
+            }
+
             document.getElementById('display-items').textContent = order.items;
             const priceEl = document.getElementById('display-price');
             if (order.totalPrice && parseFloat(order.totalPrice) > 0) {
