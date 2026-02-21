@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=2.2">
     <link rel="stylesheet" href="chatbot.css">
-    <link rel="icon" type="image/png" href="images/logo.png">
-    <link rel="shortcut icon" href="favicon.ico">
     <style>
         /* Modernized Search Bar */
         .search-container {
@@ -201,7 +199,7 @@
                 <div class="nav-icons">
                     <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
                     <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                    <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer;">
+                    <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer;" onclick="document.body.classList.add('cart-open')">
                         <span id="cart-count">0</span>
                     </i>
                     <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer;"></i>
@@ -279,16 +277,37 @@
         <div id="product-pagination" style="display:flex; gap:8px; justify-content:center; margin-top:32px; flex-wrap:wrap;"></div>
     </section>
 
-    <!-- MODERRA SUPER PACKAGES SECTION -->
+    <!-- ÖZEL PAKETLER BÖLÜMÜ (YENİ) -->
     <section class="container" id="paketler" style="margin-top: 80px;">
         <h2 class="section-title" data-tr="Moderra Süper Paketler" data-en="Moderra Super Bundles">Moderra Süper Paketler</h2>
         <p style="text-align:center; color:var(--text-muted); margin-top:-20px; margin-bottom:40px;" data-tr="İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!" data-en="Everything you need in one package, at more advantageous prices!">İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!</p>
         <div id="packages-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
-            <!-- JS dynamically -->
+            <!-- JS ile doldurulacak -->
         </div>
     </section>
     </main>
+    
+    <!-- Unified Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 style="margin:0; font-size:22px; font-weight:900; color:#1e293b;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px; color:#cbd5e1; transition:0.3s;" onclick="document.body.classList.remove('cart-open')">&times;</div>
+        </div>
+        
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;">
+            <!-- Items injected by JS -->
+        </div>
 
+        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
+            <div id="cart-total-price-area">
+                <!-- Summary injected by JS -->
+            </div>
+            <button id="whatsapp-checkout" class="btn" style="width:100%; margin:0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); box-shadow:0 10px 20px rgba(22, 163, 74, 0.2); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800;">
+                <i class="fab fa-whatsapp" style="font-size:20px;"></i> SİPARİŞİ TAMAMLA
+            </button>
+        </div>
+    </div>
+    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
 
     <!-- Modern Profil Modalı -->
     <div id="profile-modal" class="modal">
@@ -443,9 +462,218 @@
             navLinks.classList.toggle('active');
         });
 
-        // Sepet İşlemleri global-cart.js tarafından yönetilir.
-        // updateCartDisplay(), addToCart(), removeFromCart() vb. globaldir.
+        // --- Sepet İşlevi ---
+        let cart = [];
+        const cartCount = document.getElementById('cart-count');
+        const cartModal = document.getElementById('cart-modal');
+        const openCartModal = document.getElementById('open-cart-modal');
+        const cartCloseBtn = document.querySelector('.cart-close-drawer');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const whatsappCheckout = document.getElementById('whatsapp-checkout');
 
+        async function updateCartDisplay() {
+            cartItemsList.innerHTML = '';
+            
+            // Get Settings
+            let minOrder = 500;
+            let freeShip = 1000;
+            try {
+                const s = localStorage.getItem('settings');
+                if(s) { 
+                    const parsed = JSON.parse(s);
+                    minOrder = parsed.minOrder || 500;
+                    freeShip = parsed.freeShipping || 1000;
+                }
+            } catch(e){}
+            
+            const { total, subTotal, discountTotal } = calculateCartTotal();
+
+            // Progress Bar Logic
+            const shipProgress = Math.min((total / freeShip) * 100, 100);
+            const remainingShip = freeShip - total;
+            
+            const minProgress = Math.min((total / minOrder) * 100, 100);
+            const remainingMin = minOrder - total;
+
+            // Header Messages
+            let headerHTML = '';
+            
+            // 1. Min Sipariş Barı
+            if (total < minOrder) {
+                headerHTML += `
+                    <div id="min-order-bar" style="padding: 15px; background: #fff1f2; border-bottom: 1px solid #ffe4e6; transition:0.3s; cursor:pointer;" onclick="this.classList.remove('validation-shake')">
+                        <div style="font-size:13px; color:#9f1239; margin-bottom:5px; font-weight:700;">
+                            <i class="fas fa-exclamation-circle"></i> Siparişi Onaylamak İçin: ₺${remainingMin.toLocaleString('tr-TR')}
+                        </div>
+                        <div style="width:100%; height:8px; background:#ffe4e6; border-radius:4px; overflow:hidden;">
+                            <div style="width:${minProgress}%; height:100%; background:#f43f5e; transition: width 0.5s;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 2. Kargo Barı
+            if (total >= minOrder) {
+                if (total < freeShip) {
+                     headerHTML += `
+                        <div id="free-ship-bar" style="padding: 15px; background: ${shipBgColor}; border-bottom: 1px solid ${shipBorderColor}; transition:0.3s;">
+                            <div style="font-size:13px; color:${shipTextColor}; margin-bottom:5px; font-weight:800;">
+                                🚀 Ücretsiz Kargo İçin: ₺${remainingShip.toLocaleString('tr-TR')}
+                            </div>
+                            <div style="width:100%; height:8px; background:white; border-radius:4px; overflow:hidden; border:1px solid ${shipBorderColor}">
+                                <div style="width:${shipProgress}%; height:100%; background:${shipBarColor}; transition: width 0.5s;"></div>
+                            </div>
+                            <div style="font-size:11px; margin-top:5px; color:${shipTextColor}; font-style:italic;">Hadi, bu fırsatı kaçırma!</div>
+                        </div>
+                    `;
+                } else {
+                    // Green Success
+                    headerHTML += `
+                        <div style="padding: 15px; background: #ecfccb; border-bottom: 1px solid #d9f99d; text-align:center;">
+                            <div style="font-size:14px; color:#365314; font-weight:800;">
+                                🎉 TEBRİKLER! KARGONUZ ÜCRETSİZ
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Insert Header
+            const existingHeader = document.getElementById('cart-progress-container');
+            if(existingHeader) existingHeader.remove();
+            
+            const progressContainer = document.createElement('div');
+            progressContainer.id = 'cart-progress-container';
+            progressContainer.innerHTML = headerHTML;
+            cartItemsList.parentNode.insertBefore(progressContainer, cartItemsList);
+
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
+                cartCount.style.display = 'none';
+                whatsappCheckout.style.display = 'none';
+            } else {
+                cart.forEach((item, index) => {
+                     const itemTotal = (item.price * item.quantity); 
+                    
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('cart-item');
+                    itemElement.innerHTML = `
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+                                <span style="font-size:14px; font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+                            </div>
+                            <div style="font-size:11px; color:#64748b; margin-top:5px;">Birim: ₺${item.price.toFixed(2)}</div>
+                             ${item.discountNote ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${item.discountNote}</div>` : ''}
+                        </div>
+                        <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
+                        <i class="fas fa-trash-alt item-remove" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#ef4444; margin-left:15px;"></i>
+                    `;
+                    cartItemsList.appendChild(itemElement);
+                });
+                
+                // --- MR. KARTON SMART UPSELL ---
+                if (total >= minOrder && total < freeShip) {
+                    try {
+                        const res = await fetch('/api/products?t='+Date.now());
+                        const allProds = await res.json();
+                        const gap = freeShip - total;
+                        
+                        let bestMatch = null;
+                        let quantityToSuggest = 1;
+                        let pitchText = "Bunu da ekleyelim mi?";
+                        
+                        const hasCups = cart.some(i => i.name.toLowerCase().includes('bardak'));
+                        const hasLids = cart.some(i => i.name.toLowerCase().includes('kapak'));
+                        
+                        if(hasCups && !hasLids) {
+                            bestMatch = allProds.find(p => p.name_tr.toLowerCase().includes('kapak'));
+                            if(bestMatch) pitchText = "Bardaklarınızın kapağı eksik kalmasın!";
+                        }
+                        
+                        if(!bestMatch) {
+                            const sorted = allProds.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
+                            bestMatch = sorted.find(p => parseFloat(p.price) <= gap);
+                            if(!bestMatch) bestMatch = sorted[0]; 
+                            
+                            if(bestMatch) {
+                                const price = parseFloat(bestMatch.price);
+                                if(price < gap) {
+                                    quantityToSuggest = Math.ceil(gap / price);
+                                    if(quantityToSuggest > 1) {
+                                        pitchText = `Sadece ${quantityToSuggest} tane daha ekle, kargo BEDAVA!`;
+                                    } else {
+                                        pitchText = "Kargo ödemek yerine bunu al!";
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if(bestMatch) {
+                           const upsellHTML = `
+                                <div class="upsell-container" onclick="addToCart('${bestMatch.id}', '${bestMatch.name_tr.replace(/'/g, "\\'")}', ${bestMatch.price}); updateItemQuantity('${bestMatch.id}', ${quantityToSuggest-1});">
+                                    <div style="position: absolute; top:0; left:0; bottom:0; width:60px; display:flex; align-items:flex-end; justify-content:center; overflow:visible;">
+                                        <img src="images/mr_karton_leaning.png" style="width:140px;height:auto; transform: translateX(-10px) translateY(10px);">
+                                    </div>
+                                    <div style="padding-left: 35px; flex:1;">
+                                        <div class="mr-karton-bubble" style="top:-10px; right:auto; left:48px; background:var(--primary); color:white; border:none; border-radius:10px 10px 10px 0;">
+                                            Dr. Karton Öneriyor 💡
+                                        </div>
+                                        <div style="font-size:12px; font-weight:600; color:#334155; margin-top:8px;">
+                                            "${pitchText}" <br>
+                                            <span style="color:#64748b; font-weight:400;">(${bestMatch.name_tr} x ${quantityToSuggest})</span>
+                                        </div>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div style="font-weight:800; color:var(--primary)">+₺${(parseFloat(bestMatch.price)*quantityToSuggest).toLocaleString('tr-TR')}</div>
+                                        <i class="fas fa-plus-circle" style="color:var(--primary); margin-top:5px;"></i>
+                                    </div>
+                                </div>
+                           `;
+                           const div = document.createElement('div');
+                           div.innerHTML = upsellHTML;
+                           cartItemsList.appendChild(div);
+                        }
+                    } catch(e) {}
+                }
+
+                const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = totalCount;
+                if(totalCount > 0) {
+                     cartCount.style.display = 'flex';
+                } else {
+                     cartCount.style.display = 'none';
+                }
+                
+                whatsappCheckout.style.display = 'block';
+            }
+            
+            const totalFormatted = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+            if (discountTotal > 0) {
+                cartTotalPrice.innerHTML = `
+                    <div style="font-size:14px; text-decoration:line-through; color:#94a3b8">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                    <div style="color:var(--primary); font-size:20px;">${totalFormatted}</div>
+                    <div style="font-size:12px; color:var(--success)">Toplam İndirim: ₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                `;
+            } else {
+                cartTotalPrice.textContent = totalFormatted;
+            }
+        }
+
+        function updateItemQuantity(id, change) {
+            const item = cart.find(x => x.id == id);
+            if(!item) return;
+            item.quantity += change;
+            if(item.quantity <= 0) {
+                removeFromCart(id);
+            } else {
+                updateCartDisplay();
+            }
+        }
 
         whatsappCheckout.onclick = async (e) => {
             e.preventDefault();
@@ -662,6 +890,26 @@
             return { total, subTotal, discountTotal };
         }
 
+        function showVIPToast(itemName) {
+            const toast = document.createElement('div');
+            toast.className = 'vip-toast';
+            toast.innerHTML = `
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="vip-toast-icon"><i class="fas fa-crown"></i></div>
+                    <div>
+                        <div style="font-size:10px; opacity:0.8; font-weight:800; text-transform:uppercase; letter-spacing:1px;">VIP PREMIUM ADDED</div>
+                        <div style="font-size:15px; font-weight:900;">${itemName}</div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.classList.add('active'); }, 100);
+            setTimeout(() => { 
+                toast.classList.remove('active'); 
+                setTimeout(() => toast.remove(), 500); 
+            }, 4000);
+        }
+
         async function updateCartDisplay() {
             cartItemsList.innerHTML = '';
             
@@ -682,71 +930,59 @@
             // Progress Bar Logic
             const shipProgress = Math.min((total / freeShip) * 100, 100);
             const remainingShip = freeShip - total;
-            
-            // Logic for Yellow/Green
-            const shipBarColor = total >= freeShip ? '#22c55e' : '#facc15'; // Green vs Yellow
+            const shipBarColor = total >= freeShip ? '#22c55e' : '#facc15';
             const shipBgColor = total >= freeShip ? '#dcfce7' : '#fef9c3';
             const shipBorderColor = total >= freeShip ? '#bbf7d0' : '#fde047';
             const shipTextColor = total >= freeShip ? '#166534' : '#854d0e';
-
             const minProgress = Math.min((total / minOrder) * 100, 100);
             const remainingMin = minOrder - total;
 
-            // Header Messages
             let headerHTML = '';
-            
-            // 1. Min Sipariş Barı (RED)
             if (total < minOrder) {
                 headerHTML += `
-                    <div id="min-order-bar" style="padding: 15px; background: #fff1f2; border-bottom: 1px solid #ffe4e6; transition:0.3s;" onclick="this.classList.remove('validation-shake')">
-                        <div style="font-size:13px; color:#9f1239; margin-bottom:5px; font-weight:700;">
-                            <i class="fas fa-exclamation-circle"></i> Siparişi Onaylamak İçin: ₺${remainingMin.toLocaleString('tr-TR')}
+                    <div id="min-order-bar" style="padding: 20px; background: #fff1f2; border-bottom: 1px solid #ffe4e6; margin: -20px -20px 20px -20px;">
+                        <div style="font-size:13px; color:#9f1239; margin-bottom:8px; font-weight:800; display:flex; justify-content:space-between;">
+                            <span><i class="fas fa-exclamation-circle"></i> Onay İçin Eksik:</span>
+                            <span>₺${remainingMin.toLocaleString('tr-TR')}</span>
                         </div>
-                        <div style="width:100%; height:8px; background:#ffe4e6; border-radius:4px; overflow:hidden;">
-                            <div style="width:${minProgress}%; height:100%; background:#f43f5e; transition: width 0.5s;"></div>
+                        <div style="width:100%; height:8px; background:#ffe4e6; border-radius:10px; overflow:hidden;">
+                            <div style="width:${minProgress}%; height:100%; background:#f43f5e; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
                         </div>
                     </div>
                 `;
             }
 
-            // 2. Kargo Barı (YELLOW / GREEN)
             if (total >= minOrder) {
                 if (total < freeShip) {
                      headerHTML += `
-                        <div id="free-ship-bar" style="padding: 15px; background: ${shipBgColor}; border-bottom: 1px solid ${shipBorderColor}; transition:0.3s;">
-                            <div style="font-size:13px; color:${shipTextColor}; margin-bottom:5px; font-weight:800;">
-                                🚀 Ücretsiz Kargo İçin: ₺${remainingShip.toLocaleString('tr-TR')}
+                        <div id="free-ship-bar" style="padding: 20px; background: ${shipBgColor}; border-bottom: 1px solid ${shipBorderColor}; margin: -20px -20px 20px -20px;">
+                            <div style="font-size:13px; color:${shipTextColor}; margin-bottom:8px; font-weight:800; display:flex; justify-content:space-between;">
+                                <span>🚀 Ücretsiz Kargo İçin:</span>
+                                <span>₺${remainingShip.toLocaleString('tr-TR')}</span>
                             </div>
-                            <div style="width:100%; height:8px; background:white; border-radius:4px; overflow:hidden; border:1px solid ${shipBorderColor}">
-                                <div style="width:${shipProgress}%; height:100%; background:${shipBarColor}; transition: width 0.5s;"></div>
+                            <div style="width:100%; height:100%; height:8px; background:white; border-radius:10px; overflow:hidden; border:1px solid ${shipBorderColor}">
+                                <div style="width:${shipProgress}%; height:100%; background:${shipBarColor}; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
                             </div>
-                            <div style="font-size:11px; margin-top:5px; color:${shipTextColor}; font-style:italic;">Hadi, bu fırsatı kaçırma!</div>
                         </div>
                     `;
                 } else {
-                    // Green Success
                     headerHTML += `
-                        <div style="padding: 15px; background: #ecfccb; border-bottom: 1px solid #d9f99d; text-align:center;">
-                            <div style="font-size:14px; color:#365314; font-weight:800;">
-                                🎉 TEBRİKLER! KARGONUZ ÜCRETSİZ
-                            </div>
+                        <div style="padding: 20px; background: #ecfccb; border-bottom: 1px solid #d9f99d; text-align:center; margin: -20px -20px 20px -20px;">
+                            <div style="font-size:14px; color:#365314; font-weight:900;">🎉 KARGONUZ ŞİMDİ ÜCRETSİZ!</div>
                         </div>
                     `;
                 }
             }
 
-            // Insert Header
             const existingHeader = document.getElementById('cart-progress-container');
             if(existingHeader) existingHeader.remove();
-            
             const progressContainer = document.createElement('div');
             progressContainer.id = 'cart-progress-container';
             progressContainer.innerHTML = headerHTML;
-            cartItemsList.parentNode.insertBefore(progressContainer, cartItemsList);
-
+            cartItemsList.prepend(progressContainer);
 
             if (cart.length === 0) {
-                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
+                cartItemsList.innerHTML = '<div style="text-align:center; padding:100px 20px; color:#cbd5e1;"><i class="fas fa-shopping-basket" style="font-size:60px; margin-bottom:20px; display:block;"></i><p style="font-weight:700;">Sepetiniz şu an boş.</p></div>';
                 cartCount.style.display = 'none';
                 whatsappCheckout.style.display = 'none';
             } else {
@@ -760,15 +996,13 @@
                     if(item.isConcept) itemElement.classList.add('vip-concept-frame');
 
                     if (item.isPackage) {
-                        const pkgSubTotal = item.packageItems.reduce((acc, si) => acc + (parseFloat(si.price) * si.quantity), 0);
-
                         itemElement.innerHTML = `
                             <div style="display:flex; align-items:flex-start; justify-content:space-between; width:100%; gap:15px;">
                                 <div style="display:flex; gap:15px; flex:1;">
                                     <img src="${item.image || 'images/box.png'}" style="width:70px; height:70px; object-fit:contain; border-radius:15px; background:#f8fafc; padding:10px; border:1px solid #eee;">
                                     <div>
                                         <div style="font-weight:900; font-size:16px; color:#1e293b; line-height:1.2;">${item.name}</div>
-                                        <div style="font-size:11px; color:#16a34a; font-weight:800; margin-top:4px;"><i class="fas fa- PERCENTAGE"></i> Set Avantajı Uygulandı</div>
+                                        <div style="font-size:11px; color:#16a34a; font-weight:800; margin-top:4px;"><i class="fas fa-percent"></i> Set Avantajı Uygulandı</div>
                                         <div class="quantity-control" style="margin-top:10px; background:#f1f5f9; padding:2px; border-radius:8px;">
                                             <button class="qty-btn" style="width:24px; height:24px;" onclick="updateItemQuantity('${item.id}', -1)">-</button>
                                             <span style="font-weight:900; font-size:14px; min-width:30px; text-align:center;">${item.quantity}</span>
@@ -781,7 +1015,6 @@
                                     <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:14px; margin-top:12px; transition:0.3s; padding:5px;"></i>
                                 </div>
                             </div>
-                            
                             <details style="margin-top:15px; background:#f8fafc; border-radius:15px; overflow:hidden; border:1px solid #edf2f7;">
                                 <summary style="padding:10px 15px; font-size:11px; font-weight:800; color:#64748b; cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between;">
                                     <span><i class="fas fa-list-ul"></i> Paket İçeriği</span>
@@ -803,14 +1036,8 @@
                         `;
                     } else {
                         const p = item.productRaw || {};
-                        let basePrice = parseFloat(item.price);
-                        let finalPrice = basePrice;
                         let discountLabel = "";
-                        
-                        if (p.bulk_threshold && item.quantity >= p.bulk_threshold) {
-                            finalPrice = basePrice * (1 - (p.bulk_rate / 100));
-                            discountLabel = `%${p.bulk_rate} Çoklu Alım İndirimi`;
-                        }
+                        if (p.bulk_threshold && item.quantity >= p.bulk_threshold) discountLabel = `%${p.bulk_rate} Çoklu Alım İndirimi`;
 
                         itemElement.innerHTML = `
                             ${item.isConcept ? `<div class="vip-badge"><i class="fas fa-crown"></i> PREMIUM CONCEPT</div>` : ''}
@@ -848,87 +1075,38 @@
                     cartItemsList.appendChild(itemElement);
                 });
                 
-                // --- MR. KARTON AKILLI ÖNERİ SİSTEMİ (PREVIOUSLY DEFINED) ---
-                if (total >= minOrder && cart.length > 0) {
-                     // Fetch Products code remains the same...
-                     // (Keep existing Logic but make sure wrapper exists)
-                     // Since I am replacing the block, I need to ensure the side widget logic is preserved or re-triggered.
-                     // The actual Side Widget creation was OUTSIDE the renders in previous code, effectively attached to modal content.
-                     // But here we might need to re-init it if it was inside the loop logic? No, it was after loop.
-                     
-                     // For safety, I will trigger a helper function or leave the side widget logic to run after this block in the original file.
-                     // IMPORTANT: The original code had the Side Widget logic *inside* the updateCartDisplay function, after the loop.
-                     // By replacing "EndLine: 1000", I am overwriting the start of that logic.
-                     // I must include the text for the side widget setup here or ensure I don't delete it.
-                     
-                     // I will re-include the side widget setup logic here to be safe and ensure it persists.
-                     setTimeout(async () => {
-                         let allProducts = [];
-                         try {
-                            const pRes = await fetch('/api/products');
-                            allProducts = await pRes.json();
-                         } catch(e) {}
-
-                         const modalContent = document.querySelector('.cart-modal-content');
-                         // Ensure Side Widget exists
-                         // ... (Side widget logic from previous step)
-                         // To avoid code duplication and token limits, I will rely on the fact that I am replacing the LIST generation.
-                         // But wait, the original code had the side widget logic *after* the list generation.
-                         // My replacement ends at line 1000.
-                         // Line 886 starts the widget logic.
-                         // So I AM overwriting it. I need to put it back.
-                         
-                         // Re-inserting simplified Side Widget Logic:
-                         if (document.querySelector('.cart-modal-content') && document.getElementById('mr-karton-side-widget')) {
-                             // Widget already exists, just update advice
-                             fetchMrKartonAdvice(cart, total, freeShip, allProducts);
-                         } else {
-                             // Initiate widget (Full code from previous turn needed if I deleted it)
-                             // Since I don't want to re-write 100 lines of widget code blindly,
-                             // I will assume the previous turn added it successfully and I should just NOT overwrite it if I can help it.
-                             // But I requested to replace up to line 1000.
-                             // The side widget logic was around lines 886-981.
-                             // So yes, I must include it.
-                         }
-                     }, 100);
-                }
-
-                const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.textContent = totalCount;
-                cartCount.style.display = totalCount > 0 ? 'flex' : 'none';
-                
-                whatsappCheckout.style.display = 'block';
+                whatsappCheckout.style.display = 'flex';
             }
-            
+
             // BOTTOM SUMMARY AREA
             const totalFormatted = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-            
-            // Build a Premium Summary Table
-            let summaryHTML = '';
-            summaryHTML += `
+            let summaryHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:#64748b; font-size:14px;">
                     <span>Ara Toplam:</span>
                     <span>₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</span>
                 </div>
             `;
-            
             if (discountTotal > 0) {
-                 summaryHTML += `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:#16a34a; font-size:14px; font-weight:700;">
-                        <span>İndirim Tutarı:</span>
-                        <span>-₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</span>
-                    </div>
-                `;
+                 summaryHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; color:#16a34a; font-size:14px; font-weight:700;"><span>İndirim Tutarı:</span><span>-₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</span></div>`;
             }
-            
             summaryHTML += `
                 <div style="display:flex; justify-content:space-between; margin-top:15px; padding-top:15px; border-top:2px dashed #e2e8f0; align-items:center;">
                     <span style="font-weight:800; font-size:20px; color:#0f172a;">TOPLAM:</span>
-                    <span style="font-weight:900; font-size:24px; color:var(--primary);">${totalFormatted}</span>
+                    <span style="font-weight:900; font-size:26px; color:var(--primary);">${totalFormatted}</span>
                 </div>
             `;
-            
-            cartTotalPrice.innerHTML = summaryHTML;
+            const summaryArea = document.getElementById('cart-total-price-area');
+            if(summaryArea) {
+                summaryArea.innerHTML = summaryHTML;
+            } else if (typeof cartTotalPrice !== 'undefined') {
+                cartTotalPrice.innerHTML = summaryHTML;
+            }
+
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            if(typeof cartCount !== 'undefined') {
+                cartCount.textContent = totalCount;
+                cartCount.style.display = totalCount > 0 ? 'flex' : 'none';
+            }
         }
         
         // Helper to fetch AI advice
@@ -1007,8 +1185,118 @@
         }
 
 
-        // Sepet İşlemleri global-cart.js tarafından yönetilir.
-        // updateCartDisplay(), addToCart(), removeFromCart() vb. globaldir.
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id != id);
+            updateCartDisplay();
+        }
+
+        function updateItemQuantity(id, change) {
+            const item = cart.find(x => x.id == id);
+            if(!item) return;
+            
+            item.quantity += change;
+            if(item.quantity <= 0) {
+                removeFromCart(id);
+            } else {
+                updateCartDisplay();
+            }
+        }
+        
+        // --- Sepet Modal Kontrolleri ---
+        openCartModal.onclick = () => { 
+            cartModal.style.display = 'block'; 
+            document.body.classList.add('cart-open');
+            
+            // 1. Önce mevcut ayarlarla göster (Hız için)
+            updateCartDisplay();
+
+            // 2. Sunucudan EN GÜNCEL ayarları çek zorla
+            fetch('/api/settings?t=' + Date.now(), { cache: "no-store" })
+                .then(r => r.json())
+                .then(s => {
+                    console.log("Güncel Ayarlar İndirildi:", s);
+                    localStorage.setItem('settings', JSON.stringify(s));
+                    // 3. Ekranı TAZELENMİŞ ayarlarla tekrar güncelle
+                    updateCartDisplay(); 
+                })
+                .catch(e => console.error("Ayarlar çekilemedi:", e));
+        };
+        const cartCloseBtnOld = document.querySelector('.cart-close');
+        if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
+            cartModal.style.display = 'none'; 
+            document.body.classList.remove('cart-open');
+        };
+        window.onclick = (e) => { 
+            if(e.target === cartModal) {
+                cartModal.style.display = 'none'; 
+                document.body.classList.remove('cart-open');
+            }
+            if(e.target === profileModal) profileModal.style.display = 'none';
+        };
+        
+        // --- Ürün Detay Modalı (Lightbox) İşlemleri ---
+        const detailModal = document.getElementById('product-detail-modal');
+        const detailCloseBtn = document.querySelector('.detail-close');
+        const detailImg = document.getElementById('detail-img');
+        const detailTitle = document.getElementById('detail-title');
+        const detailPrice = document.getElementById('detail-price');
+        const detailAddBtn = document.getElementById('detail-add-btn');
+        const detailRating = document.getElementById('detail-rating');
+
+        // Ürün kartına tıklama işlevi
+        document.querySelectorAll('.view-btn, .product-img-wrapper, .product-title').forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const card = e.target.closest('.product-card');
+                
+                // Verileri kart üzerinden çek
+                const imgSrc = card.querySelector('.product-img').src;
+                const title = card.querySelector('.product-title').textContent;
+                const priceText = card.querySelector('.current-price').textContent;
+                const addToCartBtn = card.querySelector('.add-to-cart');
+                const priceVal = parseFloat(addToCartBtn.dataset.price);
+                const id = parseInt(addToCartBtn.dataset.id);
+                const ratingHTML = card.querySelector('.product-rating').innerHTML;
+                
+                // Modale doldur
+                detailImg.src = imgSrc;
+                detailTitle.textContent = title;
+                detailPrice.textContent = priceText;
+                detailRating.innerHTML = ratingHTML;
+                
+                // Detay modalındaki "Sepete Ekle" butonunu ayarla
+                detailAddBtn.onclick = () => {
+                    addToCart(id, title, priceVal);
+                    detailModal.style.display = 'none';
+                };
+
+                detailModal.style.display = 'block';
+            });
+        });
+
+        detailCloseBtn.onclick = () => { detailModal.style.display = 'none'; };
+
+        // Pencere dışına tıklama (Her iki modal için)
+        window.onclick = (event) => {
+            if (event.target === cartModal) {
+                cartModal.style.display = 'none';
+                document.body.classList.remove('cart-open');
+            }
+            if (event.target === profileModal) {
+                profileModal.style.display = 'none';
+            }
+            if (event.target === detailModal) {
+                detailModal.style.display = 'none';
+            }
+        };
+
+        // Sepetten Çıkar (Delegation)
+        cartItemsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('item-remove')) {
+                const id = parseInt(e.target.dataset.id);
+                removeFromCart(id);
+            }
+        });
 
         // --- Dil Değiştirme Sistemi ---
         const langToggle = document.getElementById('lang-toggle');
@@ -1126,8 +1414,8 @@
             if (!container) return;
             try {
                 const [pkgRes, prodRes] = await Promise.all([
-                    fetch('/api/packages'),
-                    fetch('/api/products')
+                    fetch('/api/packages?t=' + Date.now()),
+                    fetch('/api/products?t=' + Date.now())
                 ]);
                 const packages = await pkgRes.json();
                 const products = await prodRes.json();
@@ -1385,19 +1673,19 @@
                 const img = card ? card.querySelector('img') : null;
                 if(img) flyToCart(img);
 
-                const existingIndex = window.cart.findIndex(x => x.id === pkg.id);
+                const existingIndex = cart.findIndex(x => x.id === pkg.id);
                 const isSuper = pkg.name.toLowerCase().includes('süper');
 
                 if(existingIndex > -1) {
                     if(isSuper) {
                         // Limit to 1, update contents instead
-                        window.cart[existingIndex].packageItems = packageItems;
-                        window.cart[existingIndex].quantity = 1;
+                        cart[existingIndex].packageItems = packageItems;
+                        cart[existingIndex].quantity = 1;
                     } else {
-                        window.cart[existingIndex].quantity++;
+                        cart[existingIndex].quantity++;
                     }
                 } else {
-                    window.cart.push({
+                    cart.push({
                         id: pkg.id,
                         name: pkg.name,
                         image: pkg.image || 'images/box.png',
@@ -1409,19 +1697,20 @@
                 }
                 
                 setTimeout(() => {
-                    window.updateCartDisplay();
-                    window.toggleCart(true);
+                    updateCartDisplay();
+                    cartModal.style.display = 'block';
+                    document.body.classList.add('cart-open');
                 }, 800);
             } catch (e) { console.error("Could not add package", e); }
         }
 
         function updateSubItemQuantity(pkgId, subId, delta) {
-            const pkg = window.cart.find(x => x.id === pkgId);
+            const pkg = cart.find(x => x.id === pkgId);
             if(!pkg || !pkg.packageItems) return;
             const item = pkg.packageItems.find(si => si.id === subId);
             if(!item) return;
             item.quantity = Math.max(1, item.quantity + delta);
-            window.updateCartDisplay();
+            updateCartDisplay();
         }
 
         window.addToCartByMatch = async function(keyword) {
@@ -1444,31 +1733,23 @@
                 // 1. Fetch Products
                 let products = [];
                 try {
-                    // Zaman damgası (?t=) kaldırıldı - Edge Caching artık aktif
-                    const response = await fetch('/api/products');
-                    if (!response.ok) throw new Error(`API returned ${response.status}`);
-                    
-                    const contentType = response.headers.get("content-type");
-                    if (!contentType || !contentType.includes("application/json")) {
-                        throw new Error("Invalid JSON response from server");
-                    }
-                    
+                    const response = await fetch('/api/products?t=' + Date.now());
+                    if (!response.ok) throw new Error("API Error");
                     products = await response.json();
                 } catch (apiError) {
-                    console.warn("API failed, using local fallback...", apiError);
                     try {
-                        const fallbackResponse = await fetch('/products.json');
+                        const fallbackResponse = await fetch('products.json?t=' + Date.now());
                         products = await fallbackResponse.json();
                     } catch (fallbackError) {
-                        throw new Error("Verilere şu an erişilemiyor. Lütfen daha sonra tekrar deneyin.");
+                        throw new Error("Hem API hem de Products.json başarısız!");
                     }
                 }
-                if (!Array.isArray(products)) throw new Error("Veri formatı hatalı.");
+                if (!Array.isArray(products)) throw new Error("Not array");
 
-                // 2. Fetch Campaigns (Cached)
+                // 2. Fetch Campaigns
                 let campaigns = [];
                 try {
-                    const cRes = await fetch('/api/campaigns');
+                    const cRes = await fetch('/api/campaigns?t=' + Date.now());
                     if (cRes.ok) campaigns = await cRes.json();
                 } catch(e){}
 
@@ -1486,18 +1767,8 @@
                 renderProductPage();
 
             } catch (e) {
-                console.error("Critical API Failure:", e);
-                // Also log the specific fetch error if possible
-                window.lastRenderError = e.message;
-                
-                container.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
-                        <h3>Veritabanı Hatası</h3>
-                        <p style="font-size:12px; color:#64748b; margin-top:10px;">Sunucu şu an yanıt veremiyor. Lütfen sayfayı yenilemeyi deneyin.</p>
-                        ${location.hostname === 'localhost' ? `<p style="font-size:10px; color:red;">Error: ${e.message}</p>` : ''}
-                    </div>
-                `;
+                console.error("Ürünler yüklenemedi", e);
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);"><i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i><h3>Veritabanı Hatası</h3></div>`;
             }
         }
 
@@ -1720,8 +1991,8 @@
         renderProducts();
         
         // SMART AUTO-REFRESH (Flicker-Free)
-        // Check for updates every 60 seconds to save Upstash Redis quota
-        setInterval(renderProducts, 60000); 
+        // Check for updates every 5 seconds, but only re-render if data CHANGED.
+        setInterval(renderProducts, 5000); 
 
         // --- SEARCH FUNCTIONALITY ---
         const searchIcon = document.getElementById('open-search');
@@ -1803,7 +2074,6 @@
     </script>
 
     <script src="fiyat-guncelle.js"></script>
-    <script src="global-cart.js"></script>
     <script src="chatbot.js"></script>
     
     <!-- Vercel Speed Insights -->

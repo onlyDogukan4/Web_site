@@ -41,9 +41,8 @@ async function fiyatlariGuncelle() {
 
 // Sayfa yüklendiğinde çalıştır
 document.addEventListener('DOMContentLoaded', () => {
-    // Fiyat güncellemeleri artık index.html içerisindeki global renderProducts 
-    // fonksiyonu ile yönetildiği için burada ek bir setInterval'a gerek yoktur.
-    // Bu, veritabanı kotasını korumak için devre dışı bırakılmıştır.
-    // fiyatlariGuncelle(); 
-    // setInterval(fiyatlariGuncelle, 10000);
+    fiyatlariGuncelle();
+
+    // "Gerçek zamanlı" etki için her 10 saniyede bir kontrol et
+    setInterval(fiyatlariGuncelle, 10000);
 });
