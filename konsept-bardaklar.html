@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-tr="Konsept Bardaklar | Moderra" data-en="Concept Cups | Moderra">Konsept Bardaklar | Moderra</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Performance: DNS prefetch & preconnect -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://api.groq.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
     <style>
@@ -17,39 +22,29 @@
             --primary: #6366f1;
         }
 
-        /* Modernized Search Bar */
+        /* Modernized Search Bar from Index */
         .search-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            z-index: 10000; display: flex; align-items: flex-start; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            padding-top: 10vh;
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .search-container.active { opacity: 1; visibility: visible; }
         .search-wrapper {
-            width: 100%; max-width: 700px; padding: 0 20px; position: relative;
-            transform: translateY(20px); transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
+            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-        .search-container.active .search-wrapper { transform: translateY(0); }
+        .search-container.active .search-wrapper { transform: scale(1); }
         .search-wrapper input {
-            width: 100%; background: white; border: 1px solid #e2e8f0;
-            color: #1e293b; font-size: 24px; font-weight: 700; padding: 25px 35px; border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); outline: none; transition: 0.3s;
+            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
+            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
+            letter-spacing: -0.5px;
         }
-        .search-wrapper input:focus { border-color: var(--primary); box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15); }
-        .search-close {
-            position: absolute;
-            top: 25px; right: 45px; font-size: 28px; color: #64748b; cursor: pointer; transition: 0.3s;
-        }
-        .search-close:hover { color: #f43f5e; transform: rotate(90deg); }
-        .trend-searches { text-align: center; margin-top: 25px; color: #64748b; font-size: 14px; }
-        .trend-tag { 
-            cursor: pointer; margin: 0 5px; color: var(--primary); font-weight: 700; 
-            background: #eef2ff; padding: 6px 15px; border-radius: 10px; transition: 0.3s;
-        }
-        .trend-tag:hover { background: var(--primary); color: white; }
+        .search-close { position: absolute; top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .search-close:hover { opacity: 1; transform: rotate(90deg); }
 
         /* Re-designed Navbar Active Tab Effect (Neon Line) */
         .nav-links a {
@@ -432,18 +427,6 @@
     </style>
 </head>
 <body data-scroll-container>
-    <!-- Modern Search Bar -->
-    <div class="search-container" id="search-bar">
-        <div class="search-wrapper">
-            <i class="fas fa-times search-close" id="close-search"></i>
-            <input type="text" id="search-input" placeholder="Hayalinizdeki ürünü arayın..." data-tr-placeholder="Hayalinizdeki ürünü arayın..." data-en-placeholder="Search your dream product...">
-            <div class="trend-searches">
-                <span data-tr="Trend Aramalar: " data-en="Trending: ">Trend Aramalar: </span>
-                <span class="trend-tag" onclick="document.getElementById('search-input').value='Bardak'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Bardak</span>
-                <span class="trend-tag" onclick="document.getElementById('search-input').value='Yeni Yıl'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Yeni Yıl</span>
-            </div>
-        </div>
-    </div>
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
@@ -527,7 +510,7 @@
                 <div class="nav-icons-items">
                     <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
                     <i class="fas fa-moon" id="theme-toggle" style="cursor: pointer;"></i>
-                    <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer; position:relative;" onclick="document.body.classList.add('cart-open')">
+                    <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer; position:relative;" onclick="document.body.classList.add('cart-open'); updateCartDisplay(); triggerCartAI();">
                         <span id="cart-count">0</span>
                     </i>
                     <i class="fas fa-user-circle" id="open-profile-modal" style="cursor: pointer;"></i>
@@ -636,12 +619,14 @@
             <!-- Items injected by JS -->
         </div>
 
-        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
+        <div class="cart-footer" style="padding:20px 25px 25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
+            <!-- AI Advisor -->
+            <div id="cart-ai-advisor-wrap"></div>
             <div id="cart-total-price-area">
                 <!-- Summary injected by JS -->
             </div>
-            <button id="whatsapp-checkout" class="btn" style="width:100%; margin:0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); box-shadow:0 10px 20px rgba(22, 163, 74, 0.2); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800;">
-                <i class="fab fa-whatsapp" style="font-size:20px;"></i> SİPARİŞİ TAMAMLA
+            <button id="whatsapp-checkout" class="btn" onclick="whatsappCheckout()" style="width:100%; margin:15px 0 0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg, #22c55e, #16a34a); box-shadow:0 10px 25px rgba(22, 163, 74, 0.25); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800; transition:0.3s;">
+                <i class="fab fa-whatsapp" style="font-size:22px;"></i> SİPARİŞİ TAMAMLA
             </button>
         </div>
     </div>
@@ -1063,6 +1048,27 @@
                 modal.style.display = 'none';
                 document.body.classList.add('cart-open');
             };
+        }
+
+        // Cart AI advisor for konsept page
+        async function triggerCartAI() {
+            if (typeof cart === 'undefined' || cart.length === 0) return;
+            const textEl = document.getElementById('mr-karton-ai-text');
+            if (!textEl) return;
+            let freeShip = 1000;
+            try { freeShip = JSON.parse(localStorage.getItem('settings'))?.freeShipping || 1000; } catch(e){}
+            const total = cart.reduce((s, i) => s + (parseFloat(i.price) * i.quantity), 0);
+            const prompt = `Sepet: ${cart.map(i => `${i.quantity}x ${i.name}${i.isConcept ? ' (VIP konsept)' : ''}`).join(', ')}. Toplam: ${total} TL. Ücretsiz kargo limiti ${freeShip} TL.`;
+            try {
+                const res = await fetch('/api/cart-chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                const text = data?.choices?.[0]?.message?.content || "Mükemmel seçim, Efendim!";
+                textEl.innerText = text;
+            } catch(e) { textEl.innerText = "Harika seçimler! Sepetiniz hazır."; }
         }
 
         // Initialize Call

@@ -2,11 +2,17 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderra | Premium Karton Bardak ve Özel Tasarım Çözümleri</title>
     <meta name="description" content="Moderra ile işletmenize özel baskılı karton bardaklar, düğün paketleri ve özel konsept tasarımlar. Hızlı teslimat ve premium kalite.">
     <meta name="keywords" content="karton bardak, özel tasarım bardak, baskılı bardak, düğün paketi, moderra">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <!-- Performance: DNS prefetch & preconnect -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://api.groq.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
     <style>
         /* Modernized Search Bar */
@@ -15,33 +21,30 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            z-index: 10000; display: flex; align-items: flex-start; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            padding-top: 10vh;
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .search-container.active { opacity: 1; visibility: visible; }
         .search-wrapper {
-            width: 100%; max-width: 700px; padding: 0 20px; position: relative;
-            transform: translateY(20px); transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
+            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-        .search-container.active .search-wrapper { transform: translateY(0); }
+        .search-container.active .search-wrapper { transform: scale(1); }
         .search-wrapper input {
-            width: 100%; background: white; border: 1px solid #e2e8f0;
-            color: #1e293b; font-size: 24px; font-weight: 700; padding: 25px 35px; border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); outline: none; transition: 0.3s;
+            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
+            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
+            letter-spacing: -0.5px;
         }
-        .search-wrapper input:focus { border-color: var(--primary); box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15); }
+        .search-wrapper input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+        }
         .search-close {
             position: absolute;
-            top: 25px; right: 45px; font-size: 28px; color: #64748b; cursor: pointer; transition: 0.3s;
+            top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s;
         }
-        .search-close:hover { color: #f43f5e; transform: rotate(90deg); }
-        .trend-searches { text-align: center; margin-top: 25px; color: #64748b; font-size: 14px; }
-        .trend-tag { 
-            cursor: pointer; margin: 0 5px; color: var(--primary); font-weight: 700; 
-            background: #eef2ff; padding: 6px 15px; border-radius: 10px; transition: 0.3s;
-        }
-        .trend-tag:hover { background: var(--primary); color: white; }
+        .search-close:hover { opacity: 1; transform: rotate(90deg); }
 
         /* Re-designed Navbar Active Tab Effect (Neon Line) */
         .nav-links a {
@@ -179,10 +182,10 @@
         <div class="search-wrapper">
             <i class="fas fa-times search-close" id="close-search"></i>
             <input type="text" id="search-input" placeholder="Hayalinizdeki ürünü arayın..." data-tr-placeholder="Hayalinizdeki ürünü arayın..." data-en-placeholder="Search your dream product...">
-            <div class="trend-searches">
+            <div style="text-align:center; margin-top:30px; color:#1e293b; font-size:14px; font-weight:700; opacity:0.6;">
                 <span data-tr="Trend Aramalar: " data-en="Trending: ">Trend Aramalar: </span>
-                <span class="trend-tag" onclick="document.getElementById('search-input').value='Bardak'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Bardak</span>
-                <span class="trend-tag" onclick="document.getElementById('search-input').value='Yeni Yıl'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Yeni Yıl</span>
+                <span style="cursor:pointer; margin-left:10px; border-bottom:1px solid #1e293b;" onclick="document.getElementById('search-input').value='Bardak'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Bardak</span>,
+                <span style="cursor:pointer; margin-left:5px; border-bottom:1px solid #1e293b;" onclick="document.getElementById('search-input').value='Yeni Yıl'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Yeni Yıl</span>
             </div>
         </div>
     </div>
@@ -357,12 +360,14 @@
             <!-- Items injected by JS -->
         </div>
 
-        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
+        <div class="cart-footer" style="padding:20px 25px 25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
+            <!-- AI Advisor -->
+            <div id="cart-ai-advisor-wrap"></div>
             <div id="cart-total-price-area">
                 <!-- Summary injected by JS -->
             </div>
-            <button id="whatsapp-checkout" class="btn" style="width:100%; margin:0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); box-shadow:0 10px 20px rgba(22, 163, 74, 0.2); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800;">
-                <i class="fab fa-whatsapp" style="font-size:20px;"></i> SİPARİŞİ TAMAMLA
+            <button id="whatsapp-checkout" class="btn" onclick="whatsappCheckout()" style="width:100%; margin:15px 0 0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg, #22c55e, #16a34a); box-shadow:0 10px 25px rgba(22, 163, 74, 0.25); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800; transition:0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 15px 35px rgba(22,163,74,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(22,163,74,0.25)'">
+                <i class="fab fa-whatsapp" style="font-size:22px;"></i> SİPARİŞİ TAMAMLA
             </button>
         </div>
     </div>
@@ -579,99 +584,65 @@
             } catch(e) { return { success: false }; }
         };
         
-        // Helper to fetch AI advice
+        // Helper to fetch AI advice for cart
         async function fetchMrKartonAdvice(cartItems, total, freeShip, allProducts = []) {
              const textEl = document.getElementById('mr-karton-ai-text');
              if(!textEl) return;
-             
+
+             const catalogueSummary = allProducts.length > 0
+                ? allProducts.map(p => p.name_tr).join(", ")
+                : "Ambalaj, Bardak ve Gıda Kapları";
+
+             let goalInstruction = total >= freeShip
+                ? `Müşteri ücretsiz kargo limitini geçti (${total} TL). Tebrik et, tamamlayıcı ürün öner.`
+                : `Ücretsiz kargo için ${(freeShip - total).toFixed(0)} TL eksik. Nazikçe sepet artışı için yönlendir.`;
+
+             const promptText = `Sepet: ${cartItems.map(i => `${i.quantity}x ${i.name}`).join(', ')}. Toplam: ${total} TL. ${goalInstruction}. Ürün kataloğu: ${catalogueSummary}.`;
+
              try {
-                 // Ürün kataloğunu AI'ye tanıt (Sadece isimler, token tasarrufu için)
-                 const catalogueSummary = allProducts.length > 0 
-                    ? "Mağazamızdaki Ürünler: " + allProducts.map(p => p.name_tr).join(", ")
-                    : "Ambalaj, Bardak ve Gıda Kapları satıyoruz.";
-
-                 // Dinamik Prompt Oluşturma
-                 let goalInstruction = "";
-                 if (total >= freeShip) {
-                     goalInstruction = `
-                        DURUM: Müşteri zaten Ücretsiz Kargo limitini geçti (${total} TL).
-                        GÖREV: Sakın kargo ücretinden bahsetme! Müşteriyi tebrik et ("Harika", "Kargo bizden" vb).
-                        ODAK: Sadece ürünlerin birbirini tamamlamasına odaklan (Bardak-Kapak gibi). 
-                        Veya lüks bir ürün öner (Peçete, Çatal).
-                     `;
-                 } else {
-                     const gap = freeShip - total;
-                     goalInstruction = `
-                        DURUM: Müşterinin ücretsiz kargo için ${gap} TL'ye daha ihtiyacı var.
-                        GÖREV: "Kargo parası vereceğine ürün al" diyerek nazikçe baskı kur.
-                        ODAK: Sepet tutarını artırmaya çalış.
-                     `;
-                 }
-
-                 const promptInstructions = `
-                    Sepet:
-                    ${cartItems.map(i => `${i.quantity} ADET - ${i.name}`).join(', ')}
-                    
-                    Toplam: ${total} TL. Kargo Limiti: ${freeShip} TL.
-                    
-                    ${goalInstruction}
-                    
-                    GENEL KURALLAR:
-                    - Mr. Karton olarak konuş. (Aşırı kibar, iltifat eden, "Harikasınız", "Mükemmel seçim" diyen bir satış asistanı).
-                    - "Efendim", "Değerli Müşterimiz" gibi hitaplar kullan.
-                    - Ürünlere ve siteye çok hakim olduğunu hissettir.
-                    - Asla "Merhaba" deme. Konuya direkt gir.
-                    - Maksimum 1-2 cümle.
-                 `;
-                 
-                 const res = await fetch('/api/chat', {
+                 const res = await fetch('/api/cart-chat', {
                      method: 'POST',
                      headers: {'Content-Type': 'application/json'},
-                     body: JSON.stringify({ 
-                         prompt: promptInstructions, 
-                         chatHistory: [],
-                         siteContext: catalogueSummary
-                     })
+                     body: JSON.stringify({ prompt: promptText, siteContext: catalogueSummary })
                  });
                  const data = await res.json();
-                 
-                 if (data.error) {
-                     console.error("AI API Error:", data.error);
-                     textEl.innerText = "Dr. Karton şu an bakımda.";
-                     return;
-                 }
-                 
-                 if(data && data.choices && data.choices[0]?.message?.content) {
-                    textEl.innerText = data.choices[0].message.content;
-                } else if(data && data.candidates && data.candidates[0].content) {
-                    textEl.innerText = data.candidates[0].content.parts[0].text;
-                } else {
-                    textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
-                }
+                 const text = data?.choices?.[0]?.message?.content
+                     || data?.candidates?.[0]?.content?.parts?.[0]?.text
+                     || "Harika seçimler, Efendim!";
+                 textEl.innerText = text;
              } catch(e) {
-                 console.error(e);
-                 textEl.innerText = "Bağlantı hatası. Sepetin harika görünüyor!";
+                 textEl.innerText = "Harika seçimler! Sepetiniz hazır görünüyor.";
              }
         }
         
         // --- Sepet Modal Kontrolleri ---
-        openCartModal.onclick = () => { 
-            cartModal.style.display = 'block'; 
+        openCartModal.onclick = () => {
+            cartModal.style.display = 'block';
             document.body.classList.add('cart-open');
-            
+
             // 1. Önce mevcut ayarlarla göster (Hız için)
             updateCartDisplay();
 
-            // 2. Sunucudan EN GÜNCEL ayarları çek zorla
-            fetch('/api/settings?t=' + Date.now(), { cache: "no-store" })
+            // 2. Sunucudan EN GÜNCEL ayarları çek
+            fetch('/api/settings', { cache: "no-store" })
                 .then(r => r.json())
                 .then(s => {
-                    console.log("Güncel Ayarlar İndirildi:", s);
                     localStorage.setItem('settings', JSON.stringify(s));
-                    // 3. Ekranı TAZELENMİŞ ayarlarla tekrar güncelle
-                    updateCartDisplay(); 
+                    updateCartDisplay();
+                    // 3. AI Tavsiyesi çek (sepet doluysa)
+                    if (cart.length > 0) {
+                        const { total } = calculateCartTotal();
+                        let freeShip = 1000;
+                        try { freeShip = JSON.parse(localStorage.getItem('settings'))?.freeShipping || 1000; } catch(e){}
+                        fetchMrKartonAdvice(cart, total, freeShip, _allProducts);
+                    }
                 })
-                .catch(e => console.error("Ayarlar çekilemedi:", e));
+                .catch(e => {
+                    if (cart.length > 0) {
+                        const { total } = calculateCartTotal();
+                        fetchMrKartonAdvice(cart, total, 1000, _allProducts);
+                    }
+                });
         };
         const cartCloseBtnOld = document.querySelector('.cart-close');
         if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
@@ -1442,9 +1413,8 @@
 
         renderProducts();
         
-        // SMART AUTO-REFRESH (Flicker-Free)
-        // Check for updates every 5 seconds, but only re-render if data CHANGED.
-        setInterval(renderProducts, 5000); 
+        // Check for updates every 60 seconds (prevents Redis rate limit)
+        setInterval(renderProducts, 60000); 
 
         // --- SEARCH FUNCTIONALITY ---
         const searchIcon = document.getElementById('open-search');

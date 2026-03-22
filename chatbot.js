@@ -230,12 +230,12 @@ class ModerraAI {
 
             if (data.error) throw new Error(data.error);
 
-            // Grok format: { grok: true, choices: [{ message: { content: '...' } }] }
+            // Groq / OpenAI format
             let botText = '';
-            if (data.grok && data.choices && data.choices[0]?.message?.content) {
+            if (data.choices && data.choices[0]?.message?.content) {
                 botText = data.choices[0].message.content;
-                // Legacy Gemini format fallback
             } else if (data.candidates && data.candidates[0]?.content) {
+                // Legacy Gemini format fallback
                 botText = data.candidates[0].content.parts[0].text;
             } else {
                 throw new Error('Geçersiz yanıt formatı.')

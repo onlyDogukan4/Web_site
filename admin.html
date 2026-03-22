@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderra | Yönetici Paneli</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -374,6 +376,7 @@
                 <label>Toplam Fiyat (₺)</label>
                 <input type="number" id="o-price" class="editable-input" placeholder="Örn: 2500">
             </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label>Durum</label>
                     <select id="o-status" class="editable-input">
@@ -384,17 +387,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Tahmini Kargoya Verme</label>
-                    <input type="date" id="o-ship-date" class="editable-input">
+                    <label>Tahmini Teslim Günü</label>
+                    <input type="date" id="o-delivery" class="editable-input">
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Gecikme / Bilgilendirme Notu</label>
-                <textarea id="o-delay-note" class="editable-input" rows="2" placeholder="Örn: Yoğunluk nedeniyle kargoya verilme süresi uzamıştır."></textarea>
-            </div>
-            <div class="form-group">
-                <label>Müşteriye Özel Mesaj (Opsiyonel)</label>
-                <input type="text" id="o-delivery-msg" class="editable-input" placeholder="Tahmini teslim günü vb.">
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
                 <button class="btn btn-secondary" onclick="closeModal('order-modal')">Vazgeç</button>
@@ -587,10 +582,6 @@
                         <label>Ücretsiz Kargo Limiti (₺)</label>
                         <input type="number" id="s-free-shipping" class="editable-input" placeholder="Örn: 1000">
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Standart Kargo Ücreti (₺)</label>
-                    <input type="number" id="s-shipping-fee" class="editable-input" placeholder="Örn: 50">
                 </div>
                 <!-- Not: s-min-order inputu aşağıda JS ile doldurulacak -->
                 <div style="text-align:right; margin-top:25px; border-top: 1px solid var(--border); padding-top: 20px;">
@@ -814,7 +805,6 @@
             if(document.getElementById('s-min-order')) {
                 document.getElementById('s-min-order').value = settings.minOrder || 500;
                 document.getElementById('s-free-shipping').value = settings.freeShipping || 1000;
-                document.getElementById('s-shipping-fee').value = settings.shippingFee || 50;
             }
         }
 
@@ -828,9 +818,7 @@
             document.getElementById('o-items').value = o.items;
             document.getElementById('o-status').value = o.status;
             document.getElementById('o-price').value = o.totalPrice || "";
-            document.getElementById('o-ship-date').value = o.shipmentDate || "";
-            document.getElementById('o-delay-note').value = o.delayNote || "";
-            document.getElementById('o-delivery-msg').value = o.estimatedDelivery || "";
+            document.getElementById('o-delivery').value = o.estimatedDelivery === "Bilgi Bekleniyor" ? "" : o.estimatedDelivery;
             
             document.getElementById('order-modal').style.display = 'flex';
         }
@@ -1286,28 +1274,29 @@
             try {
                 const minOrderInput = document.getElementById('s-min-order');
                 const freeShipInput = document.getElementById('s-free-shipping');
-                const shipFeeInput = document.getElementById('s-shipping-fee');
                 
-                if (!minOrderInput || !freeShipInput || !shipFeeInput) {
-                    alert("Hata: Ayar kutucukları bulunamadı!");
+                if (!minOrderInput || !freeShipInput) {
+                    alert("Hata: Ayar kutucukları bulunamadı! HTML yapısı bozuk.");
                     return;
                 }
 
                 const minOrderVal = parseInt(minOrderInput.value);
                 const freeShipVal = parseInt(freeShipInput.value);
-                const shipFeeVal = parseInt(shipFeeInput.value);
                 
-                if (isNaN(minOrderVal) || isNaN(freeShipVal) || isNaN(shipFeeVal)) {
+                if (isNaN(minOrderVal) || isNaN(freeShipVal)) {
                     alert("Lütfen geçerli sayısal değerler girin!");
                     return;
                 }
                 
+                // Global nesneyi güncelle
                 settings = {
                     minOrder: minOrderVal,
-                    freeShipping: freeShipVal,
-                    shippingFee: shipFeeVal
+                    freeShipping: freeShipVal
                 };
                 
+                console.log("Sunucuya gönderiliyor:", settings);
+                
+                // Manuel Sync Çağrısı (syncData fonksiyonuna güvenmeden doğrudan fetch atıyorum)
                 const res = await fetch('/api/settings', {
                     method: 'POST',
                     body: JSON.stringify(settings),
@@ -1315,12 +1304,15 @@
                 });
                 
                 if (res.ok) {
-                    alert(`✅ BAŞARILI!\nAyarlar Veritabanına Yazıldı.\n\nMin Sepet: ${minOrderVal} TL\nKargo Limiti: ${freeShipVal} TL\nKargo Ücreti: ${shipFeeVal} TL`);
+                    alert(`✅ BAŞARILI!\nAyarlar Veritabanına Yazıldı.\n\nMin Sepet: ${minOrderVal} TL\nKargo Limiti: ${freeShipVal} TL\n\nŞimdi ana sayfayı yenileyip kontrol edebilirsiniz.`);
                 } else {
-                    alert("❌ SUNUCU HATASI!");
+                    alert("❌ SUNUCU HATASI: Kaydedilemedi. Lütfen internet bağlantısını kontrol edin.");
                 }
+                
+                // Ekranı güncellemek için render çağırılabilir ama gerek yok, inputlar zaten dolu.
             } catch (e) {
                 alert("KRİTİK HATA: " + e.message);
+                console.error(e);
             }
         }
 
@@ -1329,9 +1321,7 @@
             const name = document.getElementById('o-customer').value.trim();
             const items = document.getElementById('o-items').value.trim();
             const status = document.getElementById('o-status').value;
-            const shipDate = document.getElementById('o-ship-date').value;
-            const delayNote = document.getElementById('o-delay-note').value;
-            const deliveryMsg = document.getElementById('o-delivery-msg').value;
+            const delivery = document.getElementById('o-delivery').value;
             const totalPrice = parseFloat(document.getElementById('o-price').value) || 0;
             
             if(!name || !items) return alert("Müşteri ve ürün bilgisi girilmeli!");
@@ -1340,19 +1330,19 @@
             let newCode = "";
 
             if (editOrderId) {
+                // Düzenleme
                 const idx = orders.findIndex(x => x.orderId === editOrderId);
                 if (idx > -1) {
                     orders[idx].customerName = name;
                     orders[idx].items = items;
                     orders[idx].status = status;
-                    orders[idx].totalPrice = totalPrice;
-                    orders[idx].shipmentDate = shipDate;
-                    orders[idx].delayNote = delayNote;
-                    orders[idx].estimatedDelivery = deliveryMsg;
+                    orders[idx].totalPrice = totalPrice || orders[idx].totalPrice;
+                    orders[idx].estimatedDelivery = delivery || "Bilgi Bekleniyor";
                     orders[idx].lastUpdate = new Date().toISOString();
                 }
                 editOrderId = null;
             } else {
+                // Yeni Sipariş
                 const randomID = Math.floor(10000 + Math.random() * 90000);
                 newCode = "MOD-" + randomID;
                 isNew = true;
@@ -1363,10 +1353,8 @@
                     items,
                     totalPrice,
                     status, 
-                    shipmentDate: shipDate,
-                    delayNote: delayNote,
-                    estimatedDelivery: deliveryMsg,
-                    lastUpdate: new Date().toISOString()
+                    lastUpdate: new Date().toISOString(),
+                    estimatedDelivery: delivery || "Bilgi Bekleniyor"
                 };
                 orders.push(newOrder);
             }
@@ -1374,21 +1362,21 @@
             renderAll(); 
             closeModal('order-modal'); 
             
+            // Veritabani kaydi bekle
             try {
                 await syncData('orders'); 
                 if(isNew) {
-                    alert(`✅ SİPARİŞ OLUŞTURULDU!\n\nTakip Kodu: ${newCode}`);
+                    alert(`✅ YENİ SİPARİŞ OLUŞTURULDU VE VERİTABANINA YAZILDI!\n\nTakip Kodu: ${newCode}\n\nMüşteriye bu kodu iletebilirsiniz.`);
                 }
             } catch(e) {
-                alert("Hata: Veritabanına yazılamadı!");
+                alert("Uyarı: Sipariş yerelde oluştu ama veritabanına yazılamadı! Lütfen internet bağlantınızı kontrol edin.");
             }
 
+            // Formu temizle
             document.getElementById('o-customer').value = "";
             document.getElementById('o-items').value = "";
+            document.getElementById('o-delivery').value = "";
             document.getElementById('o-price').value = "";
-            document.getElementById('o-ship-date').value = "";
-            document.getElementById('o-delay-note').value = "";
-            document.getElementById('o-delivery-msg').value = "";
         }
         
         async function deleteOrder(id) { 
