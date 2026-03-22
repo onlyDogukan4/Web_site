@@ -1,5 +1,5 @@
 
-import { Redis } from '@upstash/redis';
+import { kv } from '@vercel/kv';
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -11,15 +11,11 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
     try {
-        const redis = new Redis({
-            url: process.env.UPSTASH_REDIS_REST_URL,
-            token: process.env.UPSTASH_REDIS_REST_TOKEN,
-        });
         if (req.method === 'POST') {
-            await redis.set('settings', req.body);
+            await kv.set('settings', req.body);
             return res.status(200).json({ success: true });
         } else if (req.method === 'GET') {
-            const data = await redis.get('settings');
+            const data = await kv.get('settings');
             return res.status(200).json(data || { minOrder: 500, freeShipping: 1000 });
         } else {
             return res.status(405).json({ error: 'Method not allowed' });

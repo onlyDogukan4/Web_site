@@ -1,5 +1,5 @@
 
-import { Redis } from '@upstash/redis';
+import { kv } from '@vercel/kv';
 
 const DEFAULT_PRODUCTS = [
     {
@@ -45,19 +45,14 @@ export default async function handler(req, res) {
     }
 
     try {
-        const redis = new Redis({
-            url: process.env.UPSTASH_REDIS_REST_URL,
-            token: process.env.UPSTASH_REDIS_REST_TOKEN,
-        });
         if (req.method === 'POST') {
             const data = req.body;
-            await redis.set('products', data);
+            await kv.set('products', data);
             return res.status(200).json({ success: true });
         } else if (req.method === 'GET') {
-            let data = await redis.get('products');
+            let data = await kv.get('products');
             if (!data) {
-                console.log("Redis cache miss, seeding default products...");
-                await redis.set('products', DEFAULT_PRODUCTS);
+                await kv.set('products', DEFAULT_PRODUCTS);
                 data = DEFAULT_PRODUCTS;
             }
             return res.status(200).json(data || []);
