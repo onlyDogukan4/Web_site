@@ -1,5 +1,4 @@
-
-import { kv } from '@vercel/kv';
+import { kvGet, kvSet } from './_kv.js';
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -10,10 +9,10 @@ export default async function handler(req, res) {
 
     try {
         if (req.method === 'POST') {
-            await kv.set('concepts', req.body);
+            await kvSet('concepts', req.body);
             return res.status(200).json({ success: true });
         } else if (req.method === 'GET') {
-            const data = await kv.get('concepts');
+            const data = await kvGet('concepts');
             return res.status(200).json(data || []);
         } else {
             return res.status(405).json({ error: 'Method not allowed' });
