@@ -363,51 +363,64 @@ button {
     background: #0f172a;
 }
 
-/* Navbar */
+/* ===== NAVBAR — UNIFIED ACROSS ALL PAGES ===== */
 .navbar {
     background-color: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
 }
 
 .navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
+    padding: 14px 0;
+    gap: 20px;
 }
 
 .logo {
-    font-size: 26px;
-    font-weight: 800;
+    font-size: 24px;
+    font-weight: 900;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
+    letter-spacing: -0.5px;
 }
 
 .logo i {
-    margin-right: 10px;
-    font-size: 24px;
+    margin-right: 8px;
+    font-size: 22px;
     color: var(--primary);
 }
 
+/* Nav Links */
 .nav-links {
     display: flex;
     list-style: none;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
 }
 
-.nav-links li {
-    margin-left: 30px;
-}
+.nav-links li { margin: 0; }
 
 .nav-links a {
     font-weight: 600;
     color: var(--secondary);
     position: relative;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: 0.25s ease;
+    font-size: 14px;
+    display: block;
 }
 
 .nav-links a::after {
@@ -415,28 +428,119 @@ button {
     position: absolute;
     width: 0;
     height: 2px;
-    bottom: -5px;
-    left: 0;
-    background: var(--primary-gradient);
-    transition: width 0.3s;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
-.nav-links a:hover::after {
-    width: 100%;
+.nav-links a:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.06);
 }
+
+.nav-links a:hover::after { width: 60%; }
+
+.nav-links a.active {
+    color: var(--primary) !important;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.nav-links a.active::after { width: 70%; }
 
 /* Language Switch */
-.lang-switch {
-    margin-left: 30px;
-}
+.lang-switch { margin: 0; }
 
 #lang-toggle {
     background: var(--primary-gradient);
     color: white !important;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 13px;
-    box-shadow: 0 4px 10px rgba(78, 84, 200, 0.3);
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(78, 84, 200, 0.25);
+    letter-spacing: 0.5px;
+}
+
+/* Nav Icons — same on ALL pages */
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.nav-icons > i,
+.nav-icons > .hamburger {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--secondary);
+    font-size: 17px;
+    transition: 0.25s ease;
+    position: relative;
+}
+
+.nav-icons > i:hover,
+.nav-icons > .hamburger:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+#open-cart-modal { position: relative; }
+
+#cart-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #ef4444;
+    color: white;
+    font-size: 9px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    border: 2px solid var(--glass-bg);
+    line-height: 1;
+}
+
+/* Mobile Nav */
+@media (max-width: 900px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 16px;
+        gap: 4px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        z-index: 999;
+    }
+    .nav-links.active { display: flex; }
+    .nav-links li { width: 100%; }
+    .nav-links a { padding: 12px 16px; border-radius: 12px; }
+    .navbar-container { position: relative; }
+}
+
+@media (max-width: 600px) {
+    .logo { font-size: 20px; }
+    .nav-icons > i,
+    .nav-icons > .hamburger { width: 34px; height: 34px; font-size: 15px; }
 }
 
 /* Concept Grid */

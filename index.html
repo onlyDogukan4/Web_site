@@ -46,34 +46,6 @@
         }
         .search-close:hover { opacity: 1; transform: rotate(90deg); }
 
-        /* Re-designed Navbar Active Tab Effect (Neon Line) */
-        .nav-links a {
-            position: relative;
-            padding: 10px 20px;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-            color: var(--text);
-        }
-        .nav-links a::before {
-            content: '';
-            position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
-            background: var(--primary); transform: translateX(-50%);
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px var(--primary);
-        }
-        .nav-links a.active {
-            color: var(--primary) !important;
-        }
-        .nav-links a.active::before {
-            width: 80%;
-        }
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-        .nav-links a:hover::before {
-            width: 50%;
-        }
-
         /* VIP Concept Cart Item Style */
         .vip-concept-frame {
             position: relative;
@@ -192,7 +164,6 @@
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
-
             <ul class="nav-links" id="nav-links">
                 <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
@@ -201,73 +172,17 @@
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-
-                <style>
-                    .nav-icons {
-                        position: relative;
-                        display: flex;
-                        align-items: center;
-                        gap: 20px;
-                    }
-                    .nav-icons-items {
-                        display: flex;
-                        align-items: center;
-                        gap: 20px;
-                        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                        opacity: 0;
-                        visibility: hidden;
-                        transform: translateX(20px);
-                    }
-                    .nav-icons.active .nav-icons-items {
-                        opacity: 1;
-                        visibility: visible;
-                        transform: translateX(0);
-                    }
-                    .nav-icons-trigger {
-                        width: 45px;
-                        height: 45px;
-                        background: var(--primary);
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                        cursor: pointer;
-                        position: relative;
-                        z-index: 10;
-                        transition: 0.3s;
-                        box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
-                    }
-                    /* User's ::before request: Pulsing effect */
-                    .nav-icons-trigger::before {
-                        content: '';
-                        position: absolute;
-                        inset: -5px;
-                        border: 2px solid var(--primary);
-                        border-radius: 50%;
-                        animation: pulseMenu 2s infinite;
-                    }
-                    @keyframes pulseMenu {
-                        0% { transform: scale(1); opacity: 0.8; }
-                        100% { transform: scale(1.4); opacity: 0; }
-                    }
-                </style>
-                <div class="nav-icons" id="main-nav-icons">
-                    <div class="nav-icons-trigger" onclick="document.getElementById('main-nav-icons').classList.toggle('active'); document.getElementById('nav-links').classList.toggle('active')">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </div>
-                    <div class="nav-icons-items">
-                        <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
-                        <i class="fas fa-moon" id="theme-toggle" style="cursor: pointer;"></i>
-                        <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer; position:relative;" onclick="document.body.classList.add('cart-open')">
-                            <span id="cart-count">0</span>
-                        </i>
-                        <i class="fas fa-user" id="open-profile-modal" style="cursor: pointer;"></i>
-                        <div class="hamburger">
-                            <i class="fas fa-bars"></i>
-                        </div>
-                    </div>
+            <div class="nav-icons" id="main-nav-icons">
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count">0</span>
+                </i>
+                <i class="fas fa-user-circle" id="open-profile-modal"></i>
+                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
+                    <i class="fas fa-bars"></i>
                 </div>
+            </div>
         </div>
     </nav>
     <script>

@@ -35,26 +35,6 @@
         .search-close { position: absolute; top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
         .search-close:hover { opacity: 1; transform: rotate(90deg); }
 
-        /* Re-designed Navbar Active Tab Effect (Neon Line) */
-        .nav-links a {
-            position: relative;
-            padding: 10px 20px;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-        }
-        .nav-links a::before {
-            content: '';
-            position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
-            background: var(--primary); transform: translateX(-50%);
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px var(--primary);
-        }
-        .nav-links a.active {
-            color: var(--primary) !important;
-        }
-        .nav-links a.active::before {
-            width: 80%;
-        }
     </style>
 </head>
 <body data-scroll-container>
@@ -77,14 +57,14 @@
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons" style="display: flex; align-items: center;">
-                <i class="fas fa-search" id="open-search" style="cursor:pointer;"></i>
-                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal" style="cursor:pointer; margin-left:20px; position:relative;" onclick="document.body.classList.add('cart-open')">
-                    <span id="cart-count" style="position:absolute; top:-8px; right:-10px; background:#ef4444; color:white; font-size:10px; width:18px; height:18px; border-radius:50%; display:none; align-items:center; justify-content:center; font-weight:bold;">0</span>
+            <div class="nav-icons" id="main-nav-icons">
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal" onclick="document.body.classList.add('cart-open')">
+                    <span id="cart-count">0</span>
                 </i>
-                <i class="fas fa-user-circle" id="open-profile-modal" style="margin-left: 20px; cursor: pointer;"></i>
-                <div class="hamburger" style="margin-left:20px; cursor:pointer;">
+                <i class="fas fa-user-circle" id="open-profile-modal"></i>
+                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
