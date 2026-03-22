@@ -1,11 +1,6 @@
 
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,6 +12,10 @@ export default async function handler(req, res) {
     }
 
     try {
+        const redis = new Redis({
+            url: process.env.UPSTASH_REDIS_REST_URL,
+            token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        });
         if (req.method === 'POST') {
             const data = req.body;
             await redis.set('packages', data);
@@ -28,6 +27,7 @@ export default async function handler(req, res) {
             return res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        console.error("Packages API Error:", error.message);
+        return res.status(200).json([]);
     }
 }

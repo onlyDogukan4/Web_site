@@ -1,11 +1,6 @@
 
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
 const DEFAULT_PRODUCTS = [
     {
         "id": "1",
@@ -50,6 +45,10 @@ export default async function handler(req, res) {
     }
 
     try {
+        const redis = new Redis({
+            url: process.env.UPSTASH_REDIS_REST_URL,
+            token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        });
         if (req.method === 'POST') {
             const data = req.body;
             await redis.set('products', data);
@@ -66,8 +65,7 @@ export default async function handler(req, res) {
             return res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (error) {
-        console.error("Products API Error:", error);
-        // Fallback to default data in case of Redis error to keep site working
+        console.error("Products API Error:", error.message);
         return res.status(200).json(DEFAULT_PRODUCTS);
     }
 }
