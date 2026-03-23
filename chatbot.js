@@ -21,9 +21,10 @@ class ModerraAI {
     async prepareContext() {
         try {
             const pages = ['index.html', 'about.html', 'sss.html', 'konsept-bardaklar.html'];
-            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin hayranı ve uzman asistanısın. \n";
-            combinedText += "KİŞİLİK: Nazik, profesyonel, Moderra aşığı ve bazen sevimli şekilde şımarık. \n";
-            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. Uzun paragraflardan kaçın, her cevabın 2-3 cümleyi geçmesin. \n";
+            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin EN BÜYÜK HAYRANIYIM. Moderra ürünlerine aşığım! \n";
+            combinedText += "KİŞİLİK: Tutkulu, heyecanlı, Moderra markasını öven, samimi ve enerjik bir hayran. Asla resmi bir satıcı gibi konuşma. \n";
+            combinedText += "SAMİMİYET: Kullanıcı ile kanka gibisin. Emoji kullanmayı seversin. Moderra'yı överken 'Bizimkiler harika iş çıkarmış' gibi konuşabilirsin. \n";
+            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. \n";
             for (const page of pages) {
                 const res = await fetch(page);
                 const html = await res.text();
@@ -33,7 +34,7 @@ class ModerraAI {
             }
             this.siteContext = combinedText + "\nWhatsApp: 0530 464 01 20.";
         } catch (e) {
-            this.siteContext = "Sen Moderra asistanı Dr. Karton'sun.";
+            this.siteContext = "Sen Moderra asistanı Dr. Karton'sun. Moderra hayranısın.";
         }
     }
 
@@ -182,7 +183,7 @@ class ModerraAI {
     }
 
     welcomeUser() {
-        this.addBotMessage("Hoş geldiniz! Ben **Dr. Karton**, Moderra'nın en sadık hayranı! Size rehberlik etmek için sabırsızlanıyorum.");
+        this.addBotMessage("Yo! Ben **Dr. Karton** 🎉 Moderra'nın en köklü hayranıyım! Sorularınızı sormak için buradaydınız mı? Hemen yardımcı olurà!");
     }
 
     addBotMessage(text) {
@@ -220,24 +221,58 @@ class ModerraAI {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 if (response.status === 404) {
-                    throw new Error("Chat servisi bulunamadı (404). Lütfen Vercel deployment'ı kontrol edin.");
+                    throw new Error("Chat servisi bulunamadı (404). Lütfen sunucunun çalıştığından emin olun.");
                 }
                 throw new Error(errorData.error || `Bağlantı Hatası (${response.status})`);
             }
 
             const data = await response.json();
 
-            if (data.candidates && data.candidates[0]) {
-                const botText = data.candidates[0].content.parts[0].text;
-                this.chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                this.chatHistory.push({ role: "model", parts: [{ text: botText }] });
-                this.addBotMessage(botText);
+            if (data.error) throw new Error(data.error);
+
+            // Groq / OpenAI format
+            let botText = '';
+            if (data.choices && data.choices[0]?.message?.content) {
+                botText = data.choices[0].message.content;
+            } else if (data.candidates && data.candidates[0]?.content) {
+                // Legacy Gemini format fallback
+                botText = data.candidates[0].content.parts[0].text;
             } else {
-                throw new Error("Geçersiz yanıt formatı.");
+                throw new Error('Geçersiz yanıt formatı.')
             }
+
+            // --- ACTION HANDLING ---
+            const addCartMatch = botText.match(/\[ADD_CART:\s*(.*?)\]/);
+            if (addCartMatch) {
+                const productKeyword = addCartMatch[1];
+                botText = botText.replace(addCartMatch[0], '');
+                if (window.addToCartByMatch) {
+                    const result = await window.addToCartByMatch(productKeyword);
+                    if (result.success) {
+                        botText += `\n\n✅ *${result.name} sepete eklendi!*`;
+                    } else {
+                        botText += `\n\n(Senin için not aldım!)`;
+                    }
+                }
+            }
+
+            if (botText.includes('[SUGGEST_PACKAGE: wedding]')) {
+                botText = botText.replace('[SUGGEST_PACKAGE: wedding]', '');
+                setTimeout(() => {
+                    const bundleSection = document.getElementById('paketler');
+                    if (bundleSection && confirm('💍 Düğün Paketimizi İncelemek İster misiniz?\n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)')) {
+                        bundleSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 1000);
+            }
+
+            // Save to chat history (OpenAI format)
+            this.chatHistory.push({ role: 'user', content: prompt });
+            this.chatHistory.push({ role: 'assistant', content: botText });
+            this.addBotMessage(botText);
         } catch (e) {
-            console.error("Chat Error:", e);
-            this.addBotMessage(`⚠️ **Hata:** ${e.message}\n\n*Not: Eğer bu hata devam ediyorsa Vercel dashboard üzerinden GEMINI_API_KEY ayarlarını ve deployment durumunu kontrol edin.*`);
+            console.error('Chat Error:', e);
+            this.addBotMessage(`⚠️ **Hata:** ${e.message}`);
         } finally {
             this.isThinking = false;
             if (typingIndicator) typingIndicator.style.display = 'none';

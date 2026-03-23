@@ -1,42 +1,44 @@
+async function kvGet(key) {
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (!url || !token) return null;
+    try {
+        const res = await fetch(`${url}/get/${key}`, { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        if (!data.result) return null;
+        return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+    } catch { return null; }
+}
 
-import { Redis } from '@upstash/redis';
-
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+async function kvSet(key, value) {
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (!url || !token) return;
+    try {
+        await fetch(`${url}/pipeline`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify([['SET', key, JSON.stringify(value)]])
+        });
+    } catch { }
+}
 
 export default async function handler(req, res) {
-    // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
+    if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
-    try {
-        if (req.method === 'POST') {
-            const data = req.body;
-            await redis.set('settings', data);
-            return res.status(200).json({ success: true });
-        } else if (req.method === 'GET') {
-            const data = await redis.get('settings');
-            return res.status(200).json(data || {});
-        } else {
-            return res.status(405).json({ error: 'Method not allowed' });
-        }
-    } catch (error) {
-        console.error("Settings API Error:", error);
-        return res.status(500).json({ error: error.message });
+    if (req.method === 'POST') {
+        await kvSet('settings', req.body);
+        return res.status(200).json({ success: true });
     }
+    if (req.method === 'GET') {
+        const data = await kvGet('settings');
+        return res.status(200).json(data || { minOrder: 500, freeShipping: 1000 });
+    }
+    return res.status(405).json({ error: 'Method not allowed' });
 }

@@ -3,19 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Moderra Sıkça Sorulan Sorular - Aklınıza takılan soruların cevapları.">
-    <title data-tr="Sıkça Sorulan Sorular | Moderra" data-en="F.A.Q. | Moderra">Sıkça Sorulan Sorular | Moderra</title>
+    <meta name="description" content="Moderra hakkında merak ettiğiniz tüm soruların cevapları. Karton bardak siparişi, teslimat süreçleri ve özel tasarım detayları.">
+    <meta name="keywords" content="karton bardak sss, moderra yardım, bardak siparişi nasıl verilir">
+    <title data-tr="Sıkça Sorulan Sorular | Moderra" data-en="F.A.Q. | Moderra">Moderra | Sıkça Sorulan Sorular</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
+    <style>
+        /* Modernized Search Bar */
+        .search-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .search-container.active { opacity: 1; visibility: visible; }
+        .search-wrapper {
+            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
+            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .search-container.active .search-wrapper { transform: scale(1); }
+        .search-wrapper input {
+            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
+            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
+            letter-spacing: -0.5px;
+        }
+        .search-close { position: absolute; top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .search-close:hover { opacity: 1; transform: rotate(90deg); }
+
+    </style>
 </head>
 <body data-scroll-container>
-    <!-- Modern Search UI -->
+    <!-- Impressive Search UI -->
     <div class="search-container" id="search-bar">
         <div class="search-wrapper">
-            <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--gray);"></i>
-            <input type="text" id="search-input" placeholder="Ara..." data-tr-placeholder="Ara..." data-en-placeholder="Search...">
             <i class="fas fa-times search-close" id="close-search"></i>
+            <input type="text" id="search-input" placeholder="Hayalinizdeki ürünü arayın..." data-tr-placeholder="Hayalinizdeki ürünü arayın..." data-en-placeholder="Search your dream product...">
         </div>
     </div>
 
@@ -30,17 +57,35 @@
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons">
+            <div class="nav-icons" id="main-nav-icons">
                 <i class="fas fa-search" id="open-search"></i>
-                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
-                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'" style="margin-left: 20px;"></i>
-                <i class="fas fa-user" id="open-profile-modal" style="margin-left: 20px;"></i>
-                <div class="hamburger">
+                <i class="fas fa-moon" id="theme-toggle"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal" onclick="document.body.classList.add('cart-open')">
+                    <span id="cart-count">0</span>
+                </i>
+                <i class="fas fa-user-circle" id="open-profile-modal"></i>
+                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- Unified Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 style="margin:0; font-size:22px; font-weight:900;"><i class="fas fa-shopping-basket"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px;" onclick="document.body.classList.remove('cart-open')">&times;</div>
+        </div>
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;"></div>
+        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9;">
+            <div id="cart-total-price-area"></div>
+            <button id="whatsapp-checkout" class="btn" style="width:100%; padding:20px; border-radius:18px; background:linear-gradient(45deg, #22c55e, #16a34a); color:white; font-weight:800; border:none; cursor:pointer; margin-top:15px;">
+                <i class="fab fa-whatsapp"></i> SİPARİŞİ TAMAMLA
+            </button>
+        </div>
+    </div>
+    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
 
     <header class="page-header-premium">
         <div class="container">
@@ -83,27 +128,32 @@
 
     <!-- Modern Profil Modalı -->
     <div id="profile-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header-banner">
-                <span class="close-btn profile-close" style="color: white; top: 15px; right: 20px;">&times;</span>
-                <i class="fas fa-user-circle"></i>
-                <h2 data-tr="Profil Bilgilerim" data-en="My Profile" style="margin:0">Profil Bilgilerim</h2>
+                <span class="close-btn profile-close" style="color: white;">&times;</span>
+                <i class="fas fa-user-circle" style="font-size: 64px; margin-bottom: 15px;"></i>
+                <h2 data-tr="Profilim" data-en="My Profile">Profilim</h2>
+                <p style="font-size: 14px; opacity: 0.8;" data-tr="Bilgilerinizi buradan yönetebilirsiniz." data-en="You can manage your information here.">Bilgilerinizi buradan yönetebilirsiniz.</p>
             </div>
-            <div class="modal-body-padding">
+            <div class="modal-body-padding" style="padding:40px;">
                 <form id="profile-form">
-                    <div class="profile-field-item">
-                        <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
-                        <input type="text" id="user-name" placeholder="Adınız Soyadınız" required>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                        <div class="profile-field-item">
+                            <label style="display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--primary);"><i class="fas fa-id-card"></i> <span data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</span></label>
+                            <input type="text" id="user-name" placeholder="Örn: Doğan Aydın" required style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px;">
+                        </div>
+                        <div class="profile-field-item">
+                            <label style="display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--primary);"><i class="fas fa-phone-alt"></i> <span data-tr="Telefon" data-en="Phone">Telefon</span></label>
+                            <input type="tel" id="user-phone" placeholder="05XX XXX XX XX" required style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px;">
+                        </div>
+                        <div class="profile-field-item">
+                            <label style="display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--primary);"><i class="fas fa-map-marker-alt"></i> <span data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</span></label>
+                            <textarea id="user-address" rows="3" placeholder="Siparişleriniz için açık adres giriniz..." required style="width:100%; padding:10px; border:1px solid #eee; border-radius:8px;"></textarea>
+                        </div>
                     </div>
-                    <div class="profile-field-item">
-                        <label data-tr="Telefon Numarası" data-en="Phone Number">Telefon Numarası</label>
-                        <input type="tel" id="user-phone" placeholder="05xx xxx xx xx" required>
-                    </div>
-                    <div class="profile-field-item">
-                        <label data-tr="Teslimat Adresi" data-en="Shipping Address">Teslimat Adresi</label>
-                        <textarea id="user-address" rows="3" placeholder="Siparişlerinizin ulaşacağı tam adres..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn" style="width: 100%; padding: 15px; border-radius: 12px;" data-tr="DEĞİŞİKLİKLERİ KAYDET" data-en="SAVE CHANGES">DEĞİŞİKLİKLERİ KAYDET</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:800;">
+                        <i class="fas fa-save"></i> <span data-tr="GÜNCELLE" data-en="UPDATE">GÜNCELLE</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -225,55 +275,132 @@
 
         updateLanguage();
         // Search logic
-        const searchInput = document.getElementById('search-input');
-        const searchBar = document.getElementById('search-bar');
-        const openSearchBtn = document.getElementById('open-search');
-        const closeSearchBtn = document.getElementById('close-search');
+        document.addEventListener('DOMContentLoaded', () => {
+            const pm = document.getElementById('profile-modal');
+            const opm = document.getElementById('open-profile-modal');
+            const cl = document.querySelector('.profile-close');
+            const profileForm = document.getElementById('profile-form');
+            
+            if(opm) opm.onclick = () => { pm.style.display = 'block'; };
+            if(cl) cl.onclick = () => { pm.style.display = 'none'; };
+            window.onclick = (e) => { if(e.target === pm) pm.style.display = 'none'; };
 
-        openSearchBtn.onclick = () => { searchBar.classList.add('active'); searchInput.focus(); };
-        closeSearchBtn.onclick = () => { searchBar.classList.remove('active'); searchInput.value = ''; };
+            // Load saved profile
+            const savedData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+            if(savedData.name) document.getElementById('user-name').value = savedData.name;
+            if(savedData.phone) document.getElementById('user-phone').value = savedData.phone;
+            if(savedData.address) document.getElementById('user-address').value = savedData.address;
 
-        // Profile logic
-        const profileModal = document.getElementById('profile-modal');
-        const openProfileBtn = document.getElementById('open-profile-modal');
-        const profileCloseBtn = document.querySelector('.profile-close');
-        const profileForm = document.getElementById('profile-form');
+            if(profileForm) {
+                profileForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    const data = {
+                        name: document.getElementById('user-name').value,
+                        phone: document.getElementById('user-phone').value,
+                        address: document.getElementById('user-address').value
+                    };
+                    localStorage.setItem('moderra_user_data', JSON.stringify(data));
+                    alert(currentLang === 'tr' ? 'Profil güncellendi!' : 'Profile updated!');
+                    pm.style.display = 'none';
+                };
+            }
 
-        openProfileBtn.onclick = () => {
-            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
-            if (userData.name) document.getElementById('user-name').value = userData.name;
-            if (userData.phone) document.getElementById('user-phone').value = userData.phone;
-            if (userData.address) document.getElementById('user-address').value = userData.address;
-            profileModal.style.display = 'block';
-        };
+            // Navbar Active Tab
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if(link.getAttribute('href') === currentPath) link.classList.add('active');
+            });
 
-        profileCloseBtn.onclick = () => { profileModal.style.display = 'none'; };
+            // Search Logic
+            const searchIcon = document.getElementById('open-search');
+            const searchContainer = document.getElementById('search-bar');
+            const closeSearch = document.getElementById('close-search');
+            const searchInput = document.getElementById('search-input');
 
-        profileForm.onsubmit = (e) => {
-            e.preventDefault();
-            const userData = {
-                name: document.getElementById('user-name').value,
-                phone: document.getElementById('user-phone').value,
-                address: document.getElementById('user-address').value
+            if(searchIcon) searchIcon.onclick = () => {
+                searchContainer.classList.add('active');
+                setTimeout(() => searchInput.focus(), 100);
             };
-            localStorage.setItem('moderra_user_data', JSON.stringify(userData));
-            alert(currentLang === 'tr' ? "Profil kaydedildi!" : "Profile saved!");
-            profileModal.style.display = 'none';
-        };
-
-        window.onclick = (e) => {
-            if (e.target === profileModal) profileModal.style.display = 'none';
-        };
-
-        updateLanguage();
+            if(closeSearch) closeSearch.onclick = () => searchContainer.classList.remove('active');
+        });
     </script>
     <script src="env.js"></script>
     <script src="chatbot.js"></script>
     
-    <!-- Vercel Speed Insights -->
+    <!-- Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer" style="display:none; position:fixed; top:0; right:0; width:480px; height:100%; background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); z-index:10000; box-shadow:-20px 0 50px rgba(0,0,0,0.15); border-left:1px solid rgba(255,255,255,0.3); transition:0.5s cubic-bezier(0.19, 1, 0.22, 1); flex-direction:column;">
+        <div class="cart-header" style="padding:30px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0; font-size:22px; font-weight:900; color:#1e293b; letter-spacing:-0.5px;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px; color:#cbd5e1; transition:0.3s;" onclick="document.getElementById('cart-modal').style.display='none'; document.getElementById('cart-overlay').style.display='none';">&times;</div>
+        </div>
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;"></div>
+        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9; box-shadow:0 -10px 20px rgba(0,0,0,0.02);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:20px; font-weight:900; color:#1e293b;">
+                <span>Toplam</span>
+                <span id="cart-total-price">₺0,00</span>
+            </div>
+            <button id="whatsapp-checkout" style="width:100%; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(45deg, #22c55e, #16a34a); border:none; cursor:pointer; color:white; font-size:16px; font-weight:900; box-shadow:0 10px 20px rgba(22, 163, 74, 0.2); transition:0.3s;">
+                <i class="fab fa-whatsapp" style="font-size:20px;"></i> SİPARİŞİ TAMAMLA
+            </button>
+        </div>
+    </div>
+    <style>
+        .cart-drawer[style*="display: block"] { display: flex !important; transform: translateX(0); }
+        .cart-item-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    </style>
+    <div id="cart-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.5); z-index:9999; backdrop-filter:blur(8px);" onclick="document.getElementById('cart-modal').style.display='none'; this.style.display='none';"></div>
+
     <script>
-        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        function updateCartDisplay() {
+            const list = document.getElementById('cart-items-list');
+            const totalEl = document.getElementById('cart-total-price');
+            const countEl = document.getElementById('cart-count');
+            if(!list) return;
+            list.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += (parseFloat(item.price) * item.quantity);
+                const el = document.createElement('div');
+                el.className = 'cart-item-card';
+                el.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                        <img src="${item.image}" style="width:50px; height:50px; object-fit:contain; border-radius:12px; background:#f8fafc; border:1px solid #eee; padding:5px;">
+                        <div>
+                            <div style="font-weight:900; font-size:14px; color:#1e293b;">${item.name}</div>
+                            <div style="font-size:12px; color:var(--primary); font-weight:800; margin-top:2px;">${item.quantity} x ₺${item.price.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:14px; transition:0.3s; padding:5px;"></i>
+                `;
+                list.appendChild(el);
+            });
+            if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+            if(countEl) {
+                const qty = cart.reduce((s,i)=>s+i.quantity,0);
+                countEl.innerText = qty;
+                countEl.style.display = qty > 0 ? 'flex' : 'none';
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        function removeFromCart(id) {
+            cart = cart.filter(x => x.id !== id);
+            updateCartDisplay();
+        }
+        document.getElementById('open-cart-modal').onclick = () => {
+            document.getElementById('cart-modal').style.display = 'block';
+            document.getElementById('cart-overlay').style.display = 'block';
+            updateCartDisplay();
+        };
+        document.getElementById('whatsapp-checkout').onclick = () => {
+             let msg = "Merhaba Moderra, SSS sayfasından geliyorum. Sipariş vermek istiyorum.\n";
+             window.open(`https://wa.me/905304640120?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+        window.addEventListener('load', updateCartDisplay);
     </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+    <style>
+        .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
+        #cart-modal[style*="display: block"] { transform: translateX(0); }
+    </style>
 </body>
 </html>

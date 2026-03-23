@@ -47,6 +47,129 @@
     --border-muted: #334155;
 }
 
+/* VIP PREMIUM SYSTEM */
+.vip-concept-frame {
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box !important;
+    border: 2px solid transparent !important;
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2) !important;
+}
+
+.vip-badge {
+    background: linear-gradient(45deg, #d4af37, #f7ef8a);
+    color: #1a1a1a;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.vip-toast {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: linear-gradient(45deg, #1e293b, #0f172a);
+    color: #d4af37;
+    padding: 20px 30px;
+    border-radius: 24px;
+    z-index: 30000;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    transform: translateX(120%);
+    transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid #d4af37;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vip-toast.active {
+    transform: translateX(0);
+}
+
+.vip-toast-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(45deg, #d4af37, #f7ef8a);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    font-size: 20px;
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* CART DRAWER GLOBAL */
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 480px;
+    height: 100vh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    z-index: 10000;
+    box-shadow: -30px 0 60px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.cart-open {
+    overflow: hidden;
+}
+
+body.cart-open .cart-drawer {
+    transform: translateX(0);
+}
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.5s;
+}
+
+body.cart-open .cart-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+#cart-items-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+}
+
+#cart-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#cart-items-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#cart-items-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
 /* Body & Scroll */
 body {
     background: var(--bg-body);
@@ -240,51 +363,64 @@ button {
     background: #0f172a;
 }
 
-/* Navbar */
+/* ===== NAVBAR — UNIFIED ACROSS ALL PAGES ===== */
 .navbar {
     background-color: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
 }
 
 .navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
+    padding: 14px 0;
+    gap: 20px;
 }
 
 .logo {
-    font-size: 26px;
-    font-weight: 800;
+    font-size: 24px;
+    font-weight: 900;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
+    letter-spacing: -0.5px;
 }
 
 .logo i {
-    margin-right: 10px;
-    font-size: 24px;
+    margin-right: 8px;
+    font-size: 22px;
     color: var(--primary);
 }
 
+/* Nav Links */
 .nav-links {
     display: flex;
     list-style: none;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
 }
 
-.nav-links li {
-    margin-left: 30px;
-}
+.nav-links li { margin: 0; }
 
 .nav-links a {
     font-weight: 600;
     color: var(--secondary);
     position: relative;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: 0.25s ease;
+    font-size: 14px;
+    display: block;
 }
 
 .nav-links a::after {
@@ -292,28 +428,119 @@ button {
     position: absolute;
     width: 0;
     height: 2px;
-    bottom: -5px;
-    left: 0;
-    background: var(--primary-gradient);
-    transition: width 0.3s;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
-.nav-links a:hover::after {
-    width: 100%;
+.nav-links a:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.06);
 }
+
+.nav-links a:hover::after { width: 60%; }
+
+.nav-links a.active {
+    color: var(--primary) !important;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.nav-links a.active::after { width: 70%; }
 
 /* Language Switch */
-.lang-switch {
-    margin-left: 30px;
-}
+.lang-switch { margin: 0; }
 
 #lang-toggle {
     background: var(--primary-gradient);
     color: white !important;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 13px;
-    box-shadow: 0 4px 10px rgba(78, 84, 200, 0.3);
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(78, 84, 200, 0.25);
+    letter-spacing: 0.5px;
+}
+
+/* Nav Icons — same on ALL pages */
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.nav-icons > i,
+.nav-icons > .hamburger {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--secondary);
+    font-size: 17px;
+    transition: 0.25s ease;
+    position: relative;
+}
+
+.nav-icons > i:hover,
+.nav-icons > .hamburger:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+#open-cart-modal { position: relative; }
+
+#cart-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #ef4444;
+    color: white;
+    font-size: 9px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    border: 2px solid var(--glass-bg);
+    line-height: 1;
+}
+
+/* Mobile Nav */
+@media (max-width: 900px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 16px;
+        gap: 4px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        z-index: 999;
+    }
+    .nav-links.active { display: flex; }
+    .nav-links li { width: 100%; }
+    .nav-links a { padding: 12px 16px; border-radius: 12px; }
+    .navbar-container { position: relative; }
+}
+
+@media (max-width: 600px) {
+    .logo { font-size: 20px; }
+    .nav-icons > i,
+    .nav-icons > .hamburger { width: 34px; height: 34px; font-size: 15px; }
 }
 
 /* Concept Grid */
@@ -464,6 +691,22 @@ button {
     to {
         box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
     }
+}
+
+.campaign-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(190, 18, 60, 0.3);
+    z-index: 20;
+    transform: rotate(-3deg);
+    border: 2px solid white;
 }
 
 /* Discount Badge */
@@ -631,15 +874,19 @@ button {
 
 .product-card {
     background-color: var(--card-bg);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
     border: 1px solid var(--border);
     position: relative;
     padding: 0;
-    /* Changed back to padding 0 for the old look */
+    overflow: visible;
+    /* Allow badges to hang out */
 }
+
+.product-card .product-img {
+    border-radius: 15px 15px 0 0;
+    /* Maintain rounded corners visually */
+}
+
+/* Changed back to padding 0 for the old look */
 
 .product-card:hover {
     transform: translateY(-10px);

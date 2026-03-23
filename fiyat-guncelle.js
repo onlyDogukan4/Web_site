@@ -43,6 +43,6 @@ async function fiyatlariGuncelle() {
 document.addEventListener('DOMContentLoaded', () => {
     fiyatlariGuncelle();
 
-    // "Gerçek zamanlı" etki için her 10 saniyede bir kontrol et
-    setInterval(fiyatlariGuncelle, 10000);
+    // "Gerçek zamanlı" etki için her 60 saniyede bir kontrol et
+    setInterval(fiyatlariGuncelle, 60000);
 });

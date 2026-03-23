@@ -2,130 +2,168 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.">
-    <meta name="keywords" content="karton bardak, özel logolu bardak, baskılı bardak, ambalaj, moderra">
-    <title data-tr="Moderra | Premium Online Alışveriş" data-en="Moderra | Premium Online Shopping">Moderra | Premium Online Alışveriş</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderra | Premium Karton Bardak ve Özel Tasarım Çözümleri</title>
+    <meta name="description" content="Moderra ile işletmenize özel baskılı karton bardaklar, düğün paketleri ve özel konsept tasarımlar. Hızlı teslimat ve premium kalite.">
+    <meta name="keywords" content="karton bardak, özel tasarım bardak, baskılı bardak, düğün paketi, moderra">
+    <!-- Performance: DNS prefetch & preconnect -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://api.groq.com" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
     <style>
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 5px;
-            background: #f3f4f6;
-            padding: 5px;
-            border-radius: 8px;
-            width: fit-content;
+        /* Modernized Search Bar */
+        .search-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-        .qty-btn {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: none;
+        .search-container.active { opacity: 1; visibility: visible; }
+        .search-wrapper {
+            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
+            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .search-container.active .search-wrapper { transform: scale(1); }
+        .search-wrapper input {
+            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
+            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
+            letter-spacing: -0.5px;
+        }
+        .search-wrapper input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+        }
+        .search-close {
+            position: absolute;
+            top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s;
+        }
+        .search-close:hover { opacity: 1; transform: rotate(90deg); }
+
+        /* VIP Concept Cart Item Style */
+        .vip-concept-frame {
+            position: relative;
+            border: 2px solid transparent;
+            background: linear-gradient(#f8fafc, #f8fafc) padding-box,
+                        linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+            animation: vip-glow 3s infinite;
+        }
+        @keyframes vip-glow {
+            0%, 100% { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); }
+            50% { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.4); }
+        }
+        .vip-badge {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: linear-gradient(45deg, #d4af37, #f7ef8a);
+            color: #2c2c2c;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 1px solid white;
+        }
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 480px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.3);
+        }
+        body.cart-open .cart-drawer { transform: translateX(0); }
+        body.cart-open .chatbot-container { display: none !important; }
+        body.cart-open .upsell-container { display: none !important; }
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.4s;
+        }
+        body.cart-open .cart-overlay { opacity: 1; visibility: visible; }
+
+        .cart-header {
+            padding: 30px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-header h2 { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+
+        .cart-item-card {
             background: white;
-            color: var(--primary);
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: 0.2s;
-        }
-        .qty-btn:hover { background: var(--primary); color: white; }
-        
-        /* Upsell Style */
-        .upsell-container {
-            margin-top: 15px;
-            padding: 15px;
-            background: #eff6ff; 
-            border: 1px dashed #6366f1;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
             position: relative;
             overflow: hidden;
         }
-        .upsell-img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
-        
-        /* "Mr. Karton" Bubble in Cart */
-        .mr-karton-bubble {
-            position: absolute;
-            bottom: 5px; right: 5px;
-            font-size: 10px;
-            background: #fff;
-            padding: 2px 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            color: #555;
-        }
-        
-        /* Cart Badge Positioning */
-        #open-cart-modal {
-            position: relative; /* Crucial for badge */
-            display: inline-flex; /* Better for sizing */
-            align-items: center;
-            justify-content: center;
-        }
+        .cart-item-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 
-        #cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
+        .vip-concept-frame {
+            background: linear-gradient(white, white) padding-box, linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box !important;
+            border: 2px solid transparent !important;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15) !important;
+        }
+        .vip-badge {
+            background: linear-gradient(45deg, #d4af37, #b45309);
             color: white;
-            font-size: 10px;
-            font-weight: bold;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 10px;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            z-index: 10;
-            border: 2px solid white; /* Make it pop */
-        }
-        
-        /* Hide Chatbot when Cart Open class is on Body */
-        body.cart-open #chatbot-container,
-        body.cart-open #chatbot-toggle-btn {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-        
-        /* Shake Animation for Validation */
-        @keyframes shake-red {
-            0% { transform: translateX(0); border-color: transparent; }
-            25% { transform: translateX(-5px); border-color: #ef4444; }
-            50% { transform: translateX(5px); border-color: #ef4444; }
-            75% { transform: translateX(-5px); border-color: #ef4444; }
-            100% { transform: translateX(0); border-color: #ef4444; }
-        }
-        .validation-shake {
-            animation: shake-red 0.5s ease-in-out;
-            border: 2px solid #ef4444 !important;
+            gap: 5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body data-scroll-container>
-    <!-- Modern Search UI -->
+    <!-- Impressive Search UI -->
     <div class="search-container" id="search-bar">
         <div class="search-wrapper">
-            <i class="fas fa-search" style="position: absolute; left: 15px; color: var(--gray);"></i>
-            <input type="text" id="search-input" placeholder="Ürün veya kategori ara..." data-tr-placeholder="Ürün veya kategori ara..." data-en-placeholder="Search products or categories...">
             <i class="fas fa-times search-close" id="close-search"></i>
+            <input type="text" id="search-input" placeholder="Hayalinizdeki ürünü arayın..." data-tr-placeholder="Hayalinizdeki ürünü arayın..." data-en-placeholder="Search your dream product...">
+            <div style="text-align:center; margin-top:30px; color:#1e293b; font-size:14px; font-weight:700; opacity:0.6;">
+                <span data-tr="Trend Aramalar: " data-en="Trending: ">Trend Aramalar: </span>
+                <span style="cursor:pointer; margin-left:10px; border-bottom:1px solid #1e293b;" onclick="document.getElementById('search-input').value='Bardak'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Bardak</span>,
+                <span style="cursor:pointer; margin-left:5px; border-bottom:1px solid #1e293b;" onclick="document.getElementById('search-input').value='Yeni Yıl'; document.getElementById('search-input').dispatchEvent(new Event('input'))">Yeni Yıl</span>
+            </div>
         </div>
     </div>
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
-
             <ul class="nav-links" id="nav-links">
                 <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
@@ -134,20 +172,38 @@
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-
-            <div class="nav-icons">
+            <div class="nav-icons" id="main-nav-icons">
                 <i class="fas fa-search" id="open-search"></i>
-                <i class="fas fa-moon" id="theme-toggle" style="margin-left: 20px; cursor: pointer;"></i>
+                <i class="fas fa-moon" id="theme-toggle"></i>
                 <i class="fas fa-shopping-cart" id="open-cart-modal">
                     <span id="cart-count">0</span>
                 </i>
-                <i class="fas fa-user" id="open-profile-modal"></i>
-                <div class="hamburger">
+                <i class="fas fa-user-circle" id="open-profile-modal"></i>
+                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
         </div>
     </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             const pm = document.getElementById('profile-modal');
+             const opm = document.getElementById('open-profile-modal');
+             const cl = document.querySelector('.profile-close');
+             if(opm) opm.addEventListener('click', () => { if(pm) pm.style.display = 'block'; });
+             if(cl) cl.addEventListener('click', () => { if(pm) pm.style.display = 'none'; });
+
+             // Navbar Active Tab
+             const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+             document.querySelectorAll('.nav-links a').forEach(link => {
+                 if(link.getAttribute('href') === currentPath) {
+                     link.classList.add('active');
+                 } else {
+                     link.classList.remove('active');
+                 }
+             });
+        });
+    </script>
 
     <main>
     <section class="slider container">
@@ -184,35 +240,53 @@
         </div>
     </section>
 
+
     <section class="container" id="urunler"> 
         <h2 class="section-title">Popüler Ürünler</h2>
+        <!-- Kategori Navigasyonu -->
+        <div id="product-category-nav" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:28px;"></div>
+        <!-- Ürün Izgarası -->
         <div class="products" id="products-dynamic-container">
+            <!-- JS ile doldurulacak -->
+        </div>
+        <!-- Sayfalandırma -->
+        <div id="product-pagination" style="display:flex; gap:8px; justify-content:center; margin-top:32px; flex-wrap:wrap;"></div>
+    </section>
+
+    <!-- ÖZEL PAKETLER BÖLÜMÜ (YENİ) -->
+    <section class="container" id="paketler" style="margin-top: 80px;">
+        <h2 class="section-title" data-tr="Moderra Süper Paketler" data-en="Moderra Super Bundles">Moderra Süper Paketler</h2>
+        <p style="text-align:center; color:var(--text-muted); margin-top:-20px; margin-bottom:40px;" data-tr="İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!" data-en="Everything you need in one package, at more advantageous prices!">İhtiyacınız olan her şey tek bir pakette, daha avantajlı fiyatlarla!</p>
+        <div id="packages-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
             <!-- JS ile doldurulacak -->
         </div>
     </section>
     </main>
     
-    <!-- Sepet Modalı (Eski Hali) -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content cart-modal-content" style="max-width:600px; margin: 10% auto; border-radius:30px;">
-            <span class="close-btn cart-close" id="close-cart-btn-modal" style="top: 15px; right: 20px;">&times;</span>
-            <div class="cart-header" style="padding:25px; border-bottom:1px solid #eee;">
-                <h3 style="display:flex; align-items:center; gap:10px;"><i class="fas fa-shopping-cart"></i> <span data-tr="Sepetim" data-en="My Cart">Sepetim</span></h3>
+    <!-- Unified Cart Drawer -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 style="margin:0; font-size:22px; font-weight:900; color:#1e293b;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
+            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px; color:#cbd5e1; transition:0.3s;" onclick="document.body.classList.remove('cart-open')">&times;</div>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        
+        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;">
+            <!-- Items injected by JS -->
+        </div>
+
+        <div class="cart-footer" style="padding:20px 25px 25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
+            <!-- AI Advisor -->
+            <div id="cart-ai-advisor-wrap"></div>
+            <div id="cart-total-price-area">
+                <!-- Summary injected by JS -->
             </div>
-            <div id="cart-items-list" style="padding:20px; max-height:400px; overflow-y:auto;">
-                <p class="empty-cart-message" data-tr="Sepetinizde ürün bulunmamaktadır." data-en="Your cart is empty.">Sepetinizde ürün bulunmamaktadır.</p>
-            </div>
-            <div class="cart-footer" style="padding:25px; border-top:1px solid #eee; background:#f9fafb;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size:20px;">
-                    <span data-tr="Toplam:" data-en="Total:">Toplam:</span>
-                    <span id="cart-total-price">₺0,00</span>
-                </div>
-                <button id="whatsapp-checkout" class="btn" style="width:100%; padding:15px; border-radius:12px; background:#25d366; color:white; font-size:16px;">
-                    <i class="fab fa-whatsapp"></i> <span data-tr="WhatsApp ile Sipariş Ver" data-en="Order via WhatsApp">WhatsApp ile Sipariş Ver</span>
-                </button>
-            </div>
+            <button id="whatsapp-checkout" class="btn" onclick="whatsappCheckout()" style="width:100%; margin:15px 0 0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg, #22c55e, #16a34a); box-shadow:0 10px 25px rgba(22, 163, 74, 0.25); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800; transition:0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 15px 35px rgba(22,163,74,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(22,163,74,0.25)'">
+                <i class="fab fa-whatsapp" style="font-size:22px;"></i> SİPARİŞİ TAMAMLA
+            </button>
         </div>
     </div>
+    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
 
     <!-- Modern Profil Modalı -->
     <div id="profile-modal" class="modal">
@@ -367,288 +441,8 @@
             navLinks.classList.toggle('active');
         });
 
-        // --- Sepet İşlevi ---
-        let cart = [];
-        const cartCount = document.getElementById('cart-count');
-        const cartModal = document.getElementById('cart-modal');
-        const openCartModal = document.getElementById('open-cart-modal');
-        const cartCloseBtn = document.querySelector('.cart-close-drawer');
-        const cartItemsList = document.getElementById('cart-items-list');
-        const cartTotalPrice = document.getElementById('cart-total-price');
-        const whatsappCheckout = document.getElementById('whatsapp-checkout');
-
-        async function updateCartDisplay() {
-            cartItemsList.innerHTML = '';
-            
-            // Get Settings
-            let minOrder = 500;
-            let freeShip = 1000;
-            try {
-                const s = localStorage.getItem('settings');
-                if(s) { 
-                    const parsed = JSON.parse(s);
-                    minOrder = parsed.minOrder || 500;
-                    freeShip = parsed.freeShipping || 1000;
-                }
-            } catch(e){}
-            
-            const { total, subTotal, discountTotal } = calculateCartTotal();
-
-            // Progress Bar Logic
-            const shipProgress = Math.min((total / freeShip) * 100, 100);
-            const remainingShip = freeShip - total;
-            
-            const minProgress = Math.min((total / minOrder) * 100, 100);
-            const remainingMin = minOrder - total;
-
-            // Header Messages
-            let headerHTML = '';
-            
-            // 1. Min Sipariş Barı
-            if (total < minOrder) {
-                headerHTML += `
-                    <div id="min-order-bar" style="padding: 15px; background: #fff1f2; border-bottom: 1px solid #ffe4e6; transition:0.3s; cursor:pointer;" onclick="this.classList.remove('validation-shake')">
-                        <div style="font-size:13px; color:#9f1239; margin-bottom:5px; font-weight:700;">
-                            <i class="fas fa-exclamation-circle"></i> Siparişi Onaylamak İçin: ₺${remainingMin.toLocaleString('tr-TR')}
-                        </div>
-                        <div style="width:100%; height:8px; background:#ffe4e6; border-radius:4px; overflow:hidden;">
-                            <div style="width:${minProgress}%; height:100%; background:#f43f5e; transition: width 0.5s;"></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // 2. Kargo Barı
-            if (total >= minOrder) {
-                if (total < freeShip) {
-                     headerHTML += `
-                        <div id="free-ship-bar" style="padding: 15px; background: ${shipBgColor}; border-bottom: 1px solid ${shipBorderColor}; transition:0.3s;">
-                            <div style="font-size:13px; color:${shipTextColor}; margin-bottom:5px; font-weight:800;">
-                                🚀 Ücretsiz Kargo İçin: ₺${remainingShip.toLocaleString('tr-TR')}
-                            </div>
-                            <div style="width:100%; height:8px; background:white; border-radius:4px; overflow:hidden; border:1px solid ${shipBorderColor}">
-                                <div style="width:${shipProgress}%; height:100%; background:${shipBarColor}; transition: width 0.5s;"></div>
-                            </div>
-                            <div style="font-size:11px; margin-top:5px; color:${shipTextColor}; font-style:italic;">Hadi, bu fırsatı kaçırma!</div>
-                        </div>
-                    `;
-                } else {
-                    // Green Success
-                    headerHTML += `
-                        <div style="padding: 15px; background: #ecfccb; border-bottom: 1px solid #d9f99d; text-align:center;">
-                            <div style="font-size:14px; color:#365314; font-weight:800;">
-                                🎉 TEBRİKLER! KARGONUZ ÜCRETSİZ
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-
-            // Insert Header
-            const existingHeader = document.getElementById('cart-progress-container');
-            if(existingHeader) existingHeader.remove();
-            
-            const progressContainer = document.createElement('div');
-            progressContainer.id = 'cart-progress-container';
-            progressContainer.innerHTML = headerHTML;
-            cartItemsList.parentNode.insertBefore(progressContainer, cartItemsList);
-
-
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
-                cartCount.style.display = 'none';
-                whatsappCheckout.style.display = 'none';
-            } else {
-                cart.forEach((item, index) => {
-                     const itemTotal = (item.price * item.quantity); 
-                    
-                    const itemElement = document.createElement('div');
-                    itemElement.classList.add('cart-item');
-                    itemElement.innerHTML = `
-                        <div class="item-info">
-                            <div class="item-name">${item.name}</div>
-                            <div class="quantity-control">
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
-                                <span style="font-size:14px; font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
-                            </div>
-                            <div style="font-size:11px; color:#64748b; margin-top:5px;">Birim: ₺${item.price.toFixed(2)}</div>
-                             ${item.discountNote ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${item.discountNote}</div>` : ''}
-                        </div>
-                        <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
-                        <i class="fas fa-trash-alt item-remove" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#ef4444; margin-left:15px;"></i>
-                    `;
-                    cartItemsList.appendChild(itemElement);
-                });
-                
-                // --- MR. KARTON SMART UPSELL ---
-                if (total >= minOrder && total < freeShip) {
-                    try {
-                        const res = await fetch('/api/products?t='+Date.now());
-                        const allProds = await res.json();
-                        const gap = freeShip - total;
-                        
-                        let bestMatch = null;
-                        let quantityToSuggest = 1;
-                        let pitchText = "Bunu da ekleyelim mi?";
-                        
-                        const hasCups = cart.some(i => i.name.toLowerCase().includes('bardak'));
-                        const hasLids = cart.some(i => i.name.toLowerCase().includes('kapak'));
-                        
-                        if(hasCups && !hasLids) {
-                            bestMatch = allProds.find(p => p.name_tr.toLowerCase().includes('kapak'));
-                            if(bestMatch) pitchText = "Bardaklarınızın kapağı eksik kalmasın!";
-                        }
-                        
-                        if(!bestMatch) {
-                            const sorted = allProds.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
-                            bestMatch = sorted.find(p => parseFloat(p.price) <= gap);
-                            if(!bestMatch) bestMatch = sorted[0]; 
-                            
-                            if(bestMatch) {
-                                const price = parseFloat(bestMatch.price);
-                                if(price < gap) {
-                                    quantityToSuggest = Math.ceil(gap / price);
-                                    if(quantityToSuggest > 1) {
-                                        pitchText = `Sadece ${quantityToSuggest} tane daha ekle, kargo BEDAVA!`;
-                                    } else {
-                                        pitchText = "Kargo ödemek yerine bunu al!";
-                                    }
-                                } else {
-                                    pitchText = "Kargo ücreti ödeme, bunu ekle!";
-                                }
-                            }
-                        }
-                        
-                        if(bestMatch) {
-                           const upsellHTML = `
-                                <div class="upsell-container" onclick="addToCart('${bestMatch.id}', '${bestMatch.name_tr.replace(/'/g, "\\'")}', ${bestMatch.price}); updateItemQuantity('${bestMatch.id}', ${quantityToSuggest-1});">
-                                    <div style="position: absolute; top:0; left:0; bottom:0; width:40px; background:#e0e7ff; display:flex; align-items:center; justify-content:center;">
-                                        <i class="fas fa-robot" style="font-size:20px; color:var(--primary);"></i>
-                                    </div>
-                                    <div style="padding-left: 35px; flex:1;">
-                                        <div class="mr-karton-bubble" style="top:-10px; right:auto; left:48px; background:var(--primary); color:white; border:none; border-radius:10px 10px 10px 0;">
-                                            Dr. Karton Öneriyor 💡
-                                        </div>
-                                        <div style="font-size:12px; font-weight:600; color:#334155; margin-top:8px;">
-                                            "${pitchText}" <br>
-                                            <span style="color:#64748b; font-weight:400;">(${bestMatch.name_tr} x ${quantityToSuggest})</span>
-                                        </div>
-                                    </div>
-                                    <div style="text-align:right;">
-                                        <div style="font-weight:800; color:var(--primary)">+₺${(parseFloat(bestMatch.price)*quantityToSuggest).toLocaleString('tr-TR')}</div>
-                                        <i class="fas fa-plus-circle" style="color:var(--primary); margin-top:5px;"></i>
-                                    </div>
-                                </div>
-                           `;
-                           const div = document.createElement('div');
-                           div.innerHTML = upsellHTML;
-                           cartItemsList.appendChild(div);
-                        }
-                    } catch(e) {}
-                }
-
-                const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.textContent = totalCount;
-                if(totalCount > 0) {
-                     cartCount.style.display = 'flex';
-                } else {
-                     cartCount.style.display = 'none';
-                }
-                
-                whatsappCheckout.style.display = 'block';
-            }
-            
-            const totalFormatted = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-            if (discountTotal > 0) {
-                cartTotalPrice.innerHTML = `
-                    <div style="font-size:14px; text-decoration:line-through; color:#94a3b8">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                    <div style="color:var(--primary); font-size:20px;">${totalFormatted}</div>
-                    <div style="font-size:12px; color:var(--success)">Toplam İndirim: ₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                `;
-            } else {
-                cartTotalPrice.textContent = totalFormatted;
-            }
-        }
-
-        function updateItemQuantity(id, change) {
-            const item = cart.find(x => x.id == id);
-            if(!item) return;
-            item.quantity += change;
-            if(item.quantity <= 0) {
-                removeFromCart(id);
-            } else {
-                updateCartDisplay();
-            }
-        }
-
-        whatsappCheckout.onclick = async (e) => {
-            e.preventDefault();
-            
-            let minOrder = 500;
-            try {
-                const s = localStorage.getItem('settings');
-                if(s) minOrder = JSON.parse(s).minOrder || 500;
-            } catch(e){}
-
-            const { total } = calculateCartTotal();
-            if (total < minOrder) {
-                // Shake Animation & Scroll to top
-                document.getElementById('cart-items-list').scrollTop = 0;
-                
-                const bar = document.getElementById('min-order-bar');
-                if(bar) {
-                    bar.classList.remove('validation-shake');
-                    void bar.offsetWidth; // trigger reflow
-                    bar.classList.add('validation-shake');
-                    bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    alert(`Minimum sipariş tutarı ${minOrder} TL'dir.`);
-                }
-                return;
-            }
-
-            const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
-            
-            // Profil kontrolü: Sadece checkout anında sor
-            if (!userData.name || !userData.phone || !userData.address) {
-                if(confirm(currentLang === 'tr' ? "Sipariş için profil bilgileri gerekli. Doldurmak ister misiniz?" : "Profile details needed. Fill now?")) {
-                     profileModal.style.display = 'block';
-                }
-                return;
-            }
-
-            let message = "";
-            if (currentLang === 'tr') {
-                message = "*Moderra - Yeni Sipariş*\n\n";
-                message += "*Ürünler:*\n";
-                cart.forEach(item => {
-                    message += `📦 ${item.quantity} Adet - ${item.name} (₺${(item.price * item.quantity).toFixed(2).replace('.', ',')})\n`;
-                    if(item.discountNote) message += `   └ ℹ️ ${item.discountNote}\n`;
-                });
-                message += `\n*💰 Toplam Tutar: ₺${total.toFixed(2).replace('.', ',')}*\n\n`;
-                message += "*📍 Müşteri Bilgileri:*\n";
-                message += `👤 İsim: ${userData.name}\n`;
-                message += `📞 Tel: ${userData.phone}\n`;
-                message += `🏠 Adres: ${userData.address}`;
-            } else {
-                message = "*Moderra - New Order*\n\n";
-                message += "*Products:*\n";
-                cart.forEach(item => {
-                    message += `📦 ${item.quantity} Qty - ${item.name} (₺${(item.price * item.quantity).toFixed(2).replace('.', ',')})\n`;
-                });
-                message += `\n*💰 Total Amount: ₺${total.toFixed(2).replace('.', ',')}*\n\n`;
-                message += "*📍 Customer Information:*\n";
-                message += `👤 Name: ${userData.name}\n`;
-                message += `📞 Phone: ${userData.phone}\n`;
-                message += `🏠 Address: ${userData.address}`;
-            }
-
-            const whatsappUrl = `https://wa.me/905304640120?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        };
-
-        // Fly to Cart Animation Function
+        // --- Sepet İşlevi (Now handled by cart-system.js) ---
+        // Duplicate code removed.
         function flyToCart(imgElement) {
             if (!imgElement) return;
             const cartIcon = document.getElementById('open-cart-modal');
@@ -681,414 +475,89 @@
                 setTimeout(() => cartIcon.classList.remove('shake'), 500);
             }, 800);
         }
+    </script>
+    <script src="cart-system.js"></script>
+    <script>
+        // Use global addToCart from cart-system.js
 
-        async function addToCart(productId, productName, productPrice) {
-            // Find product details for advanced logic
-            let product = null;
+        // Global Helper for Chatbot
+        window.addToCartByMatch = async (keyword) => {
             try {
-                // Cache sisteminden veya API'den
-                // Hız için renderProducts'da global `allProducts` tutabiliriz ama şimdilik fetch
-                const res = await fetch('/api/products');
+                const res = await fetch('/api/products?t=' + Date.now());
                 const products = await res.json();
-                product = products.find(p => p.id == productId);
-            } catch(e) { }
-            
-            // Fallback
-            if(!product) product = { id: productId, name: productName, price: parseFloat(productPrice) };
-
-            const price = parseFloat(product.price);
-            if (isNaN(price)) return;
-
-            // Fly Animation Trigger
-            const card = document.querySelector(`.add-to-cart[onclick*="${productId}"]`)?.closest('.product-card');
-            const img = card ? card.querySelector('img') : null;
-            if(img) flyToCart(img);
-
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ 
-                    id: productId, 
-                    name: product.name_tr, // TR varsayılan 
-                    price: price, 
-                    quantity: 1,
-                    productRaw: product // Saklayalım indirim hesaplamaları için
-                });
-            }
-            // 700ms gecikmeli açalım ki animasyon sürsün
-            setTimeout(() => {
-                updateCartDisplay();
-                // cartModal.style.display = 'block'; // Kullanıcıyı her seferinde rahatsız etmeyelim, sadece sayaç artsın.
-                // İsteğe bağlı: Sadece bildirim gösterilebilir.
-                // Ama kullanıcı "Sepete Git" istediği için açalım:
-                // Şimdilik animasyon bitince açmıyoruz, sadece güncelliyoruz. 
-            }, 800);
-            updateCartDisplay(); // Anlık da güncellensin sayı
-        }
-
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            updateCartDisplay();
-        }
-
-        function calculateCartTotal() {
-            let total = 0;
-            let subTotal = 0;
-            let discountTotal = 0;
-
-            cart.forEach(item => {
-                const p = item.productRaw || {};
-                let itemPrice = item.price;
-                let currentTotal = itemPrice * item.quantity;
-                subTotal += currentTotal;
+                // Find best match
+                const match = products.find(p => 
+                    p.name_tr.toLowerCase().includes(keyword.toLowerCase()) || 
+                    p.name_en.toLowerCase().includes(keyword.toLowerCase())
+                );
                 
-                // 1. Çoklu Alım İndirimi (Bulk)
-                if (p.bulk_threshold && p.bulk_rate && item.quantity > p.bulk_threshold) {
-                    const discountAmount = currentTotal * (p.bulk_rate / 100);
-                    item.discountNote = `%${p.bulk_rate} Çoklu Alım İndirimi`;
-                    currentTotal -= discountAmount;
-                    discountTotal += discountAmount;
+                if(match) {
+                    addToCart(match.id, match.name_tr, match.price);
+                    return { success: true, name: match.name_tr };
                 }
-                
-                // 2. Çapraz İndirim (Cross-sell)
-                // Eğer sepette 'cross_target' ID'li ürün varsa bu ürüne indirim uygula
-                if (p.cross_target && p.cross_rate) {
-                    const targetExists = cart.find(c => c.id == p.cross_target);
-                    if (targetExists) {
-                        // Eğer bulk indirimi uygulanmadıysa bunu uygula (veya hangisi büyükse)
-                        // Şu an basitlik için: Üstüne eklemiyoruz, bulk yoksa uyguluyoruz
-                        if (!item.discountNote) {
-                            const discountAmount = (item.price * item.quantity) * (p.cross_rate / 100);
-                            item.discountNote = `Birlikte Alım Fırsatı (%${p.cross_rate})`;
-                            currentTotal = (item.price * item.quantity) - discountAmount; // Reset and apply
-                            // Note: This logic is simplified.
-                        }
-                    }
-                }
-
-                total += currentTotal;
-            });
-
-            return { total, subTotal, discountTotal };
-        }
-
-        async function updateCartDisplay() {
-            cartItemsList.innerHTML = '';
-            
-            // Get Settings
-            let minOrder = 500;
-            let freeShip = 1000;
-            try {
-                const s = localStorage.getItem('settings');
-                if(s) { 
-                    const parsed = JSON.parse(s);
-                    minOrder = parsed.minOrder || 500;
-                    freeShip = parsed.freeShipping || 1000;
-                }
-            } catch(e){}
-            
-            const { total, subTotal, discountTotal } = calculateCartTotal();
-
-            // Progress Bar Logic
-            const shipProgress = Math.min((total / freeShip) * 100, 100);
-            const remainingShip = freeShip - total;
-            
-            // Logic for Yellow/Green
-            const shipBarColor = total >= freeShip ? '#22c55e' : '#facc15'; // Green vs Yellow
-            const shipBgColor = total >= freeShip ? '#dcfce7' : '#fef9c3';
-            const shipBorderColor = total >= freeShip ? '#bbf7d0' : '#fde047';
-            const shipTextColor = total >= freeShip ? '#166534' : '#854d0e';
-
-            const minProgress = Math.min((total / minOrder) * 100, 100);
-            const remainingMin = minOrder - total;
-
-            // Header Messages
-            let headerHTML = '';
-            
-            // 1. Min Sipariş Barı (RED)
-            if (total < minOrder) {
-                headerHTML += `
-                    <div id="min-order-bar" style="padding: 15px; background: #fff1f2; border-bottom: 1px solid #ffe4e6; transition:0.3s;" onclick="this.classList.remove('validation-shake')">
-                        <div style="font-size:13px; color:#9f1239; margin-bottom:5px; font-weight:700;">
-                            <i class="fas fa-exclamation-circle"></i> Siparişi Onaylamak İçin: ₺${remainingMin.toLocaleString('tr-TR')}
-                        </div>
-                        <div style="width:100%; height:8px; background:#ffe4e6; border-radius:4px; overflow:hidden;">
-                            <div style="width:${minProgress}%; height:100%; background:#f43f5e; transition: width 0.5s;"></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // 2. Kargo Barı (YELLOW / GREEN)
-            if (total >= minOrder) {
-                if (total < freeShip) {
-                     headerHTML += `
-                        <div id="free-ship-bar" style="padding: 15px; background: ${shipBgColor}; border-bottom: 1px solid ${shipBorderColor}; transition:0.3s;">
-                            <div style="font-size:13px; color:${shipTextColor}; margin-bottom:5px; font-weight:800;">
-                                🚀 Ücretsiz Kargo İçin: ₺${remainingShip.toLocaleString('tr-TR')}
-                            </div>
-                            <div style="width:100%; height:8px; background:white; border-radius:4px; overflow:hidden; border:1px solid ${shipBorderColor}">
-                                <div style="width:${shipProgress}%; height:100%; background:${shipBarColor}; transition: width 0.5s;"></div>
-                            </div>
-                            <div style="font-size:11px; margin-top:5px; color:${shipTextColor}; font-style:italic;">Hadi, bu fırsatı kaçırma!</div>
-                        </div>
-                    `;
-                } else {
-                    // Green Success
-                    headerHTML += `
-                        <div style="padding: 15px; background: #ecfccb; border-bottom: 1px solid #d9f99d; text-align:center;">
-                            <div style="font-size:14px; color:#365314; font-weight:800;">
-                                🎉 TEBRİKLER! KARGONUZ ÜCRETSİZ
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-
-            // Insert Header
-            const existingHeader = document.getElementById('cart-progress-container');
-            if(existingHeader) existingHeader.remove();
-            
-            const progressContainer = document.createElement('div');
-            progressContainer.id = 'cart-progress-container';
-            progressContainer.innerHTML = headerHTML;
-            cartItemsList.parentNode.insertBefore(progressContainer, cartItemsList);
-
-
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<p class="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>';
-                cartCount.style.display = 'none';
-                whatsappCheckout.style.display = 'none';
-            } else {
-                cart.forEach((item, index) => {
-                    const itemTotal = (item.price * item.quantity); 
-                    
-                    const itemElement = document.createElement('div');
-                    itemElement.classList.add('cart-item');
-                    itemElement.innerHTML = `
-                        <div class="item-info">
-                            <div class="item-name">${item.name}</div>
-                            <div class="quantity-control">
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
-                                <span style="font-size:14px; font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
-                            </div>
-                            <div style="font-size:11px; color:#64748b; margin-top:5px;">Birim: ₺${item.price.toFixed(2)}</div>
-                             ${item.discountNote ? `<div style="font-size:10px; color:#16a34a; font-weight:700;">${item.discountNote}</div>` : ''}
-                        </div>
-                        <span style="font-weight:bold; color:var(--primary);">₺${itemTotal.toFixed(2).replace('.', ',')}</span>
-                        <i class="fas fa-trash-alt item-remove" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#ef4444; margin-left:15px;"></i>
-                    `;
-                    cartItemsList.appendChild(itemElement);
-                });
-                
-                // --- MR. KARTON AKILLI ÖNERİ SİSTEMİ ---
-                // --- MR. KARTON SIDE WIDGET (DYNAMIC & REAL PRODUCTS) ---
-                if (total >= minOrder && cart.length > 0) {
-                     // Fetch Products for Real Recommendations
-                     let allProducts = [];
-                     try {
-                        const pRes = await fetch('/api/products');
-                        allProducts = await pRes.json();
-                     } catch(e) {}
-
-                     const modalContent = document.querySelector('.cart-modal-content');
-                     if (modalContent) {
-                         modalContent.style.overflow = 'visible';
-                         modalContent.style.position = 'relative'; 
- 
-                         let sideWidget = document.getElementById('mr-karton-side-widget');
-                         if (!sideWidget) {
-                             sideWidget = document.createElement('div');
-                             sideWidget.id = 'mr-karton-side-widget';
-                             const isDesktop = window.innerWidth > 768;
-                             sideWidget.style.cssText = isDesktop 
-                                 ? "position:absolute; left:-180px; top:50px; width:170px; z-index:9999; display:flex; flex-direction:column; align-items:center;"
-                                 : "position:relative; width:100%; margin-top:20px; display:flex; gap:10px; align-items:flex-end;";
-                             modalContent.appendChild(sideWidget);
-                         }
-                         
-                         // --- LOGIC: Find Missing Complements ---
-                         let suggestions = [];
-                         
-                         const hasCups = cart.some(i => i.name.toLowerCase().includes('bardak'));
-                         const hasLids = cart.some(i => i.name.toLowerCase().includes('kapak'));
-                         const hasStirrer = cart.some(i => i.name.toLowerCase().includes('karıştırıcı'));
-                         
-                         if(hasCups && !hasLids) {
-                             const lid = allProducts.find(p => p.name_tr.toLowerCase().includes('kapak') || p.name_tr.toLowerCase().includes('lid'));
-                             if(lid) suggestions.push({ p: lid, reason: "Kapak Lazım!" });
-                         }
-                         
-                         if(hasCups && !hasStirrer) {
-                             const stirrer = allProducts.find(p => p.name_tr.toLowerCase().includes('karıştırıcı') || p.name_tr.toLowerCase().includes('kaşık'));
-                             if(stirrer) suggestions.push({ p: stirrer, reason: "Karıştırıcı?" });
-                         }
-                         
-                         // If no specific gap, find a cheap booster
-                         if(suggestions.length === 0) {
-                             const cheap = allProducts.sort((a,b) => parseFloat(a.price) - parseFloat(b.price)).find(p => parseFloat(p.price) > 20 && !cart.find(c=>c.id==p.id));
-                             if(cheap) suggestions.push({ p: cheap, reason: "Fırsat Ürünü" });
-                         }
-                         
-                         // Generate Buttons HTML (Modern & Elegant)
-                         let buttonsHTML = '';
-                         suggestions.slice(0, 2).forEach(s => {
-                             const safeName = s.p.name_tr.replace(/'/g, "\\'");
-                             buttonsHTML += `
-                                <button class="btn" 
-                                    style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; color: #0369a1; font-size:11px; text-align:left; width:100%; margin-bottom:6px; padding:8px 12px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s; white-space:normal; line-height:1.2; font-weight:600; display:flex; align-items:center; gap:5px;" 
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'"
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'"
-                                    onclick="addToCart('${s.p.id}', '${safeName}', ${s.p.price})">
-                                    <i class="fas fa-plus-circle" style="color:var(--primary)"></i> 
-                                    <span>${s.reason}: ${s.p.name_tr} <span style="color:var(--primary)">(${s.p.price}₺)</span></span>
-                                </button>
-                             `;
-                         });
-
-                         // Use the correct Winking Image (Chatbot Icon)
-                         // And Flattering/Pohpohlayan Text Container
-                         sideWidget.innerHTML = `
-                              <div style="background:white; border:none; border-radius:16px; padding:15px; font-size:12px; box-shadow:0 8px 20px rgba(0,0,0,0.15); position:relative; margin-bottom:12px; width:100%; border-bottom-left-radius: 4px;">
-                                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                       <h4 style="margin:0; font-size:13px; color:var(--primary); font-weight:800; display:flex; align-items:center; gap:5px;">
-                                           <i class="fas fa-magic" style="color:#eab308"></i> Dr. Karton
-                                       </h4>
-                                       <span style="font-size:9px; background:#eff6ff; color:#3b82f6; padding:2px 6px; border-radius:10px;">Size Özel</span>
-                                  </div>
-                                  
-                                  <p id="mr-karton-ai-text" style="color:#334155; margin-bottom:12px; line-height:1.5; font-family:'Inter', sans-serif;">
-                                      Mükemmel seçimlerinizi inceliyorum...
-                                  </p>
-                                  
-                                  <div id="mr-karton-options" style="display:flex; flex-direction:column;">
-                                      ${buttonsHTML}
-                                  </div>
- 
-                                  <!-- Speech Bubble Tail -->
-                                  <div style="position:absolute; bottom:-10px; left:20px; width:0; height:0; border-top: 15px solid white; border-right: 15px solid transparent;"></div>
-                              </div>
-                              
-                              <!-- Winking/Animated Mascot -->
-                              <div style="position:relative; width:90px; height:90px; margin-left:10px;">
-                                  <img src="images/mr_karton.png" 
-                                       onerror="this.src='images/chatbot-icon.png'; this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png'" 
-                                       style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.2)); animation: float 3s ease-in-out infinite;">
-                              </div>
-                         `;
-                         
-                         fetchMrKartonAdvice(cart, total, freeShip, allProducts);
-                     }
-                } else {
-                    const w = document.getElementById('mr-karton-side-widget');
-                    if(w) w.style.display = 'none';
-                }
-
-                const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.textContent = totalCount;
-                cartCount.style.display = totalCount > 0 ? 'flex' : 'none';
-                
-                whatsappCheckout.style.display = 'block';
-            }
-            
-            const totalFormatted = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-            if (discountTotal > 0) {
-                cartTotalPrice.innerHTML = `
-                    <div style="font-size:14px; text-decoration:line-through; color:#94a3b8">₺${subTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                    <div style="color:var(--primary); font-size:20px;">${totalFormatted}</div>
-                    <div style="font-size:12px; color:var(--success)">Toplam İndirim: ₺${discountTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
-                `;
-            } else {
-                cartTotalPrice.textContent = totalFormatted;
-            }
-        }
+                return { success: false };
+            } catch(e) { return { success: false }; }
+        };
         
-        // Helper to fetch AI advice
+        // Helper to fetch AI advice for cart
         async function fetchMrKartonAdvice(cartItems, total, freeShip, allProducts = []) {
              const textEl = document.getElementById('mr-karton-ai-text');
              if(!textEl) return;
-             
-             try {
-                 // Ürün kataloğunu AI'ye tanıt (Sadece isimler, token tasarrufu için)
-                 const catalogueSummary = allProducts.length > 0 
-                    ? "Mağazamızdaki Ürünler: " + allProducts.map(p => p.name_tr).join(", ")
-                    : "Ambalaj, Bardak ve Gıda Kapları satıyoruz.";
 
-                 const promptInstructions = `
-                    Sepet:
-                    ${cartItems.map(i => `${i.quantity} ADET - ${i.name}`).join(', ')}
-                    
-                    Toplam Tutar: ${total} TL.
-                    Kargo Limiti: ${freeShip} TL.
-                    
-                    GÖREVİN:
-                    Sepetteki ürünlere bakarak, mağazamızdaki DİĞER ürünlerden mantıklı tamamlayıcılar öner.
-                    Örneğin: Karton bardak alana "Kapak" veya "Karıştırıcı" öner.
-                    Gıda kabı alana "Plastik Çatal/Kaşık" öner.
-                    
-                    Sadece 1 cümle kur. Samimi, esprili ve satış odaklı ol.
-                 `;
-                 
-                 const res = await fetch('/api/chat', {
+             const catalogueSummary = allProducts.length > 0
+                ? allProducts.map(p => p.name_tr).join(", ")
+                : "Ambalaj, Bardak ve Gıda Kapları";
+
+             let goalInstruction = total >= freeShip
+                ? `Müşteri ücretsiz kargo limitini geçti (${total} TL). Tebrik et, tamamlayıcı ürün öner.`
+                : `Ücretsiz kargo için ${(freeShip - total).toFixed(0)} TL eksik. Nazikçe sepet artışı için yönlendir.`;
+
+             const promptText = `Sepet: ${cartItems.map(i => `${i.quantity}x ${i.name}`).join(', ')}. Toplam: ${total} TL. ${goalInstruction}. Ürün kataloğu: ${catalogueSummary}.`;
+
+             try {
+                 const res = await fetch('/api/cart-chat', {
                      method: 'POST',
                      headers: {'Content-Type': 'application/json'},
-                     body: JSON.stringify({ 
-                         prompt: promptInstructions, 
-                         chatHistory: [],
-                         siteContext: catalogueSummary
-                     })
+                     body: JSON.stringify({ prompt: promptText, siteContext: catalogueSummary })
                  });
                  const data = await res.json();
-                 
-                 if (data.error) {
-                     console.error("AI API Error:", data.error);
-                     textEl.innerText = "Dr. Karton şu an bakımda: " + (data.details || data.error);
-                     return;
-                 }
-                 
-                 if(data && data.candidates && data.candidates[0].content) {
-                     textEl.innerText = data.candidates[0].content.parts[0].text;
-                 } else {
-                     textEl.innerText = "Harika seçimler! Yanına karıştırıcı da lazım olabilir mi?";
-                 }
+                 const text = data?.choices?.[0]?.message?.content
+                     || data?.candidates?.[0]?.content?.parts?.[0]?.text
+                     || "Harika seçimler, Efendim!";
+                 textEl.innerText = text;
              } catch(e) {
-                 console.error(e);
-                 textEl.innerText = "Bağlantı hatası. Sepetin harika görünüyor!";
+                 textEl.innerText = "Harika seçimler! Sepetiniz hazır görünüyor.";
              }
-        }
-
-        function updateItemQuantity(id, change) {
-            const item = cart.find(x => x.id == id); // Loose equality for string/number match
-            if(!item) return;
-            
-            item.quantity += change;
-            if(item.quantity <= 0) {
-                removeFromCart(id);
-            } else {
-                updateCartDisplay();
-            }
         }
         
         // --- Sepet Modal Kontrolleri ---
-        openCartModal.onclick = () => { 
-            cartModal.style.display = 'block'; 
+        openCartModal.onclick = () => {
+            cartModal.style.display = 'block';
             document.body.classList.add('cart-open');
-            
+
             // 1. Önce mevcut ayarlarla göster (Hız için)
             updateCartDisplay();
 
-            // 2. Sunucudan EN GÜNCEL ayarları çek zorla
-            fetch('/api/settings?t=' + Date.now(), { cache: "no-store" })
+            // 2. Sunucudan EN GÜNCEL ayarları çek
+            fetch('/api/settings', { cache: "no-store" })
                 .then(r => r.json())
                 .then(s => {
-                    console.log("Güncel Ayarlar İndirildi:", s);
                     localStorage.setItem('settings', JSON.stringify(s));
-                    // 3. Ekranı TAZELENMİŞ ayarlarla tekrar güncelle
-                    updateCartDisplay(); 
+                    updateCartDisplay();
+                    // 3. AI Tavsiyesi çek (sepet doluysa)
+                    if (cart.length > 0) {
+                        const { total } = calculateCartTotal();
+                        let freeShip = 1000;
+                        try { freeShip = JSON.parse(localStorage.getItem('settings'))?.freeShipping || 1000; } catch(e){}
+                        fetchMrKartonAdvice(cart, total, freeShip, _allProducts);
+                    }
                 })
-                .catch(e => console.error("Ayarlar çekilemedi:", e));
+                .catch(e => {
+                    if (cart.length > 0) {
+                        const { total } = calculateCartTotal();
+                        fetchMrKartonAdvice(cart, total, 1000, _allProducts);
+                    }
+                });
         };
         const cartCloseBtnOld = document.querySelector('.cart-close');
         if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
@@ -1194,16 +663,26 @@
                 document.title = "Moderra | Premium Online Shopping";
                 if(metaDesc) metaDesc.setAttribute('content', "Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.");
             } else {
-                document.title = "Moderra | Premium Online Alışveriş";
+                document.title = "Moderra | Güvenli ve Hızlı Alışveriş";
                 if(metaDesc) metaDesc.setAttribute('content', "Moderra Premium Karton Bardak ve Ambalaj Çözümleri. Özel logolu bardaklar, yılbaşı, düğün ve fuar konseptleri.");
             }
 
+            // Update Placeholder for search if exists
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) {
+                searchInput.placeholder = searchInput.getAttribute('data-' + currentLang + '-placeholder');
+            }
+        }
+
+        // Consolidate Search Logic at the end to avoid duplication
+
+
+        function updateLanguageUI() {
             // Slider İçerikleri
             const slides = document.querySelectorAll('.slide-content');
             if(slides[0]) {
                 slides[0].querySelector('h2').textContent = translations['slider-h1'][currentLang];
                 slides[0].querySelector('p').textContent = translations['slider-p1'][currentLang];
-                slides[0].querySelector('.btn').textContent = currentLang === 'tr' ? 'Hemen Alışverişe Başla' : 'Start Shopping Now';
             }
             if(slides[1]) {
                 slides[1].querySelector('h2').textContent = translations['slider-h2'][currentLang];
@@ -1262,49 +741,483 @@
             }
         };
 
+
+        let lastRenderedDataSignature = ""; // Global cache for flicker prevention
+
+
+
+        let lastPackagesSignature = "";
+        async function renderPackages() {
+            const container = document.getElementById('packages-container');
+            if (!container) return;
+            try {
+                const [pkgRes, prodRes] = await Promise.all([
+                    fetch('/api/packages?t=' + Date.now()),
+                    fetch('/api/products?t=' + Date.now())
+                ]);
+                const packages = await pkgRes.json();
+                const products = await prodRes.json();
+                const isEn = localStorage.getItem('lang') === 'en';
+
+                // Skip render if no data change
+                const currentSignature = JSON.stringify(packages);
+                if (currentSignature === lastPackagesSignature) return;
+                lastPackagesSignature = currentSignature;
+
+                container.innerHTML = '';
+                // Sort by custom order field if exists and filter published
+                const sortedPkgs = (packages || [])
+                    .filter(pkg => pkg.published)
+                    .sort((a,b) => (a.order||0) - (b.order||0));
+
+                sortedPkgs.forEach(pkg => {
+                    // Calculate package dynamic price
+                    const itemIds = (pkg.items || "").split(',').map(id => id.trim());
+                    let subTotal = 0;
+                    const includedProducts = [];
+
+                    itemIds.forEach(id => {
+                        const p = products.find(x => x.id == id);
+                        if (p) {
+                            subTotal += parseFloat(p.price);
+                            includedProducts.push(isEn ? (p.name_en || p.name_tr) : p.name_tr);
+                        }
+                    });
+
+                    const discountedPrice = subTotal * (1 - ((pkg.discount||0) / 100));
+
+                    const div = document.createElement('div');
+                    div.className = 'package-card';
+                    div.style.cssText = "background:var(--bg-card); border-radius:32px; padding:30px; border:1px solid var(--border); box-shadow:var(--shadow); transition:0.3s; display:flex; flex-direction:column; gap:20px; position:relative; overflow:hidden;";
+                    div.innerHTML = `
+                        <div style="position:absolute; top:20px; right:-35px; background:var(--primary); color:white; padding:5px 40px; transform:rotate(45deg); font-weight:800; font-size:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">%${pkg.discount||0} İNDİRİM</div>
+                        <div style="display:flex; align-items:center; gap:20px; margin-bottom:10px;">
+                            <img src="${pkg.image || 'images/box.png'}" style="width:100px; height:100px; object-fit:contain; border-radius:15px; background:#f8fafc; padding:10px;">
+                            <div>
+                                <h3 style="margin:0; font-size:24px; font-weight:900;">${pkg.name}</h3>
+                                <p style="margin:5px 0 0; font-size:14px; color:var(--text-muted); line-height:1.4;">${pkg.description || ''}</p>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <h4 style="font-size:13px; text-transform:uppercase; color:var(--primary); font-weight:800; margin-bottom:20px; opacity:0.8; display:flex; align-items:center; gap:10px;">
+                                <i class="fas fa-magic"></i> Seti Sana Özel Hazırla:
+                            </h4>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:15px;">
+                                ${itemIds.map(id => {
+                                    const p = products.find(x => x.id == id);
+                                    if(!p) return '';
+                                    const itemName = isEn ? (p.name_en || p.name_tr) : p.name_tr;
+                                    const key = `${pkg.id}-${p.id}`;
+                                    const currentQty = window.onCardQuantities[key] || 1;
+                                    return `
+                                        <div style="background:var(--bg-body); padding:15px; border-radius:20px; border:1px solid var(--border); display:flex; flex-direction:column; align-items:center; gap:10px; transition:0.3s;" class="pkg-sub-item">
+                                            <img src="${p.image || 'images/bardak.png'}" style="width:50px; height:50px; object-fit:contain;">
+                                            <span style="font-size:12px; font-weight:800; text-align:center; height:32px; display:flex; align-items:center;">${itemName}</span>
+                                            <div class="quantity-control" style="background:white; border:1px solid #e2e8f0; width:100%; justify-content:space-between; padding:4px;">
+                                                <button class="qty-btn" style="width:28px; height:28px; border-radius:8px;" onclick="adjustOnCardQuantity('${pkg.id}', '${p.id}', -1)">-</button>
+                                                <span id="qty-${key}" style="font-size:14px; font-weight:900; min-width:25px; text-align:center;">${currentQty}</span>
+                                                <button class="qty-btn" style="width:28px; height:28px; border-radius:8px;" onclick="adjustOnCardQuantity('${pkg.id}', '${p.id}', 1)">+</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:15px; padding-top:25px; border-top:2px dashed var(--border);">
+                            <div>
+                                <div style="font-size:32px; font-weight:900; color:var(--primary); letter-spacing:-1px;">₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}</div>
+                                <div style="font-size:11px; color:#16a34a; font-weight:800;">Set Avantajı ile tasarruf edin!</div>
+                            </div>
+                            <button class="btn-primary" style="padding:18px 40px; border-radius:22px; font-size:16px; font-weight:900; box-shadow:0 15px 30px rgba(99, 102, 241, 0.3);" onclick="addPackageToCart('${pkg.id}')">
+                                <i class="fas fa-cart-plus"></i> ${isEn ? 'Buy Set' : 'Paketi Sepete Ekle'}
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (e) { console.error("Packages could not be loaded", e); }
+        }
+
+        // Global session flag
+        window.packageOffered = false;
+
+        function flyToCart(img) {
+            const cartBtn = document.getElementById('open-cart-modal');
+            const flyingImg = img.cloneNode();
+            const startRect = img.getBoundingClientRect();
+            const endRect = cartBtn.getBoundingClientRect();
+
+            flyingImg.style.cssText = `
+                position: fixed;
+                z-index: 10000;
+                top: ${startRect.top}px;
+                left: ${startRect.left}px;
+                width: ${startRect.width}px;
+                height: ${startRect.height}px;
+                pointer-events: none;
+                transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+                border-radius: 12px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                object-fit: contain;
+                background: white;
+            `;
+            document.body.appendChild(flyingImg);
+
+            requestAnimationFrame(() => {
+                flyingImg.style.top = `${endRect.top}px`;
+                flyingImg.style.left = `${endRect.left}px`;
+                flyingImg.style.width = '20px';
+                flyingImg.style.height = '20px';
+                flyingImg.style.opacity = '0.4';
+            });
+
+            setTimeout(() => {
+                flyingImg.remove();
+                cartBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
+            }, 800);
+        }
+
+        async function addToCart(productId, productName, productPrice) {
+            // ... (Restored and fixed addToCart logic below)
+            let product = null;
+            try {
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                product = products.find(p => p.id == productId);
+            } catch(e) { }
+            
+            if(!product) product = { id: productId, name: productName, price: parseFloat(productPrice) };
+            const price = parseFloat(product.price);
+            if (isNaN(price)) return;
+
+            const card = document.querySelector(`.add-to-cart[onclick*="${productId}"]`)?.closest('.product-card');
+            const img = card ? card.querySelector('img') : null;
+            if(img) flyToCart(img);
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ 
+                    id: productId, 
+                    name: product.name_tr, 
+                    image: product.image || 'images/bardak.png',
+                    price: price, 
+                    quantity: 1,
+                    productRaw: product 
+                });
+            }
+            
+            // --- PACKAGE SUGGESTION LOGIC ---
+            if (!window.packageOffered) { 
+                try {
+                    const res = await fetch('/api/packages');
+                    const packages = await res.json();
+                    const relevantPkg = packages.find(pkg => (pkg.items||"").split(',').some(id => id.trim() == productId));
+                    if (relevantPkg) {
+                        window.packageOffered = true;
+                        setTimeout(() => {
+                            if (confirm(`💍 Bu ürün ${relevantPkg.name} içinde de bulunuyor! \n\nPaket olarak alırsanız %${relevantPkg.discount} daha ucuza gelir. Paketi incelemek ister misiniz?`)) {
+                                document.getElementById('paketler').scrollIntoView({behavior:'smooth'});
+                            }
+                        }, 1500);
+                    }
+                } catch(e){}
+            }
+
+            setTimeout(() => { updateCartDisplay(); }, 800);
+            updateCartDisplay(); 
+        }
+
+
+        // ---- ÜRÜN KATEGORi + SAYFALANDIRMA ----
+        let _allProducts = [];
+        let _allCampaigns = [];
+        let _currentCategory = 'Tümü';
+        let _currentPage = 1;
+        const ITEMS_PER_PAGE = 6; // Sayfa başına ürün sayısı
+        let lastRenderedProductSignature = '';
+
+        window.onCardQuantities = {};
+        function adjustOnCardQuantity(pkgId, prodId, delta) {
+            const key = `${pkgId}-${prodId}`;
+            if(!window.onCardQuantities[key]) window.onCardQuantities[key] = 1;
+            window.onCardQuantities[key] = Math.max(1, window.onCardQuantities[key] + delta);
+            const el = document.getElementById(`qty-${key}`);
+            if(el) el.innerText = window.onCardQuantities[key];
+
+            // Update price on the card dynamically
+            updateOnCardPrice(pkgId);
+        }
+
+        async function updateOnCardPrice(pkgId) {
+            try {
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                const pkg = packages.find(p => p.id == pkgId);
+                if (!pkg) return;
+
+                const prodRes = await fetch('/api/products');
+                const products = await prodRes.json();
+                const itemIds = (pkg.items || "").split(',').map(id => id.trim());
+
+                let subTotal = 0;
+                itemIds.forEach(id => {
+                    const p = products.find(x => x.id == id);
+                    if(p) {
+                        const qty = window.onCardQuantities[`${pkgId}-${p.id}`] || 1;
+                        subTotal += (parseFloat(p.price) * qty);
+                    }
+                });
+
+                const discountedPrice = subTotal * (1 - (pkg.discount || 0) / 100);
+                
+                // Find all pricing elements for this package in the UI
+                const container = document.querySelector(`button[onclick*="addPackageToCart('${pkgId}')"]`)?.parentElement;
+                if(container) {
+                    const priceDisplay = container.querySelector('div[style*="font-size:32px"]');
+                    if(priceDisplay) {
+                        priceDisplay.innerText = `₺${discountedPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+                    }
+                }
+            } catch (e) {
+                console.error("Price update failed", e);
+            }
+        }
+
+        async function addPackageToCart(packageId) {
+            try {
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                const pkg = packages.find(p => p.id == packageId);
+                if (!pkg) return;
+
+                const prodRes = await fetch('/api/products');
+                const products = await prodRes.json();
+                const itemIds = (pkg.items || "").split(',').map(id => id.trim());
+                
+                const packageItems = [];
+                itemIds.forEach(id => {
+                    const p = products.find(x => x.id == id);
+                    if(p) {
+                        const qty = window.onCardQuantities[`${packageId}-${p.id}`] || 1;
+                        packageItems.push({ id: p.id, name: p.name_tr, price: p.price, image: p.image, quantity: qty });
+                    }
+                });
+
+                // Fly to cart
+                const card = document.querySelector(`button[onclick*="addPackageToCart('${packageId}')"]`)?.closest('.package-card');
+                const img = card ? card.querySelector('img') : null;
+                if(img) flyToCart(img);
+
+                const existingIndex = cart.findIndex(x => x.id === pkg.id);
+                const isSuper = pkg.name.toLowerCase().includes('süper');
+
+                if(existingIndex > -1) {
+                    if(isSuper) {
+                        // Limit to 1, update contents instead
+                        cart[existingIndex].packageItems = packageItems;
+                        cart[existingIndex].quantity = 1;
+                    } else {
+                        cart[existingIndex].quantity++;
+                    }
+                } else {
+                    cart.push({
+                        id: pkg.id,
+                        name: pkg.name,
+                        image: pkg.image || 'images/box.png',
+                        discount: pkg.discount || 0,
+                        quantity: 1,
+                        isPackage: true,
+                        packageItems: packageItems
+                    });
+                }
+                
+                setTimeout(() => {
+                    updateCartDisplay();
+                    cartModal.style.display = 'block';
+                    document.body.classList.add('cart-open');
+                }, 800);
+            } catch (e) { console.error("Could not add package", e); }
+        }
+
+        function updateSubItemQuantity(pkgId, subId, delta) {
+            const pkg = cart.find(x => x.id === pkgId);
+            if(!pkg || !pkg.packageItems) return;
+            const item = pkg.packageItems.find(si => si.id === subId);
+            if(!item) return;
+            item.quantity = Math.max(1, item.quantity + delta);
+            updateCartDisplay();
+        }
+
+        window.addToCartByMatch = async function(keyword) {
+            try {
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                const found = products.find(p => p.name_tr.toLowerCase().includes(keyword.toLowerCase()));
+                if (found) {
+                    addToCart(found.id, found.name_tr, found.price);
+                    return { success: true, name: found.name_tr };
+                }
+                return { success: false };
+            } catch(e) { return { success: false }; }
+        };
+
         async function renderProducts() {
             const container = document.getElementById('products-dynamic-container');
             if (!container) return;
             try {
-                const response = await fetch('/api/products?t=' + Date.now());
-                const products = await response.json();
-                if (!Array.isArray(products)) throw new Error("Not array");
-                
-                container.innerHTML = '';
-                const isEn = localStorage.getItem('lang') === 'en';
-
-                products.forEach(p => {
-                    const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
-                    const desc = isEn ? (p.description_en || p.description_tr) : p.description_tr;
-                    
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    // Calculate discount percentage if old price exists and is higher
-                    let discountBadge = '';
-                    if (p.old_price && parseFloat(p.old_price) > parseFloat(p.price)) {
-                        const discountRate = Math.round(((p.old_price - p.price) / p.old_price) * 100);
-                        discountBadge = `<div class="discount-badge">-${discountRate}%</div>`;
+                // 1. Fetch Products
+                let products = [];
+                try {
+                    const response = await fetch('/api/products?t=' + Date.now());
+                    if (!response.ok) throw new Error("API Error");
+                    products = await response.json();
+                } catch (apiError) {
+                    try {
+                        const fallbackResponse = await fetch('products.json?t=' + Date.now());
+                        products = await fallbackResponse.json();
+                    } catch (fallbackError) {
+                        throw new Error("Hem API hem de Products.json başarısız!");
                     }
-                    
-                    // Hot badge logic
+                }
+                if (!Array.isArray(products)) throw new Error("Not array");
+
+                // 2. Fetch Campaigns
+                let campaigns = [];
+                try {
+                    const cRes = await fetch('/api/campaigns?t=' + Date.now());
+                    if (cRes.ok) campaigns = await cRes.json();
+                } catch(e){}
+
+                // 3. Smart Refresh Check
+                const currentLang = localStorage.getItem('lang') || 'tr';
+                const currentSignature = JSON.stringify({ p: products.length, c: campaigns.length, l: currentLang });
+                if (currentSignature === lastRenderedProductSignature) return;
+                lastRenderedProductSignature = currentSignature;
+
+                _allProducts = products;
+                _allCampaigns = campaigns;
+
+                // 4. Build categories from products (using status field or name-based)
+                renderProductCategories();
+                renderProductPage();
+
+            } catch (e) {
+                console.error("Ürünler yüklenemedi", e);
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);"><i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i><h3>Veritabanı Hatası</h3></div>`;
+            }
+        }
+
+        function renderProductCategories() {
+            const nav = document.getElementById('product-category-nav');
+            if (!nav) return;
+
+            // Build categories: Tümü + unique status labels
+            const catMap = { 'active': 'Standart', 'hot': 'Fırsat', 'discount': 'İndirimli', 'oos': 'Stok Dışı' };
+            const cats = ['Tümü'];
+            _allProducts.forEach(p => {
+                const label = catMap[p.status] || 'Standart';
+                if (!cats.includes(label)) cats.push(label);
+            });
+
+            nav.innerHTML = cats.map(cat => `
+                <button onclick="filterProductCategory('${cat}')" id="cat-btn-${cat.replace(/[^a-zA-Z0-9]/g,'_')}" style="
+                    padding: 9px 22px;
+                    border-radius: 50px;
+                    border: 2px solid ${cat === _currentCategory ? 'var(--primary)' : 'var(--border)'};
+                    background: ${cat === _currentCategory ? 'var(--primary)' : 'transparent'};
+                    color: ${cat === _currentCategory ? 'white' : 'var(--text)'};
+                    font-weight: 700;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: 0.2s;
+                ">${cat}</button>
+            `).join('');
+        }
+
+        function filterProductCategory(cat) {
+            _currentCategory = cat;
+            _currentPage = 1;
+            renderProductCategories();
+            renderProductPage();
+        }
+
+        function renderProductPage() {
+            const container = document.getElementById('products-dynamic-container');
+            const paginationEl = document.getElementById('product-pagination');
+            if (!container) return;
+
+            const catMap = { 'active': 'Standart', 'hot': 'Fırsat', 'discount': 'İndirimli', 'oos': 'Stok Dışı' };
+            const isEn = (localStorage.getItem('lang') || 'tr') === 'en';
+
+            let filtered = _allProducts;
+            if (_currentCategory !== 'Tümü') {
+                filtered = _allProducts.filter(p => (catMap[p.status] || 'Standart') === _currentCategory);
+            }
+
+            const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+            if (_currentPage > totalPages) _currentPage = 1;
+
+            const start = (_currentPage - 1) * ITEMS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+            container.innerHTML = '';
+
+            if (pageItems.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted); font-size:15px;"><i class="fas fa-box-open fa-3x" style="margin-bottom:15px; opacity:0.3;"></i><br>Bu kategoride ürün bulunamadı.</div>`;
+            } else {
+                pageItems.forEach(p => {
+                    const name = isEn ? (p.name_en || p.name_tr) : p.name_tr;
+                    const isOOS = p.status === 'oos';
+                    const card = document.createElement('div');
+                    card.className = 'product-card' + (isOOS ? ' oos-card' : '');
+                    card.style.position = 'relative';
+
+                    let activeCampaign = null;
+                    if (p.campaign_id && _allCampaigns) {
+                        activeCampaign = _allCampaigns.find(c => c.id == p.campaign_id);
+                    }
+
+                    let topBadge = '', descHtml = '';
+                    if (activeCampaign) {
+                        const borderColor = activeCampaign.border_color || '#ffd700';
+                        const textColor = activeCampaign.text_color || '#000';
+                        if (activeCampaign.theme === 'premium') card.classList.add('premium-campaign');
+                        card.style.setProperty('--campaign-color', borderColor);
+                        if (activeCampaign.top_text) {
+                            topBadge = `<div style="position:absolute; top:10px; left:0; right:0; text-align:center; pointer-events:none; z-index:20;"><span style="background:${borderColor}; color:${textColor}; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:inline-block;">${activeCampaign.top_text}</span></div>`;
+                        }
+                        if (activeCampaign.description) {
+                            descHtml = `<div style="font-size:11px; color:#e11d48; font-weight:600; margin-bottom:5px;">${activeCampaign.description}</div>`;
+                        }
+                    } else if (p.bulk_rate && p.bulk_threshold) {
+                        topBadge = `<div class="discount-badge" style="left:auto; right:auto; top:-10px; left:50%; transform:translateX(-50%); font-size:11px; padding:4px 10px;">%${p.bulk_rate} İNDİRİM</div>`;
+                    }
+
                     let hotBadge = '';
-                    if (p.status === 'hot') {
+                    if (p.status === 'hot' && !activeCampaign) {
                         hotBadge = `<div class="hot-badge"><i class="fas fa-fire"></i> FIRSAT</div>`;
+                    }
+                    if (isOOS) {
+                        hotBadge = `<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; font-weight:900; z-index:30; border-radius:10px; border:2px solid #ef4444; letter-spacing:1px; font-size:14px;">TÜKENDİ</div>`;
                     }
 
                     card.innerHTML = `
-                        <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
-                        ${discountBadge}
+                        ${topBadge}
+                        <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" style="${isOOS?'filter:grayscale(1) opacity(0.5);':''}" loading="lazy" onclick="${isOOS?'':'openProductDetail(\''+p.id+'\')'}">
                         ${hotBadge}
                         <div class="product-info">
-                            <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
+                            <h3 class="product-title" onclick="${isOOS?'':'openProductDetail(\''+p.id+'\')'}">${name}</h3>
                             <div class="product-price">
                                 ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price) ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
                                 ₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                             </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart" data-id="${p.id}" data-name="${p.name_tr}" data-price="${p.price}">
-                                    <i class="fas fa-shopping-cart"></i> ${isEn?'Add':'Sepete Ekle'}
+                            ${descHtml}
+                            <div class="product-actions" style="${isOOS?'pointer-events:none; opacity:0.5;':''}">
+                                <button class="add-to-cart" ${isOOS?'disabled':''} data-name="${p.name_tr}" onclick="addToCart('${p.id}', '${p.name_tr.replace(/'/g, "\\'")}', ${p.price})">
+                                    <i class="fas fa-shopping-cart"></i> ${isOOS ? (isEn?'OOS':'Stok Yok') : (isEn?'Add':'Sepete Ekle')}
                                 </button>
                                 <button class="inspect-btn" onclick="openProductDetail('${p.id}')">
                                     <i class="fas fa-expand-alt"></i>
@@ -1312,50 +1225,73 @@
                             </div>
                         </div>
                     `;
-                    
-                    // Re-attach event listener for this specific button dynamically or rely on global delegation
-                    // Since I'm replacing innerHTML, the previous event listeners on buttons might be lost if not delegated.
-                    // The code below line 866 attaches listeners to .add-to-cart.
-                    // However, since renderProducts runs async, we need to re-attach listeners OR use onclick in HTML.
-                    // The previous code used onclick="addToCart(...)". I will switch back to that for simplicity and reliability.
-
-                     card.innerHTML = `
-                        <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy" onclick="openProductDetail('${p.id}')">
-                        ${discountBadge}
-                        ${hotBadge}
-                        <div class="product-info">
-                            <h3 class="product-title" onclick="openProductDetail('${p.id}')">${name}</h3>
-                            <div class="product-price">
-                                ${p.old_price && parseFloat(p.old_price) > parseFloat(p.price) ? `<span style="text-decoration:line-through; font-size:14px; color:#94a3b8; margin-right:5px;">₺${parseFloat(p.old_price).toLocaleString('tr-TR')}</span>` : ''}
-                                ₺${parseFloat(p.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
-                            </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart" data-name="${p.name_tr}" onclick="addToCart('${p.id}', '${p.name_tr.replace(/'/g, "\\'")}', ${p.price})">
-                                    <i class="fas fa-shopping-cart"></i> ${isEn?'Add':'Sepete Ekle'}
-                                </button>
-                                <button class="inspect-btn" onclick="openProductDetail('${p.id}')">
-                                    <i class="fas fa-expand-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Premium Campaign Style
-                    if(p.status === 'hot' || (p.campaign_id && p.campaign_id.length > 2)) card.classList.add('premium-campaign');
-
                     container.appendChild(card);
                 });
-            } catch (e) {
-                console.error("Ürünler yüklenemedi", e);
-                container.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px; background: var(--bg-card); border-radius: 32px; border: 2px dashed var(--border);">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger); margin-bottom: 20px;"></i>
-                        <h3 data-tr="Veritabanı Bağlantı Hatası" data-en="Database Connection Error">Veritabanı Bağlantı Hatası</h3>
-                        <p style="color: var(--text-muted); margin-top: 10px;" data-tr="Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin." data-en="Please check your Vercel settings or refresh the page.">Lütfen Vercel ayarlarınızı kontrol edin veya sayfayı yenileyin.</p>
-                    </div>
-                `;
+            }
+
+            // Pagination buttons
+            if (paginationEl) {
+                paginationEl.innerHTML = '';
+                if (totalPages > 1) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        const btn = document.createElement('button');
+                        btn.textContent = i;
+                        btn.style.cssText = `
+                            width: 42px; height: 42px; border-radius: 50%;
+                            border: 2px solid ${i === _currentPage ? 'var(--primary)' : 'var(--border)'};
+                            background: ${i === _currentPage ? 'var(--primary)' : 'transparent'};
+                            color: ${i === _currentPage ? 'white' : 'var(--text)'};
+                            font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.2s;
+                        `;
+                        btn.onclick = () => {
+                            _currentPage = i;
+                            renderProductPage();
+                            document.getElementById('urunler').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        };
+                        paginationEl.appendChild(btn);
+                    }
+                }
+            }
+
+            // Re-apply search filter if active
+            const activeSearch = document.getElementById('search-input');
+            if (activeSearch && activeSearch.value.trim().length > 0) {
+                setTimeout(() => activeSearch.dispatchEvent(new Event('input')), 50);
             }
         }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            renderPackages();
+            
+            const openCartBtn = document.getElementById('open-cart-modal');
+            const closeCartBtn = document.getElementById('close-cart-btn-modal');
+            const cartModal = document.getElementById('cart-modal');
+            
+            if(openCartBtn) {
+                openCartBtn.addEventListener('click', () => {
+                    cartModal.style.display = 'block';
+                    updateCartDisplay();
+                });
+            }
+            if(closeCartBtn) {
+                closeCartBtn.addEventListener('click', () => {
+                    cartModal.style.display = 'none';
+                });
+            }
+            window.addEventListener('click', (e) => {
+                if (e.target == cartModal) cartModal.style.display = 'none';
+                const pModal = document.getElementById('product-detail-modal');
+                if (e.target == pModal) pModal.style.display = 'none';
+            });
+            const detailClose = document.querySelector('.detail-close');
+            if(detailClose) {
+                detailClose.addEventListener('click', () => {
+                    document.getElementById('product-detail-modal').style.display = 'none';
+                });
+            }
+        });
+
 
         function generateRatingStars(rating) {
             let stars = '';
@@ -1392,9 +1328,83 @@
 
         renderProducts();
         
-        // Aggressive Auto-Refresh (Every 5 seconds) to ensure users see updates immediately
-        window.addEventListener('focus', renderProducts);
-        setInterval(renderProducts, 5000); 
+        // Check for updates every 60 seconds (prevents Redis rate limit)
+        setInterval(renderProducts, 60000); 
+
+        // --- SEARCH FUNCTIONALITY ---
+        const searchIcon = document.getElementById('open-search');
+        const searchContainer = document.getElementById('search-bar');
+        const searchInput = document.getElementById('search-input');
+        const closeSearch = document.getElementById('close-search');
+
+        if(searchIcon && searchContainer) {
+            searchIcon.addEventListener('click', () => {
+                searchContainer.classList.add('active');
+                const si = document.getElementById('search-input');
+                if(si) {
+                    si.value = ''; // Reset on open
+                    si.dispatchEvent(new Event('input'));
+                    setTimeout(() => si.focus(), 100);
+                }
+            });
+        }
+        
+        if(closeSearch && searchContainer) {
+            closeSearch.addEventListener('click', () => {
+                 searchContainer.classList.remove('active');
+                 const si = document.getElementById('search-input');
+                 if(si) si.value = '';
+                 renderProducts(); // Reset view
+            });
+        }
+        
+        // Filter Logic
+        const mainInput = document.getElementById('search-input');
+        if(mainInput) {
+            mainInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('.product-card');
+                const container = document.getElementById('products-dynamic-container');
+                let hasResults = false;
+                
+                // If container is empty (e.g. error state), don't filter
+                if (!container || container.children.length === 0) return;
+
+                // Remove existing 'No Results' message
+                const existingMsg = document.getElementById('no-search-results');
+                if(existingMsg) existingMsg.remove();
+
+                if (term.length > 0) {
+                    // Scroll to products if typing
+                    if(term.length === 1) document.getElementById('urunler').scrollIntoView({behavior: 'smooth', block: 'start'});
+                    
+                    cards.forEach(card => {
+                        const title = card.querySelector('.product-title').textContent.toLowerCase();
+                        // Optional: Include price check? No, title is main.
+                        if(title.includes(term)) {
+                            card.style.display = 'block';
+                            hasResults = true;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    if (!hasResults) {
+                        const msg = document.createElement('div');
+                        msg.id = 'no-search-results';
+                        msg.style.gridColumn = "1/-1";
+                        msg.style.textAlign = "center";
+                        msg.style.padding = "40px";
+                        msg.style.color = "var(--text-muted)";
+                        msg.innerHTML = `<i class="fas fa-search" style="font-size:30px; margin-bottom:10px; opacity:0.5;"></i><p>Aramanızla eşleşen ürün bulunamadı.</p>`;
+                        container.appendChild(msg);
+                    }
+                } else {
+                    // Show all
+                    cards.forEach(card => card.style.display = 'block');
+                }
+            });
+        }
 
         updateLanguage();
         updateCartDisplay();
