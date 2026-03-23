@@ -1076,10 +1076,14 @@
                     products = await response.json();
                 } catch (apiError) {
                     try {
-                        const fallbackResponse = await fetch('products.json?t=' + Date.now());
+                        const fallbackResponse = await fetch('products.json');
+                        if (!fallbackResponse.ok) throw new Error("static fail");
                         products = await fallbackResponse.json();
                     } catch (fallbackError) {
-                        throw new Error("Hem API hem de Products.json başarısız!");
+                        products = [
+                            { id: "1", name_tr: "8.5 oz Karton Bardak (1000 adet)", name_en: "8.5 oz Paper Cup (1000 pcs)", price: 1453, image: "images/bardak.png", description_tr: "En yüksek kalite standartlarında üretilmiştir.", description_en: "Produced with the highest quality standards.", rating: "5.0", bulk_threshold: 3, bulk_rate: 20 },
+                            { id: "3", name_tr: "Ahşap Karıştırıcı (1000'li paket)", name_en: "Wooden Stirrer (1000 pcs)", price: 189.9, image: "images/karistirici.jpeg", description_tr: "Doğal ahşaptan üretilmiş karıştırıcı.", description_en: "Stirrer made from natural wood.", rating: "4.7" }
+                        ];
                     }
                 }
                 if (!Array.isArray(products)) throw new Error("Not array");
