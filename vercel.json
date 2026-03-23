@@ -1,16 +1,6 @@
 {
+    "cleanUrls": true,
     "rewrites": [
-        { "source": "/admin", "destination": "/admin.html" },
-        { "source": "/takip", "destination": "/takip.html" },
-        { "source": "/about", "destination": "/about.html" },
-        { "source": "/sss", "destination": "/sss.html" },
-        { "source": "/bayram", "destination": "/bayram.html" },
-        { "source": "/dugun", "destination": "/dugun.html" },
-        { "source": "/dogum-gunu", "destination": "/dogum-gunu.html" },
-        { "source": "/fuar", "destination": "/fuar.html" },
-        { "source": "/yilbasi", "destination": "/yilbasi.html" },
-        { "source": "/toplanti", "destination": "/toplanti.html" },
-        { "source": "/konsept-bardaklar", "destination": "/konsept-bardaklar.html" },
         { "source": "/products.json", "destination": "/api/products" },
         { "source": "/orders.json", "destination": "/api/orders" },
         { "source": "/packages.json", "destination": "/api/packages" },
