@@ -555,7 +555,8 @@
             flex-direction: column;
             border-left: 1px solid rgba(255,255,255,0.3);
         }
-        #cart-modal[style*="display: block"], #cart-modal[style*="display:block"] { transform: translateX(0); }
+        body.cart-open .cart-drawer { transform: translateX(0); }
+        body.cart-open .cart-overlay { opacity: 1; visibility: visible; }
         .cart-item-card {
             background: white;
             border-radius: 24px;
@@ -620,19 +621,18 @@
     <script>
         const root = document.documentElement;
         let concepts = [];
-        let itemsPerPage = 2; // Bir sayfada kaç ürün görünecek
+        let itemsPerPage = 2;
         let currentPage = 1;
         let currentCategory = 'Tümü';
+        let currentLang = localStorage.getItem('lang') || 'tr';
 
         async function initConcepts() {
             try {
                 const res = await fetch('/api/concepts?t=' + Date.now());
                 const raw = await res.json();
                 concepts = (raw || []).filter(c => c.published);
-                
                 renderConceptSections();
-                startResourceMonitoring();
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error('Konseptler yüklenemedi:', e); }
         }
 
         function renderConceptSections() {
