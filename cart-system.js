@@ -1,5 +1,4 @@
 // MODERRA SEPET SİSTEMİ
-// Tüm sepet işlemleri bu dosyada tanımlıdır.
 
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
@@ -20,20 +19,140 @@ function getSettings() {
 function calculateCartTotal() {
     let subTotal = 0;
     let discountTotal = 0;
-
     cart.forEach(item => {
         if (item.isPackage) {
-            const itemBase = item.packageItems.reduce(
-                (acc, si) => acc + parseFloat(si.price) * si.quantity, 0
-            );
-            subTotal += itemBase * item.quantity;
-            discountTotal += itemBase * item.quantity * ((item.discount || 0) / 100);
+            const base = item.packageItems.reduce((a, si) => a + parseFloat(si.price) * si.quantity, 0);
+            subTotal += base * item.quantity;
+            discountTotal += base * item.quantity * ((item.discount || 0) / 100);
         } else {
             subTotal += parseFloat(item.price) * item.quantity;
         }
     });
-
     return { subTotal, discountTotal, total: subTotal - discountTotal };
+}
+
+// ── VIP Toast Bildirimi ──────────────────────────────────────────────────────
+
+function showVIPToast(itemName) {
+    const existing = document.getElementById('vip-toast-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'vip-toast-overlay';
+    overlay.style.cssText = `
+        position: fixed; inset: 0; z-index: 999999;
+        display: flex; align-items: center; justify-content: center;
+        pointer-events: none;
+    `;
+
+    overlay.innerHTML = `
+        <div id="vip-toast-card" style="
+            background: linear-gradient(145deg, #0f0c29, #1a1040, #24243e);
+            border: 2px solid rgba(212,175,55,0.6);
+            border-radius: 28px;
+            padding: 40px 50px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(212,175,55,0.3), 0 30px 60px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: scale(0.8) translateY(30px);
+            transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+            min-width: 340px;
+            max-width: 90vw;
+            position: relative;
+            overflow: hidden;
+        ">
+            <!-- Shimmer arka plan -->
+            <div style="
+                position: absolute; inset: 0;
+                background: linear-gradient(105deg, transparent 40%, rgba(212,175,55,0.07) 50%, transparent 60%);
+                animation: vip-shimmer 2.5s infinite;
+                pointer-events: none;
+            "></div>
+
+            <!-- Köşe süsleme -->
+            <div style="position:absolute;top:12px;left:18px;color:rgba(212,175,55,0.4);font-size:18px;">✦</div>
+            <div style="position:absolute;top:12px;right:18px;color:rgba(212,175,55,0.4);font-size:18px;">✦</div>
+            <div style="position:absolute;bottom:12px;left:18px;color:rgba(212,175,55,0.4);font-size:14px;">✦</div>
+            <div style="position:absolute;bottom:12px;right:18px;color:rgba(212,175,55,0.4);font-size:14px;">✦</div>
+
+            <!-- Crown ikonu -->
+            <div style="
+                width: 80px; height: 80px; border-radius: 50%;
+                background: linear-gradient(135deg, #b8860b, #ffd700, #daa520);
+                display: flex; align-items: center; justify-content: center;
+                margin: 0 auto 20px;
+                box-shadow: 0 0 30px rgba(212,175,55,0.5);
+                animation: vip-pulse 1.5s ease-in-out infinite;
+            ">
+                <i class="fas fa-crown" style="color:#1a0e00; font-size:34px;"></i>
+            </div>
+
+            <!-- Başlık -->
+            <div style="
+                font-size: 11px; font-weight: 800; letter-spacing: 3px;
+                color: #d4af37; margin-bottom: 10px; text-transform: uppercase;
+            ">✦ VIP Premium Siparişe Eklendi ✦</div>
+
+            <!-- Ürün adı -->
+            <div style="
+                font-size: 20px; font-weight: 900; color: white;
+                margin-bottom: 8px; line-height: 1.3;
+            ">${itemName}</div>
+
+            <div style="
+                font-size: 13px; color: rgba(212,175,55,0.8);
+                font-style: italic; margin-bottom: 24px;
+            ">Özel tasarımınız sepete eklendi</div>
+
+            <!-- İlerleme çubuğu -->
+            <div style="width:100%; height:3px; background:rgba(255,255,255,0.1); border-radius:10px; overflow:hidden;">
+                <div id="vip-toast-bar" style="
+                    height:100%;
+                    background: linear-gradient(90deg, #b8860b, #ffd700);
+                    width: 100%;
+                    border-radius: 10px;
+                    transition: width 3s linear;
+                "></div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes vip-shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(200%); }
+            }
+            @keyframes vip-pulse {
+                0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(212,175,55,0.5); }
+                50% { transform: scale(1.08); box-shadow: 0 0 50px rgba(212,175,55,0.8); }
+            }
+        </style>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Giriş animasyonu
+    requestAnimationFrame(() => {
+        const card = document.getElementById('vip-toast-card');
+        if (card) {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1) translateY(0)';
+        }
+        // Progress bar'ı sıfırla
+        setTimeout(() => {
+            const bar = document.getElementById('vip-toast-bar');
+            if (bar) bar.style.width = '0%';
+        }, 100);
+    });
+
+    // Kapatma
+    setTimeout(() => {
+        const card = document.getElementById('vip-toast-card');
+        if (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9) translateY(-20px)';
+        }
+        setTimeout(() => overlay.remove(), 500);
+    }, 3200);
 }
 
 // ── Animasyon ────────────────────────────────────────────────────────────────
@@ -72,46 +191,6 @@ function flyToCart(imgElement) {
         cartIcon.classList.add('shake');
         setTimeout(() => cartIcon.classList.remove('shake'), 500);
     }, 750);
-}
-
-function showVIPToast(itemName) {
-    const existing = document.getElementById('vip-cart-toast');
-    if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.id = 'vip-cart-toast';
-    toast.style.cssText = `
-        position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px);
-        background:linear-gradient(135deg,#1a1a2e,#16213e);
-        color:white; padding:16px 24px; border-radius:18px;
-        z-index:999999; opacity:0;
-        transition:all 0.45s cubic-bezier(0.34,1.56,0.64,1);
-        border:1px solid rgba(212,175,55,0.4);
-        box-shadow:0 20px 60px rgba(0,0,0,0.4);
-        min-width:280px; max-width:90vw;
-        display:flex; align-items:center; gap:14px;
-    `;
-    toast.innerHTML = `
-        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#b8860b,#ffd700);
-                    display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fas fa-crown" style="color:#1a0e00;font-size:16px;"></i>
-        </div>
-        <div>
-            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#ffd700;margin-bottom:2px;">VIP SEPETE EKLENDİ</div>
-            <div style="font-size:14px;font-weight:900;">${itemName}</div>
-            <div style="font-size:11px;opacity:0.6;margin-top:2px;">Özel logo siparişiniz alındı ✓</div>
-        </div>
-    `;
-    document.body.appendChild(toast);
-    requestAnimationFrame(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-    });
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(80px)';
-        setTimeout(() => toast.remove(), 450);
-    }, 4000);
 }
 
 // ── Sepet Gösterimi ──────────────────────────────────────────────────────────
@@ -162,7 +241,6 @@ function updateCartDisplay() {
         }
     }
 
-    // Ürün listesi
     list.innerHTML = '';
 
     if (cart.length === 0) {
@@ -180,9 +258,9 @@ function updateCartDisplay() {
 
     cart.forEach(item => {
         const el = document.createElement('div');
-        el.className = 'cart-item-card' + (item.isConcept ? ' vip-concept-frame' : '');
 
         if (item.isPackage) {
+            el.className = 'cart-item-card';
             const itemTotal = item.packageItems.reduce(
                 (acc, si) => acc + parseFloat(si.price) * si.quantity, 0
             ) * (1 - (item.discount || 0) / 100) * item.quantity;
@@ -206,31 +284,117 @@ function updateCartDisplay() {
                         <button onclick="removeFromCart('${item.id}')" class="trash-btn">🗑</button>
                     </div>
                 </div>`;
+
         } else if (item.isConcept) {
+            // ── VIP Premium Konsept Ürün ──────────────────────────────
             const itemTotal = parseFloat(item.price) * item.quantity;
+            el.style.cssText = `
+                background: linear-gradient(145deg, #fffdf5, #fef9e7);
+                border-radius: 20px;
+                margin-bottom: 14px;
+                border: 2px solid transparent;
+                background-clip: padding-box;
+                position: relative;
+                overflow: visible;
+                box-shadow: 0 8px 32px rgba(212,175,55,0.2);
+            `;
+
+            // Dış altın çerçeve için pseudo-element yerine wrapper
+            el.style.background = 'linear-gradient(145deg, #fffdf5, #fef9e7)';
+            el.style.outline = '2px solid #d4af37';
+            el.style.outlineOffset = '0px';
+            el.style.borderRadius = '20px';
+            el.style.marginBottom = '14px';
+            el.style.position = 'relative';
+            el.style.overflow = 'visible';
+            el.style.boxShadow = '0 8px 32px rgba(212,175,55,0.25), inset 0 1px 0 rgba(255,255,255,0.8)';
+
+            const isPDF = item.logo && item.logo.startsWith('data:application/pdf');
+            const logoHTML = item.logo
+                ? `<div style="margin-top:10px;">
+                    <div style="font-size:10px;font-weight:800;color:#b8860b;margin-bottom:4px;text-transform:uppercase;"><i class="fas fa-check-circle" style="color:#22c55e;"></i> Yüklenen Dosya:</div>
+                    ${isPDF
+                        ? `<div style="display:flex;align-items:center;gap:6px;background:rgba(239,68,68,0.1);border-radius:8px;padding:6px 10px;border:1px solid rgba(239,68,68,0.3);">
+                               <i class="fas fa-file-pdf" style="color:#ef4444;font-size:18px;"></i>
+                               <span style="font-size:11px;color:#d4af37;word-break:break-all;">${item.logoName || 'logo.pdf'}</span>
+                           </div>`
+                        : `<img src="${item.logo}" style="max-width:80px;max-height:50px;object-fit:contain;border-radius:8px;border:1px solid rgba(212,175,55,0.3);">`
+                    }
+                   </div>`
+                : `<div style="margin-top:8px;font-size:10px;color:#d4af37;font-style:italic;"><i class="fas fa-upload"></i> Logo henüz yüklenmedi</div>`;
+
             el.innerHTML = `
-                <div class="vip-badge"><i class="fas fa-crown"></i> VIP ÖZEL LOGO</div>
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:10px;">
-                    <div style="display:flex;align-items:center;gap:12px;flex:1;">
-                        <div style="width:68px;height:68px;border-radius:16px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid rgba(212,175,55,0.4);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                <!-- VIP Başlık Şeridi — Her zaman görünür, taşmaz -->
+                <div style="
+                    background: linear-gradient(90deg, #b8860b, #daa520, #ffd700, #daa520, #b8860b);
+                    border-radius: 16px 16px 0 0;
+                    padding: 8px 16px;
+                    display: flex; align-items: center; gap: 8px;
+                    margin: -2px -2px 0 -2px;
+                ">
+                    <i class="fas fa-crown" style="color:#1a0e00;font-size:14px;"></i>
+                    <span style="font-size:10px;font-weight:900;letter-spacing:2px;color:#1a0e00;text-transform:uppercase;">VIP Premium Özel Sipariş</span>
+                    <span style="margin-left:auto;font-size:10px;color:rgba(26,14,0,0.7);">✦</span>
+                </div>
+
+                <!-- İçerik -->
+                <div style="padding:14px 16px 16px;">
+                    <div style="display:flex;align-items:flex-start;gap:14px;">
+                        <!-- Ürün görseli -->
+                        <div style="
+                            width:72px;height:72px;border-radius:14px;
+                            background:linear-gradient(135deg,#fffbeb,#fef3c7);
+                            border:2px solid rgba(212,175,55,0.4);
+                            display:flex;align-items:center;justify-content:center;
+                            overflow:hidden;flex-shrink:0;
+                        ">
                             <img src="${item.image || 'images/bardak.png'}" style="width:100%;height:100%;object-fit:contain;padding:6px;" loading="lazy">
                         </div>
+
+                        <!-- Bilgiler -->
                         <div style="flex:1;min-width:0;">
-                            <div style="font-weight:900;font-size:14px;color:#1a1a1a;margin-bottom:4px;">${item.name}</div>
-                            ${item.note ? `<div style="font-size:11px;color:#7c5f00;background:#fffbeb;padding:5px 9px;border-radius:8px;margin-bottom:6px;border-left:3px solid #d4af37;font-style:italic;">"${item.note}"</div>` : ''}
-                            <div class="qty-ctrl" style="display:inline-flex;align-items:center;gap:8px;background:#fffbeb;border-radius:10px;padding:3px 8px;border:1px solid rgba(212,175,55,0.3);">
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}',-1)">−</button>
-                                <span style="font-weight:900;font-size:14px;min-width:24px;text-align:center;color:#b8860b;">${item.quantity}</span>
-                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}',1)">+</button>
+                            <div style="font-weight:900;font-size:15px;color:#1a1a1a;margin-bottom:4px;line-height:1.3;">${item.name}</div>
+
+                            ${item.note ? `
+                            <div style="
+                                font-size:11px;color:#7c5f00;background:#fffbeb;
+                                padding:6px 10px;border-radius:8px;margin-bottom:8px;
+                                border-left:3px solid #d4af37;font-style:italic;
+                            ">"${item.note}"</div>` : ''}
+
+                            ${logoHTML}
+
+                            <!-- Adet kontrolü -->
+                            <div style="
+                                display:inline-flex;align-items:center;gap:8px;
+                                background:#fffbeb;border-radius:10px;padding:4px 10px;
+                                border:1px solid rgba(212,175,55,0.4);margin-top:10px;
+                            ">
+                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}',-1)" style="background:rgba(212,175,55,0.2);">−</button>
+                                <span style="font-weight:900;font-size:15px;min-width:24px;text-align:center;color:#b8860b;">${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateItemQuantity('${item.id}',1)" style="background:rgba(212,175,55,0.2);">+</button>
                             </div>
                         </div>
-                    </div>
-                    <div style="text-align:right;flex-shrink:0;">
-                        <div style="font-size:18px;font-weight:900;background:linear-gradient(135deg,#b8860b,#d4af37);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">₺${itemTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div>
-                        <button onclick="removeFromCart('${item.id}')" class="trash-btn">🗑</button>
+
+                        <!-- Fiyat + Sil -->
+                        <div style="text-align:right;flex-shrink:0;">
+                            <div style="
+                                font-size:20px;font-weight:900;
+                                background:linear-gradient(135deg,#b8860b,#d4af37);
+                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                                background-clip:text;
+                            ">₺${itemTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div>
+                            <div style="font-size:10px;color:#b8860b;margin-top:2px;">adet başına</div>
+                            <button onclick="removeFromCart('${item.id}')" style="
+                                background:none;border:none;cursor:pointer;font-size:16px;
+                                opacity:0.5;transition:opacity 0.2s;display:block;margin:8px 0 0 auto;
+                            " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">🗑</button>
+                        </div>
                     </div>
                 </div>`;
+
         } else {
+            el.className = 'cart-item-card';
             const itemTotal = parseFloat(item.price) * item.quantity;
             el.innerHTML = `
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
@@ -335,7 +499,6 @@ async function addPackageToCart(packageId) {
             return acc;
         }, []);
 
-        // Uçan animasyon
         const card = document.querySelector(`button[onclick*="addPackageToCart('${packageId}')"]`)?.closest('.package-card');
         const img = card ? card.querySelector('img') : null;
         if (img) flyToCart(img);
@@ -352,39 +515,21 @@ async function addPackageToCart(packageId) {
             }
         } else {
             cart.push({
-                id: String(pkg.id),
-                name: pkg.name,
+                id: String(pkg.id), name: pkg.name,
                 image: pkg.image || 'images/bardak.png',
                 discount: pkg.discount || 0,
-                quantity: 1,
-                isPackage: true,
-                packageItems
+                quantity: 1, isPackage: true, packageItems
             });
         }
 
         saveCart();
-
         setTimeout(() => {
             updateCartDisplay();
-            const cartModal = document.getElementById('cart-modal');
-            if (cartModal) {
-                cartModal.style.display = 'block';
-                document.body.classList.add('cart-open');
-            }
+            document.body.classList.add('cart-open');
         }, 800);
     } catch (e) {
         console.error('addPackageToCart hatası:', e);
     }
-}
-
-function updateSubItemQuantity(pkgId, subId, delta) {
-    const pkg = cart.find(x => String(x.id) === String(pkgId));
-    if (!pkg || !pkg.packageItems) return;
-    const sub = pkg.packageItems.find(si => String(si.id) === String(subId));
-    if (!sub) return;
-    sub.quantity = Math.max(1, sub.quantity + delta);
-    saveCart();
-    updateCartDisplay();
 }
 
 function removeFromCart(id) {
@@ -429,8 +574,9 @@ function whatsappCheckout() {
               * (1 - (item.discount || 0) / 100) * item.quantity
             : parseFloat(item.price) * item.quantity;
         msg += `📦 ${item.quantity}× ${item.name} — ₺${lineTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}\n`;
-        if (item.note) msg += `   └ 📝 ${item.note}\n`;
-        if (item.isConcept) msg += `   └ ✨ VIP Özel Logo Tasarım\n`;
+        if (item.note) msg += `   └ 📝 Not: ${item.note}\n`;
+        if (item.isConcept) msg += `   └ 👑 VIP Premium Özel Tasarım\n`;
+        if (item.logo) msg += `   └ 🖼️ Logo yüklendi (WhatsApp üzerinden iletilecek)\n`;
     });
     msg += `\n*💰 Toplam: ₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}*\n\n`;
     msg += `👤 ${user.name}\n📞 ${user.phone}\n🏠 ${user.address}`;
@@ -438,8 +584,7 @@ function whatsappCheckout() {
     window.open(`https://wa.me/905304640120?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-// ── Cross-tab senkronizasyonu ────────────────────────────────────────────────
-
+// Cross-tab senkronizasyon
 window.addEventListener('storage', e => {
     if (e.key === 'cart') {
         cart = JSON.parse(e.newValue || '[]');
@@ -447,90 +592,49 @@ window.addEventListener('storage', e => {
     }
 });
 
-// ── Stiller ─────────────────────────────────────────────────────────────────
-
+// Stiller
 (function injectStyles() {
     if (document.getElementById('moderra-cart-styles')) return;
     const s = document.createElement('style');
     s.id = 'moderra-cart-styles';
     s.textContent = `
         .cart-item-card {
-            background: white;
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid #f1f5f9;
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: visible;
+            background: white; border-radius: 18px; padding: 16px;
+            margin-bottom: 12px; border: 1px solid #f1f5f9;
+            transition: all 0.25s ease; position: relative; overflow: visible;
         }
-        .cart-item-card:hover {
-            border-color: #c7d2fe;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-        }
-        .vip-concept-frame {
-            background: linear-gradient(#fffdf5,#fffdf5) padding-box,
-                        linear-gradient(135deg,#b8860b,#ffd700,#daa520,#ffd700,#b8860b) border-box !important;
-            border: 2px solid transparent !important;
-            box-shadow: 0 8px 28px rgba(212,175,55,0.22) !important;
-        }
-        .vip-badge {
-            position: absolute;
-            top: -11px; left: 14px;
-            background: linear-gradient(135deg,#b8860b,#ffd700,#daa520);
-            color: #1a0e00;
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 9px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            z-index: 10;
-            box-shadow: 0 4px 12px rgba(180,135,0,0.35);
-            border: 1px solid rgba(255,255,255,0.5);
-            display: flex; align-items: center; gap: 5px;
-        }
+        .cart-item-card:hover { border-color: #c7d2fe; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
         .qty-btn {
-            background: #f1f5f9;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: 900;
-            font-size: 15px;
-            width: 26px; height: 26px;
+            background: #f1f5f9; border: none; border-radius: 7px; cursor: pointer;
+            font-weight: 900; font-size: 15px; width: 26px; height: 26px;
             display: flex; align-items: center; justify-content: center;
-            color: #1e293b;
-            transition: all 0.2s;
+            color: #1e293b; transition: all 0.2s;
         }
         .qty-btn:hover { background: var(--primary,#6366f1); color: white; }
         .trash-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 15px;
-            margin-top: 8px;
-            padding: 4px;
-            border-radius: 6px;
-            opacity: 0.5;
-            transition: opacity 0.2s;
-            display: block;
-            margin-left: auto;
+            background: none; border: none; cursor: pointer; font-size: 15px;
+            margin-top: 8px; padding: 4px; border-radius: 6px; opacity: 0.5;
+            transition: opacity 0.2s; display: block; margin-left: auto;
         }
         .trash-btn:hover { opacity: 1; }
+        @keyframes shake {
+            0%,100% { transform: rotate(0deg); }
+            20%,60% { transform: rotate(-10deg); }
+            40%,80% { transform: rotate(10deg); }
+        }
+        .shake { animation: shake 0.5s ease; }
     `;
     document.head.appendChild(s);
 })();
 
-// ── Global erişim ────────────────────────────────────────────────────────────
-
+// Global erişim
 window.addToCart = addToCart;
 window.addToCartConcept = addToCartConcept;
 window.addPackageToCart = addPackageToCart;
-window.updateSubItemQuantity = updateSubItemQuantity;
 window.removeFromCart = removeFromCart;
 window.updateItemQuantity = updateItemQuantity;
 window.whatsappCheckout = whatsappCheckout;
 window.flyToCart = flyToCart;
 window.updateCartDisplay = updateCartDisplay;
 window.calculateCartTotal = calculateCartTotal;
+window.showVIPToast = showVIPToast;

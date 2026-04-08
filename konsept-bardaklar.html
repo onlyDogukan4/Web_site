@@ -708,6 +708,27 @@
                                     <textarea id="note-${c.id}" placeholder="Üzerine ne yazılmasını istersiniz? Veya diğer özel istekleriniz..." style="width:100%; height:80px; padding:12px; border-radius:12px; border:2px solid var(--theme-color); background:rgba(255,255,255,0.1); color:var(--theme-text); font-family:inherit; font-size:13px; outline:none; resize:none;"></textarea>
                                 </div>
 
+                                <!-- Logo / PDF Yükleme Alanı -->
+                                <div style="margin-bottom:4px;">
+                                    <label style="font-size:12px; font-weight:800; color:var(--theme-text); display:flex; align-items:center; gap:5px; margin-bottom:8px;">
+                                        <i class="fas fa-file-upload" style="color:var(--theme-color);"></i>
+                                        <span data-tr="LOGO / TASARIM DOSYANIZ" data-en="YOUR LOGO / DESIGN FILE">LOGO / TASARIM DOSYANIZ</span>
+                                        <span style="font-weight:400; opacity:0.7; font-size:11px;">(PNG, JPG, PDF)</span>
+                                    </label>
+                                    <label for="logo-upload-${c.id}" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:100%; min-height:90px; border:2px dashed var(--theme-color); border-radius:14px; cursor:pointer; background:rgba(255,255,255,0.06); transition:background 0.2s; padding:12px; box-sizing:border-box;" id="logo-drop-${c.id}" onmouseover="this.style.background='rgba(255,255,255,0.13)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                                        <div id="logo-preview-${c.id}" style="display:none; width:100%; text-align:center;">
+                                            <img id="logo-img-${c.id}" src="" style="max-height:70px; max-width:100%; border-radius:8px; object-fit:contain;" />
+                                            <div id="logo-filename-${c.id}" style="font-size:11px; margin-top:5px; opacity:0.8; word-break:break-all;"></div>
+                                        </div>
+                                        <div id="logo-placeholder-${c.id}" style="display:flex; flex-direction:column; align-items:center; gap:4px; pointer-events:none;">
+                                            <i class="fas fa-cloud-upload-alt" style="font-size:24px; color:var(--theme-color); opacity:0.7;"></i>
+                                            <span style="font-size:12px; opacity:0.7;">Dosya seçmek için tıklayın</span>
+                                        </div>
+                                    </label>
+                                    <input type="file" id="logo-upload-${c.id}" accept="image/*,.pdf" style="display:none;" onchange="handleLogoUpload(this, '${c.id}')">
+                                    <div id="logo-error-${c.id}" style="color:#ef4444; font-size:11px; margin-top:4px; display:none;">Dosya 5MB'dan küçük olmalıdır.</div>
+                                </div>
+
                                 <div id="price-display-${c.id}" style="font-size:32px; font-weight:900; color:var(--theme-color); margin-bottom:15px;">₺15,00</div>
 
                                 <button onclick="addToCartConcept('${c.id}')" id="add-btn-${c.id}" class="order-btn" style="background:var(--theme-color); color:white; border:none; width:100%; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; padding:18px; margin-top:10px;">
@@ -922,6 +943,41 @@
             });
         }
 
+        // --- Logo Yükleme ---
+        function handleLogoUpload(input, conceptId) {
+            const file = input.files[0];
+            if (!file) return;
+            const errEl = document.getElementById(`logo-error-${conceptId}`);
+            if (file.size > 5 * 1024 * 1024) {
+                errEl.style.display = 'block';
+                input.value = '';
+                return;
+            }
+            errEl.style.display = 'none';
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                const preview = document.getElementById(`logo-preview-${conceptId}`);
+                const placeholder = document.getElementById(`logo-placeholder-${conceptId}`);
+                const imgEl = document.getElementById(`logo-img-${conceptId}`);
+                const nameEl = document.getElementById(`logo-filename-${conceptId}`);
+
+                if (file.type === 'application/pdf') {
+                    imgEl.style.display = 'none';
+                    nameEl.innerHTML = `<i class="fas fa-file-pdf" style="font-size:28px; color:#ef4444;"></i><br>${file.name}`;
+                } else {
+                    imgEl.style.display = '';
+                    imgEl.src = base64;
+                    nameEl.textContent = file.name;
+                }
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                input._base64 = base64;
+                input._filename = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
         // --- Sepet İşlevi (Now handled by cart-system.js) ---
         function addToCartConcept(conceptId) {
             const concept = concepts.find(c => c.id == conceptId);
@@ -932,6 +988,10 @@
             const note = document.getElementById(`note-${conceptId}`)?.value || "";
             const variantData = (concept.variations && concept.variations[`${oz}-${lid}`]) || null;
             const price = variantData ? (parseFloat(variantData.price) || 15.0) : 15.0;
+
+            const logoInput = document.getElementById(`logo-upload-${conceptId}`);
+            const logoData = logoInput?._base64 || null;
+            const logoName = logoInput?._filename || null;
 
             const modal = document.getElementById('confirm-modal');
             document.getElementById('conf-name').innerText = concept.name;
@@ -949,7 +1009,9 @@
                     price: price,
                     quantity: 1,
                     note: note,
-                    isConcept: true
+                    isConcept: true,
+                    logo: logoData,
+                    logoName: logoName
                 });
                 modal.style.display = 'none';
                 document.body.classList.add('cart-open');
