@@ -46,7 +46,7 @@ export default async function handler(req, res) {
         }
 
         // ─── Siparişi güncelle ────────────────────────────────────────────
-        const orders = readData('orders', []);
+        const orders = await readData('orders', []);
         const idx = orders.findIndex(o => o.orderId === merchant_oid);
 
         if (idx > -1) {
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
                 orders[idx].failReason   = failed_reason_msg  || '';
             }
             orders[idx].lastUpdate = new Date().toISOString();
-            writeData('orders', orders);
+            await writeData('orders', orders);
         } else {
             console.warn('PayTR callback: sipariş bulunamadı', merchant_oid);
         }

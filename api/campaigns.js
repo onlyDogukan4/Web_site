@@ -7,11 +7,11 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
     if (req.method === 'GET') {
-        return res.status(200).json(readData('campaigns', []));
+        return res.status(200).json(await readData('campaigns', []));
     }
 
     if (req.method === 'POST') {
-        const ok = writeData('campaigns', req.body);
+        const ok = await writeData('campaigns', req.body);
         return res.status(200).json({ success: true, saved: ok });
     }
 

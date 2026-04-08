@@ -13,13 +13,13 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
     if (req.method === 'GET') {
-        const data = readData('products', FALLBACK);
+        const data = await readData('products', FALLBACK);
         const products = (Array.isArray(data) && data.length > 0) ? data : FALLBACK;
         return res.status(200).json(products);
     }
 
     if (req.method === 'POST') {
-        const ok = writeData('products', req.body);
+        const ok = await writeData('products', req.body);
         return res.status(200).json({ success: true, saved: ok });
     }
 

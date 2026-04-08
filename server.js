@@ -1,33 +1,14 @@
-
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { readData, writeData } from './api/_db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = 3000;
 
-// ── JSON dosya yardımcıları ──────────────────────────────────────────────────
-
-function readJSON(filename, fallback = []) {
-    try {
-        const raw = fs.readFileSync(path.join(__dirname, `${filename}.json`), 'utf-8');
-        return JSON.parse(raw);
-    } catch {
-        return fallback;
-    }
-}
-
-function writeJSON(filename, data) {
-    try {
-        fs.writeFileSync(path.join(__dirname, `${filename}.json`), JSON.stringify(data, null, 2), 'utf-8');
-        return true;
-    } catch (e) {
-        console.error(`writeJSON(${filename}) hata:`, e.message);
-        return false;
-    }
-}
+// ── Yardımcılar ──────────────────────────────────────────────────────────────
 
 function parseBody(req) {
     return new Promise((resolve) => {
@@ -101,32 +82,32 @@ const server = http.createServer(async (req, res) => {
         'last-update': { time: 'Henüz güncellenmedi' }
     };
 
-    if (dataRoutes[url]) {
-        const key = dataRoutes[url];
+        if (dataRoutes[url]) {
+            const key = dataRoutes[url];
 
-        if (req.method === 'GET') {
-            return json(res, readJSON(key, defaults[key]));
-        }
-
-        if (req.method === 'POST') {
-            const body = await parseBody(req);
-            if (key === 'orders') {
-                // Siparişleri biriktir (üzerine yazma)
-                const existing = readJSON('orders', []);
-                const newOrders = Array.isArray(body) ? body : [body];
-                writeJSON('orders', [...existing, ...newOrders]);
-            } else {
-                writeJSON(key, body);
+            if (req.method === 'GET') {
+                return json(res, await readData(key, defaults[key]));
             }
-            return json(res, { success: true });
-        }
 
-        if (req.method === 'PUT') {
-            const body = await parseBody(req);
-            writeJSON(key, body);
-            return json(res, { success: true });
+            if (req.method === 'POST') {
+                const body = await parseBody(req);
+                if (key === 'orders') {
+                    // Siparişleri biriktir (üzerine yazma)
+                    const existing = await readData('orders', []);
+                    const newOrders = Array.isArray(body) ? body : [body];
+                    await writeData('orders', [...existing, ...newOrders]);
+                } else {
+                    await writeData(key, body);
+                }
+                return json(res, { success: true });
+            }
+
+            if (req.method === 'PUT') {
+                const body = await parseBody(req);
+                await writeData(key, body);
+                return json(res, { success: true });
+            }
         }
-    }
 
     // ── Chatbot (xAI Grok) ──────────────────────────────────────────────────
 

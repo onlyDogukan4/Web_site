@@ -1,28 +1,51 @@
-// Moderra — JSON dosya tabanlı veri yönetimi (Upstash kaldırıldı)
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+dotenv.config();
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+const uri = process.env.MONGODB_URI;
+let client;
+let clientPromise;
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+if (uri) {
+    client = new MongoClient(uri);
+    clientPromise = client.connect();
+} else {
+    console.warn('⚠️ MONGODB_URI tanımlanmamış. Yerel JSON moduna geçiliyor (Vercel\'de çalışmaz).');
+}
 
-export function readData(filename, fallback = []) {
+export async function getCollection(name) {
+    if (!clientPromise) return null;
+    const conn = await clientPromise;
+    return conn.db('moderra_db').collection(name);
+}
+
+export async function readData(filename, fallback = []) {
     try {
-        const path = join(ROOT, `${filename}.json`);
-        if (!existsSync(path)) return fallback;
-        const raw = readFileSync(path, 'utf8');
-        return JSON.parse(raw);
-    } catch {
+        const col = await getCollection(filename);
+        if (!col) return fallback;
+        const data = await col.find({}, { projection: { _id: 0 } }).toArray();
+        return data.length ? data : fallback;
+    } catch (e) {
+        console.error(`readData(${filename}) hata:`, e);
         return fallback;
     }
 }
 
-export function writeData(filename, data) {
+export async function writeData(filename, data) {
     try {
-        writeFileSync(join(ROOT, `${filename}.json`), JSON.stringify(data, null, 2), 'utf8');
+        const col = await getCollection(filename);
+        if (!col) return false;
+        
+        // Mevcut yapıyı bozmamak için (JSON gibi davranıyoruz) koleksiyonu temizleyip yeniden yazıyoruz
+        await col.deleteMany({});
+        if (Array.isArray(data) && data.length > 0) {
+            await col.insertMany(data);
+        } else if (!Array.isArray(data) && data) {
+            await col.insertOne(data);
+        }
         return true;
-    } catch {
+    } catch (e) {
+        console.error(`writeData(${filename}) hata:`, e);
         return false;
     }
 }

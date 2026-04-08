@@ -76,8 +76,8 @@ export default async function handler(req, res) {
             cartData:         cart
         };
 
-        const existing = readData('orders', []);
-        writeData('orders', [...existing, orderData]);
+        const existing = await readData('orders', []);
+        await writeData('orders', [...existing, orderData]);
 
         // ─── PayTR API isteği ─────────────────────────────────────────────
         const params = new URLSearchParams({
