@@ -24,9 +24,9 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Eksik parametre: cart, user, totalAmount gerekli' });
         }
 
-        // Benzersiz sipariş ID
+        // Benzersiz sipariş ID (Sadece harf ve rakam olmalı)
         const randomID = Math.floor(10000 + Math.random() * 90000);
-        const merchant_oid = `MOD-${randomID}`;
+        const merchant_oid = `MOD${randomID}`;
 
         // PayTR sepet formatı: [["Ürün Adı", "birim_fiyat", adet], ...]
         const basketArr = cart.map(item => [
