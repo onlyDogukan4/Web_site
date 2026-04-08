@@ -470,6 +470,9 @@ function _renderSummary(subTotal, discountTotal, total) {
                     <i class="fas fa-credit-card" style="font-size:20px;"></i> KREDİ KARTI
                 </button>
             </div>
+            <button onclick="showInstallmentTable()" style="width:100%; margin-top:10px; padding:12px; border-radius:12px; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); color:#4f46e5; cursor:pointer; font-size:12px; font-weight:700; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-table-list"></i> Taksit Seçeneklerini Gör
+            </button>
 `;
 }
 
@@ -663,9 +666,50 @@ window.removeFromCart = removeFromCart;
 window.updateItemQuantity = updateItemQuantity;
 window.whatsappCheckout = whatsappCheckout;
 window.flyToCart = flyToCart;
-window.updateCartDisplay = updateCartDisplay;
-window.calculateCartTotal = calculateCartTotal;
-window.showVIPToast = showVIPToast;
+async function showInstallmentTable() {
+    const { total } = calculateCartTotal();
+    if (total <= 0) return;
+
+    let modal = document.getElementById('installment-modal');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
+    modal.id = 'installment-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:15px;';
+    modal.innerHTML = `
+        <div style="width:100%;max-width:800px;background:white;border-radius:24px;overflow-y:auto;position:relative;max-height:90vh;display:flex;flex-direction:column;padding:30px;">
+            <div style="margin-bottom:25px;display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="margin:0;color:#1e293b;font-size:18px;font-weight:900;">💳 Taksit Seçenekleri (₺${total.toLocaleString('tr-TR')})</h3>
+                <button onclick="document.getElementById('installment-modal').remove()" style="background:none;border:none;font-size:28px;cursor:pointer;color:#94a3b8;">&times;</button>
+            </div>
+            <div id="paytr_taksit_tablosu"></div>
+            <p style="margin-top:20px; font-size:11px; color:#64748b; text-align:center;">Ödeme ekranında kredi kartınızı girdiğinizde bu taksit seçenekleri sunulacaktır.</p>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Style and Script injection
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #paytr_taksit_tablosu{clear: both;font-size: 12px;width: 100%;text-align: center;font-family: 'Segoe UI', sans-serif;}
+        .taksit-tablosu-wrapper{margin: 10px;width: auto;min-width:180px;padding: 15px;cursor: default;text-align: center;display: inline-block;border: 1px solid #e2e8f0;border-radius:12px;background:#f8fafc;}
+        .taksit-logo img{max-height: 24px;padding-bottom: 12px;}
+        .taksit-tutari-text{float: left;width: 50%;color: #64748b;margin-bottom: 5px;font-size:10px;text-align:left;}
+        .taksit-tutar-wrapper{display: block;background-color: #fff;border-radius:8px;border:1px solid #cbd5e1;overflow:hidden;}
+        .taksit-tutari{float: left;width: 50%;padding: 10px 0;color: #1e293b;border: 1px solid #f1f5f9;font-size:13px;}
+        .taksit-tutari-bold{font-weight: bold;color:var(--primary);}
+        @media all and (max-width: 600px) {.taksit-tablosu-wrapper {margin: 5px 0; display:block; width:100%;}}
+    `;
+    document.head.appendChild(style);
+
+    const script = document.createElement('script');
+    const token = 'e980c8427df5c612465f3cd69d3cf703cdfe0b98f3df0fed04b919a2605b01c0';
+    script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=${token}&merchant_id=678000&amount=${total}&taksit=0&tumu=0`;
+    document.body.appendChild(script);
+}
+
+window.showInstallmentTable = showInstallmentTable;
+
 async function payWithPayTR() {
     const { minOrder } = getSettings();
     const { total } = calculateCartTotal();
@@ -729,7 +773,9 @@ async function payWithPayTR() {
         console.error('PayTR hatası:', e);
         alert('Ödeme sistemine bağlanılamadı.');
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalContent;
+        if (btn) {
+           btn.disabled = false;
+           btn.innerHTML = originalContent;
+        }
     }
 }
