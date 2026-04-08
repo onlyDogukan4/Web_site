@@ -1,6 +1,6 @@
 async function kvGet(key) {
-    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || 'https://prime-monitor-83024.upstash.io';
-    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
+    const url = 'https://prime-monitor-83024.upstash.io';
+    const token = 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
     if (!url || !token) return null;
     try {
         const res = await fetch(`${url}/get/${key}`, { headers: { Authorization: `Bearer ${token}` } });
@@ -11,8 +11,8 @@ async function kvGet(key) {
 }
 
 async function kvSet(key, value) {
-    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || 'https://prime-monitor-83024.upstash.io';
-    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
+    const url = 'https://prime-monitor-83024.upstash.io';
+    const token = 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
     if (!url || !token) return;
     try {
         await fetch(`${url}/pipeline`, {

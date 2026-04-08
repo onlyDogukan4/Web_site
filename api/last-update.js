@@ -1,8 +1,8 @@
 export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store');
 
-    const url = (process.env.UPSTASH_REDIS_REST_URL || 'https://prime-monitor-83024.upstash.io').trim();
-    const token = (process.env.UPSTASH_REDIS_REST_TOKEN || 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ').trim();
+    const url = 'https://prime-monitor-83024.upstash.io';
+    const token = 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
 
     if (!url || !token) {
         if (req.method === 'POST') return res.status(200).json({ success: true });
