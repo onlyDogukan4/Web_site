@@ -16,9 +16,12 @@ function getFileProducts() {
     ];
 }
 
+const KV_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || 'https://prime-monitor-83024.upstash.io';
+const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
+
 async function kvGet(key) {
-    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    const url = KV_URL;
+    const token = KV_TOKEN;
     if (!url || !token) return null;
     try {
         const res = await fetch(`${url}/get/${key}`, { headers: { Authorization: `Bearer ${token}` } });
@@ -29,8 +32,8 @@ async function kvGet(key) {
 }
 
 async function kvSet(key, value) {
-    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    const url = KV_URL;
+    const token = KV_TOKEN;
     if (!url || !token) return false;
     try {
         const res = await fetch(`${url}/pipeline`, {
