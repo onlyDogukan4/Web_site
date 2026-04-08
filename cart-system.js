@@ -10,25 +10,41 @@ function saveCart() {
 
 function getSettings() {
     try {
-        const s = localStorage.getItem('settings');
+        const s = localStorage.getItem('moderra_settings') || localStorage.getItem('settings');
         if (s) return JSON.parse(s);
     } catch (e) {}
     return { minOrder: 500, freeShipping: 1000 };
 }
 
+async function fetchSettingsFromServer() {
+    try {
+        const res = await fetch('/api/settings?t=' + Date.now());
+        if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem('moderra_settings', JSON.stringify(data));
+            if (typeof updateCartDisplay === 'function') updateCartDisplay();
+        }
+    } catch (e) { console.warn('Ayarlar sunucudan alınamadı:', e); }
+}
+// Sayfa yüklendiğinde ayarları tazele
+fetchSettingsFromServer();
+setInterval(fetchSettingsFromServer, 60000);
+
 function calculateCartTotal() {
     let subTotal = 0;
     let discountTotal = 0;
     cart.forEach(item => {
-        if (item.isPackage) {
-            const base = item.packageItems.reduce((a, si) => a + parseFloat(si.price) * si.quantity, 0);
-            subTotal += base * item.quantity;
-            discountTotal += base * item.quantity * ((item.discount || 0) / 100);
+        const itemPrice = parseFloat(item.price) || 0;
+        if (item.isPackage && Array.isArray(item.packageItems)) {
+            const base = item.packageItems.reduce((a, si) => a + (parseFloat(si.price) || 0) * (si.quantity || 1), 0);
+            subTotal += base * (item.quantity || 1);
+            discountTotal += base * (item.quantity || 1) * ((parseFloat(item.discount) || 0) / 100);
         } else {
-            subTotal += parseFloat(item.price) * item.quantity;
+            subTotal += itemPrice * (item.quantity || 1);
         }
     });
-    return { subTotal, discountTotal, total: subTotal - discountTotal };
+    const total = Math.max(0, subTotal - discountTotal);
+    return { subTotal, discountTotal, total };
 }
 
 // ── VIP Toast Bildirimi ──────────────────────────────────────────────────────
@@ -442,10 +458,19 @@ function _renderSummary(subTotal, discountTotal, total) {
             <span>🎁 İndirim</span>
             <span>−₺${discountTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
         </div>` : ''}
-        <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:2px dashed #e2e8f0;align-items:center;">
-            <span style="font-weight:800;font-size:17px;color:#0f172a;">TOPLAM</span>
-            <span style="font-weight:900;font-size:22px;color:var(--primary);">₺${total.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
-        </div>`;
+            <div style="display:flex;justify-content:space-between;color:var(--primary);font-weight:900;font-size:18px;margin-top:10px;padding-top:10px;border-top:2px solid #f1f5f9;">
+                <span>TOPLAM</span>
+                <span style="font-weight:900;font-size:22px;color:var(--primary);">₺${total.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
+            </div>
+            <div id="checkout-options" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                <button onclick="whatsappCheckout()" style="padding:16px; border-radius:15px; background:linear-gradient(135deg,#22c55e,#16a34a); border:none; cursor:pointer; color:white; font-size:13px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                    <i class="fab fa-whatsapp" style="font-size:20px;"></i> WHATSAPP
+                </button>
+                <button onclick="payWithPayTR()" style="padding:16px; border-radius:15px; background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; cursor:pointer; color:white; font-size:13px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                    <i class="fas fa-credit-card" style="font-size:20px;"></i> KREDİ KARTI
+                </button>
+            </div>
+`;
 }
 
 // ── Sepet İşlemleri ──────────────────────────────────────────────────────────
@@ -470,7 +495,9 @@ function addToCart(idOrItem, name, price, isConcept = false) {
     saveCart();
     updateCartDisplay();
 
-    if (item.isConcept) showVIPToast(item.name);
+    if (item.isConcept) {
+        if (typeof showVIPToast === 'function') showVIPToast(item.name);
+    }
 }
 
 function addToCartConcept(item) {
@@ -569,10 +596,11 @@ function whatsappCheckout() {
 
     let msg = '*Moderra — Yeni Sipariş*\n\n';
     cart.forEach(item => {
+        const itemQty = item.quantity || 1;
         const lineTotal = item.isPackage
-            ? item.packageItems.reduce((a, si) => a + parseFloat(si.price) * si.quantity, 0)
-              * (1 - (item.discount || 0) / 100) * item.quantity
-            : parseFloat(item.price) * item.quantity;
+            ? item.packageItems.reduce((a, si) => a + (parseFloat(si.price) || 0) * (si.quantity || 1), 0)
+              * (1 - (parseFloat(item.discount) || 0) / 100) * itemQty
+            : (parseFloat(item.price) || 0) * itemQty;
         msg += `📦 ${item.quantity}× ${item.name} — ₺${lineTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}\n`;
         if (item.note) msg += `   └ 📝 Not: ${item.note}\n`;
         if (item.isConcept) msg += `   └ 👑 VIP Premium Özel Tasarım\n`;
@@ -638,3 +666,70 @@ window.flyToCart = flyToCart;
 window.updateCartDisplay = updateCartDisplay;
 window.calculateCartTotal = calculateCartTotal;
 window.showVIPToast = showVIPToast;
+async function payWithPayTR() {
+    const { minOrder } = getSettings();
+    const { total } = calculateCartTotal();
+
+    if (total < minOrder) {
+        alert(`Minimum sipariş tutarı ₺${minOrder.toLocaleString('tr-TR')} TL'dir.`);
+        return;
+    }
+
+    const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
+    if (!userData.name || !userData.phone || !userData.address) {
+        alert('Lütfen ödeme için profil bilgilerinizi doldurun.');
+        const pm = document.getElementById('profile-modal');
+        if (pm) pm.style.display = 'block';
+        return;
+    }
+
+    const btn = document.querySelector('button[onclick="payWithPayTR()"]');
+    const originalContent = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-spinner"></span> BEKLEYİN...';
+
+    try {
+        const response = await fetch('/api/paytr-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                cart: cart,
+                user: userData,
+                totalAmount: total
+            })
+        });
+
+        const data = await response.json();
+        if (data.token) {
+            // PayTR İframe Modal Oluştur
+            let modal = document.getElementById('paytr-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'paytr-modal';
+                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:10px;';
+                modal.innerHTML = `
+                    <div style="width:100%;max-width:800px;background:white;border-radius:24px;overflow:hidden;position:relative;height:90vh;display:flex;flex-direction:column;">
+                        <div style="padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;">
+                            <h3 style="margin:0;color:#1e293b;"><i class="fas fa-lock" style="color:#10b981;"></i> Güvenli Ödeme</h3>
+                            <button onclick="document.getElementById('paytr-modal').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;">&times;</button>
+                        </div>
+                        <div id="paytr-iframe-container" style="flex:1;">
+                             <iframe src="https://www.paytr.com/odeme/guvenli/${data.token}" id="paytr-iframe" style="width:100%;height:100%;border:none;"></iframe>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            // Sipariş ID sakla
+            localStorage.setItem('last_order_id', data.orderId);
+        } else {
+            alert('Ödeme başlatılamadı: ' + (data.error || 'Bilinmeyen hata'));
+        }
+    } catch (e) {
+        console.error('PayTR hatası:', e);
+        alert('Ödeme sistemine bağlanılamadı.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+    }
+}

@@ -353,15 +353,19 @@
             }
             
             const statusMap = {
+                'onay-bekliyor': 'SİPARİŞ ONAY BEKLİYOR',
                 'alindi': 'SİPARİŞ ALINDI',
                 'hazirlaniyor': 'HAZIRLANIYOR',
                 'kargoda': 'KARGODA',
-                'teslim': 'TESLİM EDİLDİ'
+                'teslim': 'TESLİM EDİLDİ',
+                'odeme-bekleniyor': 'ÖDEME BEKLENİYOR',
+                'odeme-reddedildi': 'ÖDEME REDDEDİLDİ'
             };
             document.getElementById('status-text').textContent = statusMap[order.status] || order.status.toUpperCase();
 
             // Progress Logic
             const steps = {
+                'onay-bekliyor': 1,
                 'alindi': 1,
                 'hazirlaniyor': 2,
                 'kargoda': 3,

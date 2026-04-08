@@ -895,11 +895,12 @@
             const variantKey = `${size}-${lid}`;
             const variant = (concept.variations && concept.variations[variantKey]) || {};
             
-            const price = variant.price || 15.0;
+            const rawPrice = variant.price || concept.price || 15.0;
+            const cleanPrice = parseFloat(rawPrice) || 0;
             const stock = variant.stock === undefined ? 999 : variant.stock;
 
             const priceEl = document.getElementById(`price-display-${conceptId}`);
-            if(priceEl) priceEl.innerText = `₺${parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+            if(priceEl) priceEl.innerText = `₺${cleanPrice.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
 
             const addBtn = document.getElementById(`add-btn-${conceptId}`);
             if(addBtn) {
@@ -983,11 +984,13 @@
             const concept = concepts.find(c => c.id == conceptId);
             if(!concept) return;
             const section = document.getElementById(conceptId);
-            const oz = section.querySelector('.size-btn.active').dataset.oz;
-            const lid = section.querySelector('.lid-btn.active')?.dataset.lid || 'nolid';
-            const note = document.getElementById(`note-${conceptId}`)?.value || "";
-            const variantData = (concept.variations && concept.variations[`${oz}-${lid}`]) || null;
-            const price = variantData ? (parseFloat(variantData.price) || 15.0) : 15.0;
+            const ozVariant = section.querySelector('.size-btn.active').dataset.oz;
+            const lidVariant = section.querySelector('.lid-btn.active')?.dataset.lid || 'nolid';
+            const variantKey = `${ozVariant}-${lidVariant}`;
+            const variantData = (concept.variations && concept.variations[variantKey]) || null;
+            
+            const rawPrice = variantData ? variantData.price : concept.price;
+            const price = parseFloat(rawPrice) || 15.0;
 
             const logoInput = document.getElementById(`logo-upload-${conceptId}`);
             const logoData = logoInput?._base64 || null;
@@ -995,16 +998,16 @@
 
             const modal = document.getElementById('confirm-modal');
             document.getElementById('conf-name').innerText = concept.name;
-            document.getElementById('conf-size').innerText = oz;
-            document.getElementById('conf-lid').innerText = lid==='lid'?'Kapaklı':'Kapaksız';
-            document.getElementById('conf-price').innerText = `₺${price}`;
+            document.getElementById('conf-size').innerText = ozVariant;
+            document.getElementById('conf-lid').innerText = lidVariant==='lid'?'Kapaklı':'Kapaksız';
+            document.getElementById('conf-price').innerText = `₺${price.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
             modal.style.display = 'flex';
 
             document.getElementById('conf-cancel').onclick = () => modal.style.display = 'none';
             document.getElementById('conf-approve').onclick = () => {
                 addToCart({
                     id: `concept-${concept.id}-${Date.now()}`,
-                    name: `${concept.name} (${oz})`,
+                    name: `${concept.name} (${ozVariant})`,
                     image: variantData?.img || concept.base_image,
                     price: price,
                     quantity: 1,
@@ -1043,6 +1046,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             initConcepts();
             updateCartDisplay();
+            
+            // Auto refresh from server every 60 seconds
+            setInterval(() => {
+                initConcepts();
+                updateCartDisplay();
+            }, 60000);
 
             // Profile Modal Logic
             const pm = document.getElementById('profile-modal');

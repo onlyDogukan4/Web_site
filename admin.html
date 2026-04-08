@@ -102,6 +102,9 @@
         .status-hazirlaniyor { background: #fef3c7; color: #92400e; }
         .status-kargoda { background: #dcfce7; color: #166534; }
         .status-teslim { background: #fce7f3; color: #9d174d; }
+        .status-onay-bekliyor { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; }
+        .status-odeme-bekleniyor { background: #f1f5f9; color: #64748b; }
+        .status-odeme-reddedildi { background: #fef2f2; color: #ef4444; }
     </style>
 </head>
 <body>
@@ -379,10 +382,13 @@
                 <div class="form-group">
                     <label>Durum</label>
                     <select id="o-status" class="editable-input">
+                        <option value="onay-bekliyor">💳 Onay Bekliyor (Ödeme Tamam)</option>
                         <option value="alindi">Sipariş Alındı</option>
                         <option value="hazirlaniyor">Hazırlanıyor</option>
                         <option value="kargoda">Kargoda</option>
                         <option value="teslim">Teslim Edildi</option>
+                        <option value="odeme-bekleniyor">⌛ Ödeme Bekleniyor</option>
+                        <option value="odeme-reddedildi">❌ Ödeme Reddedildi</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -786,7 +792,7 @@
                         <td><b>${o.customerName}</b></td>
                         <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width:160px;">${o.items}</div></td>
                         <td>${priceText}</td>
-                        <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                        <td><span class="status-badge status-${o.status}">${o.status.replace(/-/g, ' ')}</span></td>
                         <td style="text-align:right;">
                             <button class="btn btn-primary" style="padding:8px" onclick="openEditOrder('${o.orderId}')"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-danger" style="padding:8px" onclick="deleteOrder('${o.orderId}')"><i class="fas fa-times"></i></button>
@@ -1096,12 +1102,33 @@
             if(!file || !file.type.startsWith('image/')) return;
             const reader = new FileReader();
             reader.onload = (e) => {
-                const res = e.target.result;
-                const prev = document.getElementById(previewId);
-                const txt = document.getElementById(textId);
-                if(prev) { prev.src = res; prev.style.display = 'block'; }
-                if(txt) txt.style.display = 'none';
-                callback(res);
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const max = 800; 
+
+                    if (width > height) {
+                        if (width > max) { height *= max / width; width = max; }
+                    } else {
+                        if (height > max) { width *= max / height; height = max; }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    const prev = document.getElementById(previewId);
+                    const txt = document.getElementById(textId);
+                    if(prev) { prev.src = compressed; prev.style.display = 'block'; }
+                    if(txt) txt.style.display = 'none';
+                    callback(compressed);
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -1164,12 +1191,14 @@
 
         function updateVarStock(key, val) {
             if(!curVariantData[key]) curVariantData[key] = { img: "", stock: 100, price: 15.0 };
-            curVariantData[key].stock = parseInt(val) || 0;
+            const parsed = parseInt(val);
+            curVariantData[key].stock = isNaN(parsed) ? 0 : parsed;
         }
 
         function updateVarPrice(key, val) {
             if(!curVariantData[key]) curVariantData[key] = { img: "", stock: 100, price: 15.0 };
-            curVariantData[key].price = parseFloat(val) || 0;
+            const parsed = parseFloat(val.replace(',', '.')); // Handle comma as decimal
+            curVariantData[key].price = isNaN(parsed) ? 15.0 : parsed;
         }
         
         function openEditConcept(i) {
