@@ -530,47 +530,7 @@
              }
         }
         
-        // --- Sepet Modal Kontrolleri ---
-        openCartModal.onclick = () => {
-            cartModal.style.display = 'block';
-            document.body.classList.add('cart-open');
-
-            // 1. Önce mevcut ayarlarla göster (Hız için)
-            updateCartDisplay();
-
-            // 2. Sunucudan EN GÜNCEL ayarları çek
-            fetch('/api/settings', { cache: "no-store" })
-                .then(r => r.json())
-                .then(s => {
-                    localStorage.setItem('settings', JSON.stringify(s));
-                    updateCartDisplay();
-                    // 3. AI Tavsiyesi çek (sepet doluysa)
-                    if (cart.length > 0) {
-                        const { total } = calculateCartTotal();
-                        let freeShip = 1000;
-                        try { freeShip = JSON.parse(localStorage.getItem('settings'))?.freeShipping || 1000; } catch(e){}
-                        fetchMrKartonAdvice(cart, total, freeShip, _allProducts);
-                    }
-                })
-                .catch(e => {
-                    if (cart.length > 0) {
-                        const { total } = calculateCartTotal();
-                        fetchMrKartonAdvice(cart, total, 1000, _allProducts);
-                    }
-                });
-        };
-        const cartCloseBtnOld = document.querySelector('.cart-close');
-        if(cartCloseBtnOld) cartCloseBtnOld.onclick = () => { 
-            cartModal.style.display = 'none'; 
-            document.body.classList.remove('cart-open');
-        };
-        window.onclick = (e) => { 
-            if(e.target === cartModal) {
-                cartModal.style.display = 'none'; 
-                document.body.classList.remove('cart-open');
-            }
-            if(e.target === profileModal) profileModal.style.display = 'none';
-        };
+        // Sepet açma/kapama — DOMContentLoaded bloğunda yönetiliyor
         
         // --- Ürün Detay Modalı (Lightbox) İşlemleri ---
         const detailModal = document.getElementById('product-detail-modal');
@@ -770,6 +730,8 @@
                     .filter(pkg => pkg.published)
                     .sort((a,b) => (a.order||0) - (b.order||0));
 
+                window._allPackages = sortedPkgs; // Paket önerisi için global erişim
+
                 sortedPkgs.forEach(pkg => {
                     // Calculate package dynamic price
                     const itemIds = (pkg.items || "").split(',').map(id => id.trim());
@@ -878,56 +840,44 @@
             }, 800);
         }
 
-        async function addToCart(productId, productName, productPrice) {
-            // ... (Restored and fixed addToCart logic below)
-            let product = null;
-            try {
-                const res = await fetch('/api/products');
-                const products = await res.json();
-                product = products.find(p => p.id == productId);
-            } catch(e) { }
-            
-            if(!product) product = { id: productId, name: productName, price: parseFloat(productPrice) };
-            const price = parseFloat(product.price);
+        function addToCart(productId, productName, productPrice) {
+            // Zaten yüklü ürün listesinden al, tekrar API çağrısı yapma
+            const product = _allProducts.find(p => String(p.id) === String(productId));
+            const name = (product && product.name_tr) || productName || 'Ürün';
+            const price = parseFloat((product && product.price) != null ? product.price : productPrice);
+            const image = (product && product.image) || 'images/bardak.png';
+
             if (isNaN(price)) return;
 
-            const card = document.querySelector(`.add-to-cart[onclick*="${productId}"]`)?.closest('.product-card');
+            // Uçan animasyon
+            const btn = document.querySelector(`.add-to-cart[onclick*="'${productId}'"]`);
+            const card = btn ? btn.closest('.product-card') : null;
             const img = card ? card.querySelector('img') : null;
-            if(img) flyToCart(img);
+            if (img) flyToCart(img);
 
-            const existingItem = cart.find(item => item.id === productId);
+            const existingItem = cart.find(item => String(item.id) === String(productId));
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                cart.push({ 
-                    id: productId, 
-                    name: product.name_tr, 
-                    image: product.image || 'images/bardak.png',
-                    price: price, 
-                    quantity: 1,
-                    productRaw: product 
-                });
+                cart.push({ id: String(productId), name, image, price, quantity: 1 });
             }
-            
-            // --- PACKAGE SUGGESTION LOGIC ---
-            if (!window.packageOffered) { 
-                try {
-                    const res = await fetch('/api/packages');
-                    const packages = await res.json();
-                    const relevantPkg = packages.find(pkg => (pkg.items||"").split(',').some(id => id.trim() == productId));
-                    if (relevantPkg) {
-                        window.packageOffered = true;
-                        setTimeout(() => {
-                            if (confirm(`💍 Bu ürün ${relevantPkg.name} içinde de bulunuyor! \n\nPaket olarak alırsanız %${relevantPkg.discount} daha ucuza gelir. Paketi incelemek ister misiniz?`)) {
-                                document.getElementById('paketler').scrollIntoView({behavior:'smooth'});
-                            }
-                        }, 1500);
-                    }
-                } catch(e){}
-            }
+            saveCart();
+            updateCartDisplay();
 
-            setTimeout(() => { updateCartDisplay(); }, 800);
-            updateCartDisplay(); 
+            // Paket önerisi (yüklü paket listesinden, API çağrısı olmadan)
+            if (!window.packageOffered && window._allPackages && window._allPackages.length > 0) {
+                const relevantPkg = window._allPackages.find(pkg =>
+                    (pkg.items || '').split(',').some(id => id.trim() === String(productId))
+                );
+                if (relevantPkg) {
+                    window.packageOffered = true;
+                    setTimeout(() => {
+                        if (confirm(`Bu ürün "${relevantPkg.name}" paketinde de bulunuyor!\n%${relevantPkg.discount || 0} daha ucuz. Paketi görmek ister misiniz?`)) {
+                            document.getElementById('paketler')?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 1500);
+                }
+            }
         }
 
 
@@ -951,15 +901,13 @@
             updateOnCardPrice(pkgId);
         }
 
-        async function updateOnCardPrice(pkgId) {
+        function updateOnCardPrice(pkgId) {
             try {
-                const res = await fetch('/api/packages');
-                const packages = await res.json();
-                const pkg = packages.find(p => p.id == pkgId);
+                const packages = window._allPackages || [];
+                const pkg = packages.find(p => String(p.id) == String(pkgId));
                 if (!pkg) return;
 
-                const prodRes = await fetch('/api/products');
-                const products = await prodRes.json();
+                const products = _allProducts;
                 const itemIds = (pkg.items || "").split(',').map(id => id.trim());
 
                 let subTotal = 0;
@@ -986,15 +934,13 @@
             }
         }
 
-        async function addPackageToCart(packageId) {
+        function addPackageToCart(packageId) {
             try {
-                const res = await fetch('/api/packages');
-                const packages = await res.json();
-                const pkg = packages.find(p => p.id == packageId);
+                const packages = window._allPackages || [];
+                const pkg = packages.find(p => String(p.id) === String(packageId));
                 if (!pkg) return;
 
-                const prodRes = await fetch('/api/products');
-                const products = await prodRes.json();
+                const products = _allProducts;
                 const itemIds = (pkg.items || "").split(',').map(id => id.trim());
                 
                 const packageItems = [];
@@ -1011,12 +957,11 @@
                 const img = card ? card.querySelector('img') : null;
                 if(img) flyToCart(img);
 
-                const existingIndex = cart.findIndex(x => x.id === pkg.id);
+                const existingIndex = cart.findIndex(x => String(x.id) === String(pkg.id));
                 const isSuper = pkg.name.toLowerCase().includes('süper');
 
-                if(existingIndex > -1) {
-                    if(isSuper) {
-                        // Limit to 1, update contents instead
+                if (existingIndex > -1) {
+                    if (isSuper) {
                         cart[existingIndex].packageItems = packageItems;
                         cart[existingIndex].quantity = 1;
                     } else {
@@ -1024,22 +969,21 @@
                     }
                 } else {
                     cart.push({
-                        id: pkg.id,
+                        id: String(pkg.id),
                         name: pkg.name,
                         image: pkg.image || 'images/box.png',
                         discount: pkg.discount || 0,
                         quantity: 1,
                         isPackage: true,
-                        packageItems: packageItems
+                        packageItems
                     });
                 }
-                
+                saveCart();
                 setTimeout(() => {
                     updateCartDisplay();
-                    cartModal.style.display = 'block';
                     document.body.classList.add('cart-open');
                 }, 800);
-            } catch (e) { console.error("Could not add package", e); }
+            } catch (e) { console.error("Paket sepete eklenemedi:", e); }
         }
 
         function updateSubItemQuantity(pkgId, subId, delta) {
@@ -1274,17 +1218,16 @@
             
             if(openCartBtn) {
                 openCartBtn.addEventListener('click', () => {
-                    cartModal.style.display = 'block';
+                    document.body.classList.add('cart-open');
                     updateCartDisplay();
-                });
-            }
-            if(closeCartBtn) {
-                closeCartBtn.addEventListener('click', () => {
-                    cartModal.style.display = 'none';
+                    // Güncel ayarları çek (sessizce, arka planda)
+                    fetch('/api/settings', { cache: 'no-store' })
+                        .then(r => r.json())
+                        .then(s => { localStorage.setItem('settings', JSON.stringify(s)); updateCartDisplay(); })
+                        .catch(() => {});
                 });
             }
             window.addEventListener('click', (e) => {
-                if (e.target == cartModal) cartModal.style.display = 'none';
                 const pModal = document.getElementById('product-detail-modal');
                 if (e.target == pModal) pModal.style.display = 'none';
             });
@@ -1307,10 +1250,8 @@
             return stars;
         }
 
-        async function openProductDetail(id) {
-            const response = await fetch('/api/products');
-            const products = await response.json();
-            const p = products.find(prod => prod.id == id);
+        function openProductDetail(id) {
+            const p = _allProducts.find(prod => String(prod.id) === String(id));
             if (!p) return;
 
             const isEn = localStorage.getItem('lang') === 'en';

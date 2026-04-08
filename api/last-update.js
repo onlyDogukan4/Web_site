@@ -1,36 +1,21 @@
+import { readData, writeData } from './_db.js';
+
 export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
-    const url = 'https://prime-monitor-83024.upstash.io';
-    const token = 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
+    if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
-    if (!url || !token) {
-        if (req.method === 'POST') return res.status(200).json({ success: true });
-        return res.status(200).json({ time: 'Henüz güncellenmedi' });
+    if (req.method === 'GET') {
+        const data = readData('last-update', { time: 'Henüz güncellenmedi' });
+        return res.status(200).json(data);
     }
 
-    try {
-        if (req.method === 'POST') {
-            const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            await fetch(`${url}/pipeline`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify([['SET', 'last_update', JSON.stringify(data)]])
-            });
-            return res.status(200).json({ success: true });
-        } else {
-            const response = await fetch(`${url}/get/last_update`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const body = await response.json();
-            let data = body.result;
-            if (typeof data === 'string') {
-                try { data = JSON.parse(data); } catch (e) { }
-            }
-            return res.status(200).json(data || { time: 'Henüz güncellenmedi' });
-        }
-    } catch (e) {
-        if (req.method === 'POST') return res.status(200).json({ success: true });
-        return res.status(200).json({ time: 'Henüz güncellenmedi' });
+    if (req.method === 'POST') {
+        const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+        writeData('last-update', body);
+        return res.status(200).json({ success: true });
     }
+
+    return res.status(405).json({ error: 'Method not allowed' });
 }

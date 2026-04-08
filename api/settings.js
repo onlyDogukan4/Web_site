@@ -1,44 +1,22 @@
-async function kvGet(key) {
-    const url = 'https://prime-monitor-83024.upstash.io';
-    const token = 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
-    if (!url || !token) return null;
-    try {
-        const res = await fetch(`${url}/get/${key}`, { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (!data.result) return null;
-        return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
-    } catch { return null; }
-}
+import { readData, writeData, corsHeaders } from './_db.js';
 
-async function kvSet(key, value) {
-    const url = 'https://prime-monitor-83024.upstash.io';
-    const token = 'gQAAAAAAAURQAAIncDE5OGU4MzFhZjBlZWQ0ZDRkYTNlMWI3NGFlY2Y4NGUwOHAxODMwMjQ';
-    if (!url || !token) return;
-    try {
-        await fetch(`${url}/pipeline`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify([['SET', key, JSON.stringify(value)]])
-        });
-    } catch { }
-}
+const DEFAULTS = { minOrder: 500, freeShipping: 1000 };
 
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    corsHeaders(res);
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 
     if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
-    if (req.method === 'POST') {
-        await kvSet('settings', req.body);
-        return res.status(200).json({ success: true });
-    }
     if (req.method === 'GET') {
-        const data = await kvGet('settings');
-        return res.status(200).json(data || { minOrder: 500, freeShipping: 1000 });
+        const data = readData('settings', DEFAULTS);
+        return res.status(200).json(data || DEFAULTS);
     }
+
+    if (req.method === 'POST') {
+        const ok = writeData('settings', req.body);
+        return res.status(200).json({ success: true, saved: ok });
+    }
+
     return res.status(405).json({ error: 'Method not allowed' });
 }
