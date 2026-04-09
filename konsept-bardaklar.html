@@ -988,13 +988,23 @@
             const lidVariant = section.querySelector('.lid-btn.active')?.dataset.lid || 'nolid';
             const variantKey = `${ozVariant}-${lidVariant}`;
             const variantData = (concept.variations && concept.variations[variantKey]) || null;
-            
+
+            // DOM'dan gösterilen fiyatı al (updateConceptPrice tarafından doğru hesaplanmış)
+            const priceEl = document.getElementById(`price-display-${conceptId}`);
+            const domPrice = priceEl ? parseFloat(
+                (priceEl.innerText || '').replace('₺', '').replace(/\./g, '').replace(',', '.')
+            ) : NaN;
+
             const rawPrice = variantData ? variantData.price : concept.price;
-            const price = parseFloat(rawPrice) || 15.0;
+            const dbPrice = parseFloat(rawPrice);
+            // DB fiyatı geçerliyse kullan, yoksa DOM'dan oku, o da yoksa 15.0
+            const price = (!isNaN(dbPrice) && dbPrice > 0) ? dbPrice : (!isNaN(domPrice) && domPrice > 0) ? domPrice : 15.0;
 
             const logoInput = document.getElementById(`logo-upload-${conceptId}`);
             const logoData = logoInput?._base64 || null;
             const logoName = logoInput?._filename || null;
+            const noteInput = document.getElementById(`note-${conceptId}`);
+            const noteText = noteInput ? noteInput.value : '';
 
             const modal = document.getElementById('confirm-modal');
             document.getElementById('conf-name').innerText = concept.name;
@@ -1011,7 +1021,7 @@
                     image: variantData?.img || concept.base_image,
                     price: price,
                     quantity: 1,
-                    note: note,
+                    note: noteText,
                     isConcept: true,
                     logo: logoData,
                     logoName: logoName
@@ -1047,11 +1057,22 @@
             initConcepts();
             updateCartDisplay();
             
-            // Auto refresh from server every 60 seconds
-            setInterval(() => {
-                initConcepts();
-                updateCartDisplay();
-            }, 60000);
+            // Admin değişikliklerini anlık takip et: her 8 saniyede last-update kontrol et
+            let _lastUpdateTime = null;
+            async function checkForUpdates() {
+                try {
+                    const r = await fetch('/api/last-update?t=' + Date.now());
+                    if (!r.ok) return;
+                    const d = await r.json();
+                    if (_lastUpdateTime === null) { _lastUpdateTime = d.time; return; }
+                    if (d.time !== _lastUpdateTime) {
+                        _lastUpdateTime = d.time;
+                        await initConcepts();
+                        updateCartDisplay();
+                    }
+                } catch(e) {}
+            }
+            setInterval(checkForUpdates, 8000);
 
             // Profile Modal Logic
             const pm = document.getElementById('profile-modal');

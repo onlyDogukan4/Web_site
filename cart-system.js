@@ -1,6 +1,9 @@
 // MODERRA SEPET SİSTEMİ
 
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+let cart = (JSON.parse(localStorage.getItem('cart') || '[]')).map(item => ({
+    ...item,
+    price: (isNaN(parseFloat(item.price)) || parseFloat(item.price) === null) ? 15.0 : parseFloat(item.price)
+}));
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────
 
@@ -723,6 +726,79 @@ async function payWithPayTR() {
         if (pm) pm.style.display = 'block';
         return;
     }
+
+    // ── Bilgi Onay Modalı ────────────────────────────────────────────────────
+    const confirmed = await new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.7);backdrop-filter:blur(8px);z-index:99998;display:flex;align-items:center;justify-content:center;padding:20px;';
+        overlay.innerHTML = `
+            <div style="background:white;border-radius:24px;padding:0;max-width:480px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.3);overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:24px 28px;color:white;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="width:42px;height:42px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-user-check" style="font-size:18px;"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin:0;font-size:17px;font-weight:900;">Teslimat Bilgilerini Onayla</h3>
+                            <p style="margin:3px 0 0;font-size:12px;opacity:0.8;">Bilgileriniz doğru mu kontrol edin</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:24px 28px;display:flex;flex-direction:column;gap:14px;">
+                    <div style="background:#f8fafc;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:34px;height:34px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-user" style="color:#7c3aed;font-size:14px;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Ad Soyad</div>
+                                <div style="font-size:15px;font-weight:800;color:#1e293b;">${userData.name}</div>
+                            </div>
+                        </div>
+                        <div style="height:1px;background:#e2e8f0;"></div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:34px;height:34px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-phone" style="color:#7c3aed;font-size:14px;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Telefon</div>
+                                <div style="font-size:15px;font-weight:800;color:#1e293b;">${userData.phone}</div>
+                            </div>
+                        </div>
+                        <div style="height:1px;background:#e2e8f0;"></div>
+                        <div style="display:flex;align-items:flex-start;gap:12px;">
+                            <div style="width:34px;height:34px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+                                <i class="fas fa-map-marker-alt" style="color:#7c3aed;font-size:14px;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Teslimat Adresi</div>
+                                <div style="font-size:14px;font-weight:700;color:#1e293b;line-height:1.4;">${userData.address}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin:0;font-size:11px;color:#64748b;text-align:center;">Bilgileri değiştirmek istiyorsanız aşağıdaki butona tıklayın.</p>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <button id="conf-edit-btn" style="padding:14px;border-radius:12px;border:2px solid #e2e8f0;background:white;cursor:pointer;font-weight:700;font-size:14px;color:#64748b;transition:all 0.2s;" onmouseover="this.style.borderColor='#4f46e5';this.style.color='#4f46e5'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#64748b'">
+                            <i class="fas fa-edit"></i> Düzenle
+                        </button>
+                        <button id="conf-ok-btn" style="padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#4f46e5,#7c3aed);cursor:pointer;font-weight:900;font-size:14px;color:white;box-shadow:0 4px 15px rgba(79,70,229,0.4);transition:all 0.2s;">
+                            <i class="fas fa-check"></i> Onayla ve Öde
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.getElementById('conf-ok-btn').onclick = () => { overlay.remove(); resolve(true); };
+        document.getElementById('conf-edit-btn').onclick = () => {
+            overlay.remove();
+            const pm = document.getElementById('profile-modal');
+            if (pm) pm.style.display = 'block';
+            resolve(false);
+        };
+        overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(false); } });
+    });
+    if (!confirmed) return;
 
     const btn = document.querySelector('button[onclick="payWithPayTR()"]');
     const originalContent = btn.innerHTML;

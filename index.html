@@ -321,7 +321,23 @@
         await loadData();
         renderProducts();
         renderPackages();
-        setInterval(async () => { await loadData(); renderProducts(); renderPackages(); }, 60000);
+        // Admin değişikliklerini anlık takip et: her 8 saniyede last-update kontrol et
+        let _lastUpdateTime = null;
+        async function checkForUpdates() {
+            try {
+                const r = await fetch('/api/last-update?t=' + Date.now());
+                if (!r.ok) return;
+                const d = await r.json();
+                if (_lastUpdateTime === null) { _lastUpdateTime = d.time; return; }
+                if (d.time !== _lastUpdateTime) {
+                    _lastUpdateTime = d.time;
+                    await loadData();
+                    renderProducts();
+                    renderPackages();
+                }
+            } catch(e) {}
+        }
+        setInterval(checkForUpdates, 8000);
     });
 
     // ── Veri Yükleme ─────────────────────────────────
