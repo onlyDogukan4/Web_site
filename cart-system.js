@@ -470,9 +470,6 @@ function _renderSummary(subTotal, discountTotal, total) {
                     <i class="fas fa-credit-card" style="font-size:20px;"></i> KREDİ KARTI
                 </button>
             </div>
-            <button onclick="showInstallmentTable()" style="width:100%; margin-top:10px; padding:12px; border-radius:12px; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); color:#4f46e5; cursor:pointer; font-size:12px; font-weight:700; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <i class="fas fa-table-list"></i> Taksit Seçeneklerini Gör
-            </button>
 `;
 }
 
@@ -745,25 +742,59 @@ async function payWithPayTR() {
 
         const data = await response.json();
         if (data.token) {
-            // PayTR İframe Modal Oluştur
+            // PayTR İframe + Taksit Tablosu Modal Oluştur
             let modal = document.getElementById('paytr-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'paytr-modal';
-                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:10px;';
-                modal.innerHTML = `
-                    <div style="width:100%;max-width:800px;background:white;border-radius:24px;overflow:hidden;position:relative;height:90vh;display:flex;flex-direction:column;">
-                        <div style="padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;">
-                            <h3 style="margin:0;color:#1e293b;"><i class="fas fa-lock" style="color:#10b981;"></i> Güvenli Ödeme</h3>
-                            <button onclick="document.getElementById('paytr-modal').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;">&times;</button>
+            if (modal) modal.remove();
+
+            modal = document.createElement('div');
+            modal.id = 'paytr-modal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(15px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:10px;';
+            modal.innerHTML = `
+                <div style="width:100%;max-width:1100px;background:white;border-radius:24px;overflow:hidden;position:relative;height:95vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+                    <div style="padding:20px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;background:#fff;">
+                        <div>
+                            <h3 style="margin:0;color:#1e293b;font-size:18px;font-weight:900;"><i class="fas fa-shield-halved" style="color:#10b981;"></i> Güvenli Ödeme Sayfası</h3>
+                            <p style="margin:5px 0 0 0;font-size:12px;color:#64748b;">Toplam Ödeme: ₺${total.toLocaleString('tr-TR')}</p>
                         </div>
-                        <div id="paytr-iframe-container" style="flex:1;">
+                        <button onclick="document.getElementById('paytr-modal').remove()" style="background:#f1f5f9;border:none;width:40px;height:40px;border-radius:20px;font-size:24px;cursor:pointer;color:#94a3b8;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">&times;</button>
+                    </div>
+                    
+                    <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;background:#f8fafc;">
+                        <!-- Taksit Tablosu Bilgilendirme -->
+                        <div style="padding:20px;background:white;margin:15px;border-radius:15px;border:1px solid #e2e8f0;">
+                            <p style="margin:0 0 15px 0;font-size:13px;font-weight:700;color:#1e293b;"><i class="fas fa-credit-card"></i> Bankalara Göre Taksit İmkanları (Bilgi Amaçlıdır)</p>
+                            <div id="paytr_taksit_tablosu"></div>
+                        </div>
+
+                        <!-- PayTR iFrame -->
+                        <div id="paytr-iframe-container" style="flex:0 0 700px;margin:0 15px 15px 15px;border-radius:15px;overflow:hidden;border:1px solid #e2e8f0;background:white;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
                              <iframe src="https://www.paytr.com/odeme/guvenli/${data.token}" id="paytr-iframe" style="width:100%;height:100%;border:none;"></iframe>
                         </div>
                     </div>
-                `;
-                document.body.appendChild(modal);
-            }
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Taksit Tablosu Script & Style Enjeksiyonu
+            const style = document.createElement('style');
+            style.innerHTML = `
+                #paytr_taksit_tablosu{clear: both;font-size: 11px;width: 100%;text-align: center;font-family: inherit;}
+                .taksit-tablosu-wrapper{margin: 5px;width: auto;min-width:160px;padding: 10px;cursor: default;text-align: center;display: inline-block;border: 1px solid #f1f5f9;border-radius:10px;background:#fff;}
+                .taksit-logo img{max-height: 20px;padding-bottom: 8px;}
+                .taksit-tutari-text{float: left;width: 50%;color: #94a3b8;margin-bottom: 5px;font-size:9px;text-align:left;}
+                .taksit-tutar-wrapper{display: block;background-color: #f8fafc;border-radius:6px;border:1px solid #f1f5f9;overflow:hidden;}
+                .taksit-tutari{float: left;width: 50%;padding: 6px 0;color: #334155;border: 1px solid #f1f5f9;font-size:11px;}
+                .taksit-tutari-bold{font-weight: bold;color:#4f46e5;}
+                @media all and (max-width: 600px) {.taksit-tablosu-wrapper {margin: 5px 0; display:block; width:100%;}}
+            `;
+            document.head.appendChild(style);
+
+            const script = document.createElement('script');
+            const tt_token = 'e980c8427df5c612465f3cd69d3cf703cdfe0b98f3df0fed04b919a2605b01c0';
+            // tumu=1 yapıldı (Tüm seçenekleri göstermek için)
+            script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=${tt_token}&merchant_id=678000&amount=${total}&taksit=0&tumu=1`;
+            document.body.appendChild(script);
+
             // Sipariş ID sakla
             localStorage.setItem('last_order_id', data.orderId);
         } else {
