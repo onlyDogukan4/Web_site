@@ -238,10 +238,10 @@
         btn.innerHTML = '<span class="spinner"></span> Hazırlanıyor...';
 
         try {
-            const res  = await fetch('/api/payment-link-token', {
+            const res  = await fetch('/api/payment-requests', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ requestId: reqId })
+                body:    JSON.stringify({ action: 'get-token', requestId: reqId })
             });
             const data = await res.json();
 

@@ -8,13 +8,19 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
+    // ?type=last-update → last-update collection'ını yönet
+    const isLastUpdate = req.query?.type === 'last-update';
+    const collection   = isLastUpdate ? 'last-update' : 'settings';
+    const fallback     = isLastUpdate ? { time: 'Henüz güncellenmedi' } : DEFAULTS;
+
     if (req.method === 'GET') {
-        const data = await readData('settings', DEFAULTS);
-        return res.status(200).json(data || DEFAULTS);
+        const data = await readData(collection, fallback);
+        return res.status(200).json(data || fallback);
     }
 
     if (req.method === 'POST') {
-        const ok = await writeData('settings', req.body);
+        const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+        const ok   = await writeData(collection, body);
         return res.status(200).json({ success: true, saved: ok });
     }
 

@@ -1082,7 +1082,7 @@
             let _lastUpdateTime = null;
             async function checkForUpdates() {
                 try {
-                    const r = await fetch('/api/last-update?t=' + Date.now());
+                    const r = await fetch('/api/settings?type=last-update&t=' + Date.now());
                     if (!r.ok) return;
                     const d = await r.json();
                     if (_lastUpdateTime === null) { _lastUpdateTime = d.time; return; }

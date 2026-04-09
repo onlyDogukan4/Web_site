@@ -1490,7 +1490,7 @@
                 
                 if (res.ok) {
                     // last-update güncelle → site anlık yenilensin
-                    await fetch('/api/last-update', {
+                    await fetch('/api/settings?type=last-update', {
                         method: 'POST',
                         body: JSON.stringify({ time: new Date().toLocaleString('tr-TR') }),
                         headers: { 'Content-Type': 'application/json' }
@@ -1611,7 +1611,7 @@
                 if (type === 'all' || type === 'packages') { 
                     requests.push(fetch('/api/packages', {method:'POST', body:JSON.stringify(packages), headers:{'Content-Type':'application/json'}}));
                 }
-                requests.push(fetch('/api/last-update', {method:'POST', body:JSON.stringify({time:new Date().toLocaleString('tr-TR')}), headers:{'Content-Type':'application/json'}}));
+                requests.push(fetch('/api/settings?type=last-update', {method:'POST', body:JSON.stringify({time:new Date().toLocaleString('tr-TR')}), headers:{'Content-Type':'application/json'}}));
 
                 const results = await Promise.all(requests);
                 
