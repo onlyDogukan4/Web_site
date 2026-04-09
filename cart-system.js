@@ -748,67 +748,112 @@ async function payWithPayTR() {
 
             modal = document.createElement('div');
             modal.id = 'paytr-modal';
-            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(15px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:10px;';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.9);backdrop-filter:blur(20px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:10px;';
             modal.innerHTML = `
-                <div style="width:100%;max-width:1100px;background:white;border-radius:24px;overflow:hidden;position:relative;height:95vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
-                    <div style="padding:20px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;background:#fff;">
-                        <div>
-                            <h3 style="margin:0;color:#1e293b;font-size:18px;font-weight:900;"><i class="fas fa-shield-halved" style="color:#10b981;"></i> Güvenli Ödeme Sayfası</h3>
-                            <p style="margin:5px 0 0 0;font-size:12px;color:#64748b;">Toplam Ödeme: ₺${total.toLocaleString('tr-TR')}</p>
+                <div style="width:100%;max-width:1200px;background:#f8fafc;border-radius:28px;overflow:hidden;position:relative;height:95vh;display:flex;flex-direction:column;box-shadow:0 40px 80px -12px rgba(0,0,0,0.7);">
+
+                    <!-- Header -->
+                    <div style="padding:18px 28px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1e293b 0%,#334155 100%);flex-shrink:0;">
+                        <div style="display:flex;align-items:center;gap:14px;">
+                            <div style="width:44px;height:44px;background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.5);border-radius:14px;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-shield-halved" style="color:#10b981;font-size:20px;"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin:0;color:white;font-size:17px;font-weight:900;letter-spacing:-0.3px;">Güvenli Ödeme</h3>
+                                <p style="margin:3px 0 0 0;font-size:11px;color:#94a3b8;"><i class="fas fa-lock" style="font-size:9px;"></i> 256-bit SSL ile şifreleniyor</p>
+                            </div>
                         </div>
-                        <button onclick="document.getElementById('paytr-modal').remove()" style="background:#f1f5f9;border:none;width:40px;height:40px;border-radius:20px;font-size:24px;cursor:pointer;color:#94a3b8;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">&times;</button>
+                        <div style="display:flex;align-items:center;gap:20px;">
+                            <div style="text-align:right;">
+                                <p style="margin:0;font-size:11px;color:#64748b;">Toplam Tutar</p>
+                                <p style="margin:2px 0 0 0;font-size:22px;font-weight:900;color:#10b981;">₺${total.toLocaleString('tr-TR')}</p>
+                            </div>
+                            <button onclick="document.getElementById('paytr-modal').remove()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);width:38px;height:38px;border-radius:50%;font-size:22px;cursor:pointer;color:#94a3b8;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">&times;</button>
+                        </div>
                     </div>
-                    
-                    <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;background:#f8fafc;">
-                        <!-- Hızlı Test Kartları (Yeni Bölüm) -->
-                        <div style="padding:15px; background:#eff6ff; margin:15px; border-radius:15px; border:1px solid #bfdbfe; display:flex; flex-direction:column; gap:8px;">
-                            <p style="margin:0; font-size:12px; font-weight:700; color:#1e40af;"><i class="fas fa-flask"></i> TEST MODU: Taksitleri görmek için aşağıdaki kart numaralarını kullanın:</p>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                <div onclick="navigator.clipboard.writeText('4506000000000001'); alert('World Kart kopyalandı!')" style="background:white; padding:6px 10px; border-radius:8px; font-size:11px; cursor:pointer; border:1px solid #dbeafe; transition:all 0.2s;">
-                                    <b>World:</b> 4506 0000 0000 0001 <i class="far fa-copy" style="margin-left:5px;"></i>
+
+                    <!-- Body: İki Sütun -->
+                    <div style="flex:1;display:flex;overflow:hidden;">
+
+                        <!-- Sol Panel: Bilgi + Taksit Tablosu -->
+                        <div style="width:360px;flex-shrink:0;background:#f1f5f9;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow-y:auto;">
+
+                            <!-- Test Kartları -->
+                            <div style="margin:16px 16px 0 16px;background:linear-gradient(135deg,#dbeafe,#ede9fe);border-radius:16px;border:1px solid #c7d2fe;overflow:hidden;">
+                                <div style="padding:12px 14px;background:rgba(99,102,241,0.1);border-bottom:1px solid #c7d2fe;">
+                                    <p style="margin:0;font-size:11px;font-weight:800;color:#4338ca;text-transform:uppercase;letter-spacing:0.8px;">
+                                        <i class="fas fa-flask"></i> Test Modu — Taksit Denemek İçin
+                                    </p>
+                                    <p style="margin:4px 0 0 0;font-size:10px;color:#6366f1;">Kart numarasını silip aşağıdakini girin → Taksitler görünür</p>
                                 </div>
-                                <div onclick="navigator.clipboard.writeText('4444444444444444'); alert('Maximum Kart kopyalandı!')" style="background:white; padding:6px 10px; border-radius:8px; font-size:11px; cursor:pointer; border:1px solid #dbeafe; transition:all 0.2s;">
-                                    <b>Maximum:</b> 4444 4444 4444 4444 <i class="far fa-copy" style="margin-left:5px;"></i>
+                                <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px;">
+                                    <div onclick="(function(){navigator.clipboard.writeText('4506000000000001');var el=event.currentTarget;el.style.background='#d1fae5';setTimeout(()=>el.style.background='white',1500);})()" style="background:white;padding:9px 12px;border-radius:10px;font-size:11px;cursor:pointer;border:1px solid #e0e7ff;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(99,102,241,0.2)'" onmouseout="this.style.boxShadow='none'">
+                                        <div><span style="color:#64748b;font-size:9px;display:block;">YKB · World · 3-12 Taksit</span><b style="color:#1e293b;">4506 0000 0000 0001</b></div>
+                                        <i class="far fa-copy" style="color:#6366f1;"></i>
+                                    </div>
+                                    <div onclick="(function(){navigator.clipboard.writeText('4444444444444444');var el=event.currentTarget;el.style.background='#d1fae5';setTimeout(()=>el.style.background='white',1500);})()" style="background:white;padding:9px 12px;border-radius:10px;font-size:11px;cursor:pointer;border:1px solid #e0e7ff;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(99,102,241,0.2)'" onmouseout="this.style.boxShadow='none'">
+                                        <div><span style="color:#64748b;font-size:9px;display:block;">İş Bankası · Maximum · 3-12 Taksit</span><b style="color:#1e293b;">4444 4444 4444 4444</b></div>
+                                        <i class="far fa-copy" style="color:#6366f1;"></i>
+                                    </div>
+                                    <div onclick="(function(){navigator.clipboard.writeText('5400000000000002');var el=event.currentTarget;el.style.background='#d1fae5';setTimeout(()=>el.style.background='white',1500);})()" style="background:white;padding:9px 12px;border-radius:10px;font-size:11px;cursor:pointer;border:1px solid #e0e7ff;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(99,102,241,0.2)'" onmouseout="this.style.boxShadow='none'">
+                                        <div><span style="color:#64748b;font-size:9px;display:block;">Garanti · Bonus · 3-12 Taksit</span><b style="color:#1e293b;">5400 0000 0000 0002</b></div>
+                                        <i class="far fa-copy" style="color:#6366f1;"></i>
+                                    </div>
+                                    <p style="margin:2px 0 0 0;font-size:10px;color:#6366f1;text-align:center;"><i class="fas fa-calendar-alt"></i> Son tarih: 12/99 &nbsp;|&nbsp; CVV: 000</p>
                                 </div>
-                                <div onclick="navigator.clipboard.writeText('5400000000000002'); alert('Bonus Kart kopyalandı!')" style="background:white; padding:6px 10px; border-radius:8px; font-size:11px; cursor:pointer; border:1px solid #dbeafe; transition:all 0.2s;">
-                                    <b>Bonus:</b> 5400 0000 0000 0002 <i class="far fa-copy" style="margin-left:5px;"></i>
+                            </div>
+
+                            <!-- Taksit Tablosu -->
+                            <div style="margin:12px 16px 0 16px;background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
+                                <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;background:linear-gradient(135deg,#f8fafc,#f1f5f9);">
+                                    <p style="margin:0;font-size:11px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.8px;">
+                                        <i class="fas fa-credit-card" style="color:#6366f1;"></i> Taksit Seçenekleri
+                                    </p>
+                                </div>
+                                <div style="padding:12px 10px;">
+                                    <div id="paytr_taksit_tablosu"></div>
+                                </div>
+                            </div>
+
+                            <!-- Güvenlik -->
+                            <div style="margin:12px 16px 16px 16px;background:white;border-radius:16px;border:1px solid #e2e8f0;padding:14px;">
+                                <div style="display:flex;gap:10px;align-items:flex-start;">
+                                    <i class="fas fa-shield-check" style="color:#10b981;font-size:18px;margin-top:1px;"></i>
+                                    <div>
+                                        <p style="margin:0 0 4px 0;font-size:11px;font-weight:800;color:#1e293b;">%100 Güvenli Ödeme</p>
+                                        <p style="margin:0;font-size:10px;color:#64748b;line-height:1.5;">Kart bilgileriniz PayTR güvencesiyle şifrelenir. Verileriniz tarafımızca saklanmaz.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Taksit Tablosu Bilgilendirme -->
-                        <div style="padding:20px;background:white;margin:0 15px 15px 15px;border-radius:15px;border:1px solid #e2e8f0;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
-                            <p style="margin:0 0 15px 0;font-size:13px;font-weight:700;color:#1e293b;"><i class="fas fa-credit-card"></i> Bankalara Göre Taksit İmkanları</p>
-                            <div id="paytr_taksit_tablosu"></div>
-                        </div>
-
-                        <!-- PayTR iFrame -->
-                        <div id="paytr-iframe-container" style="flex:0 0 700px;margin:0 15px 15px 15px;border-radius:15px;overflow:hidden;border:1px solid #e2e8f0;background:white;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
-                             <iframe src="https://www.paytr.com/odeme/guvenli/${data.token}" id="paytr-iframe" style="width:100%;height:100%;border:none;"></iframe>
+                        <!-- Sağ Panel: PayTR iFrame -->
+                        <div style="flex:1;display:flex;flex-direction:column;background:white;">
+                            <iframe src="https://www.paytr.com/odeme/guvenli/${data.token}" id="paytr-iframe" style="width:100%;flex:1;border:none;display:block;"></iframe>
                         </div>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
 
-            // Taksit Tablosu Script & Style Enjeksiyonu
+            // Taksit Tablosu CSS
             const style = document.createElement('style');
             style.innerHTML = `
-                #paytr_taksit_tablosu{clear: both;font-size: 11px;width: 100%;text-align: center;font-family: inherit;}
-                .taksit-tablosu-wrapper{margin: 5px;width: auto;min-width:160px;padding: 10px;cursor: default;text-align: center;display: inline-block;border: 1px solid #f1f5f9;border-radius:10px;background:#fff;}
-                .taksit-logo img{max-height: 20px;padding-bottom: 8px;}
-                .taksit-tutari-text{float: left;width: 50%;color: #94a3b8;margin-bottom: 5px;font-size:9px;text-align:left;}
-                .taksit-tutar-wrapper{display: block;background-color: #f8fafc;border-radius:6px;border:1px solid #f1f5f9;overflow:hidden;}
-                .taksit-tutari{float: left;width: 50%;padding: 6px 0;color: #334155;border: 1px solid #f1f5f9;font-size:11px;}
-                .taksit-tutari-bold{font-weight: bold;color:#4f46e5;}
-                @media all and (max-width: 600px) {.taksit-tablosu-wrapper {margin: 5px 0; display:block; width:100%;}}
+                #paytr_taksit_tablosu{clear:both;font-size:10px;width:100%;text-align:center;font-family:inherit;}
+                .taksit-tablosu-wrapper{margin:4px;padding:8px 6px;cursor:default;text-align:center;display:inline-block;border:1px solid #f1f5f9;border-radius:10px;background:#fafafa;width:calc(50% - 12px);box-sizing:border-box;vertical-align:top;}
+                .taksit-logo img{max-height:18px;padding-bottom:6px;}
+                .taksit-tutari-text{float:left;width:50%;color:#94a3b8;margin-bottom:4px;font-size:9px;text-align:left;padding-left:2px;}
+                .taksit-tutar-wrapper{display:block;background:#f8fafc;border-radius:6px;border:1px solid #f1f5f9;overflow:hidden;clear:both;}
+                .taksit-tutari{float:left;width:50%;padding:5px 0;color:#334155;border:1px solid #f1f5f9;font-size:10px;}
+                .taksit-tutari-bold{font-weight:900;color:#4f46e5;}
+                @media(max-width:600px){.taksit-tablosu-wrapper{width:100%;display:block;margin:4px 0;}}
             `;
             document.head.appendChild(style);
 
+            // Taksit Tablosu Script — taksit=12, tumu=1 (tüm seçenekler)
             const script = document.createElement('script');
             const tt_token = 'e980c8427df5c612465f3cd69d3cf703cdfe0b98f3df0fed04b919a2605b01c0';
-            // taksit=5 (maksimum 5 taksit gösterir), tumu=0 (karışık ve avantajlı olanları gösterir)
-            script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=${tt_token}&merchant_id=678000&amount=${total}&taksit=5&tumu=0`;
+            script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=${tt_token}&merchant_id=678000&amount=${total}&taksit=12&tumu=1`;
             document.body.appendChild(script);
 
             // Sipariş ID sakla
