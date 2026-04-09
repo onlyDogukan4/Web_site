@@ -895,8 +895,11 @@
             const variantKey = `${size}-${lid}`;
             const variant = (concept.variations && concept.variations[variantKey]) || {};
             
-            const rawPrice = variant.price || concept.price || 15.0;
-            const cleanPrice = parseFloat(rawPrice) || 0;
+            const variantPrice  = parseFloat(variant.price);
+            const conceptPrice  = parseFloat(concept.price);
+            const cleanPrice    = (variantPrice  > 0) ? variantPrice
+                                : (conceptPrice  > 0) ? conceptPrice
+                                : 15.0;
             const stock = variant.stock === undefined ? 999 : variant.stock;
 
             const priceEl = document.getElementById(`price-display-${conceptId}`);
@@ -989,16 +992,17 @@
             const variantKey = `${ozVariant}-${lidVariant}`;
             const variantData = (concept.variations && concept.variations[variantKey]) || null;
 
-            // DOM'dan gösterilen fiyatı al (updateConceptPrice tarafından doğru hesaplanmış)
-            const priceEl = document.getElementById(`price-display-${conceptId}`);
-            const domPrice = priceEl ? parseFloat(
+            // Fiyat önceliği: varyasyon fiyatı > konsept varsayılan fiyatı > DOM > 15
+            const varPrice     = variantData ? parseFloat(variantData.price) : 0;
+            const conceptPrice = parseFloat(concept.price);
+            const priceEl      = document.getElementById(`price-display-${conceptId}`);
+            const domPrice     = priceEl ? parseFloat(
                 (priceEl.innerText || '').replace('₺', '').replace(/\./g, '').replace(',', '.')
-            ) : NaN;
-
-            const rawPrice = variantData ? variantData.price : concept.price;
-            const dbPrice = parseFloat(rawPrice);
-            // DB fiyatı geçerliyse kullan, yoksa DOM'dan oku, o da yoksa 15.0
-            const price = (!isNaN(dbPrice) && dbPrice > 0) ? dbPrice : (!isNaN(domPrice) && domPrice > 0) ? domPrice : 15.0;
+            ) : 0;
+            const price = (varPrice     > 0) ? varPrice
+                        : (conceptPrice > 0) ? conceptPrice
+                        : (domPrice     > 0) ? domPrice
+                        : 15.0;
 
             const logoInput = document.getElementById(`logo-upload-${conceptId}`);
             const logoData = logoInput?._base64 || null;
@@ -1056,7 +1060,7 @@
 
         // Initialize Call
         document.addEventListener('DOMContentLoaded', () => {
-            initConcepts();
+            initConcepts().then(() => syncConceptCartPrices());
             updateCartDisplay();
             
             // ── Sepetteki konsept fiyatlarını güncelle ──────────────────────
@@ -1066,9 +1070,12 @@
                     if (!item.isConcept || !item.conceptId || !item.variantKey) return item;
                     const concept = concepts.find(c => String(c.id) === item.conceptId);
                     if (!concept) return item;
-                    const variant = concept.variations?.[item.variantKey] || {};
-                    const rawPrice = variant.price || concept.price || 15.0;
-                    const newPrice = parseFloat(rawPrice) || 15.0;
+                    const variant      = concept.variations?.[item.variantKey] || {};
+                    const variantPrice = parseFloat(variant.price);
+                    const conceptPrice = parseFloat(concept.price);
+                    const newPrice     = (variantPrice > 0) ? variantPrice
+                                      : (conceptPrice > 0) ? conceptPrice
+                                      : 15.0;
                     if (newPrice !== parseFloat(item.price)) {
                         changed = true;
                         return { ...item, price: newPrice };

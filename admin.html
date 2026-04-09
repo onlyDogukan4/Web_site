@@ -1116,19 +1116,25 @@
         function renderConcepts() {
             const tbody = document.getElementById('con-table');
             if(!tbody) return;
-            tbody.innerHTML = (concepts || []).map((c, i) => `
+            tbody.innerHTML = (concepts || []).map((c, i) => {
+                // Fiyat: varsayılan > varyasyonlardan ilki > 0
+                const basePrice = parseFloat(c.price) > 0 ? parseFloat(c.price)
+                    : Object.values(c.variations || {}).map(v => parseFloat(v.price)).find(p => p > 0) || 0;
+                const priceStr = basePrice > 0 ? `₺${basePrice.toLocaleString('tr-TR',{minimumFractionDigits:2})}` : '<span style="color:#ef4444;font-weight:700;">Fiyat YOK</span>';
+                return `
                 <tr>
                     <td style="font-weight:700">
                         <i class="fas fa-circle" style="color:${c.theme_color}; margin-right:5px;"></i> ${c.name}
                     </td>
                     <td><span class="status-badge" style="background:${c.published ? '#dcfce7':'#f1f5f9'}; color:${c.published ? '#166534':'#64748b'};">${c.published ? 'YAYINDA' : 'TASLAK'}</span></td>
+                    <td style="font-weight:700;">${priceStr}</td>
                     <td style="color:var(--text-muted); font-size:12px;">${c.label_text || '-'}</td>
                     <td style="text-align:right;">
                         <button class="btn btn-secondary" style="padding:8px" onclick="openEditConcept(${i})"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-danger" style="padding:8px" onclick="deleteConcept(${i})"><i class="fas fa-trash"></i></button>
                     </td>
-                </tr>
-            `).join('');
+                </tr>`;
+            }).join('');
         }
 
         function renderPackages() {
@@ -1228,6 +1234,8 @@
             combinations.forEach(combo => {
                 const key = `${combo.sz}-${combo.ld?'lid':'nolid'}`;
                 const data = curVariantData[key] || { img: "", stock: 100, price: 15.0 };
+                // Eksik anahtarları varsayılan değerlerle başlat (kullanıcı dokunmasa bile kaydolsun)
+                if (!curVariantData[key]) curVariantData[key] = { ...data };
                 
                 const div = document.createElement('div');
                 div.className = "var-card";
