@@ -448,9 +448,16 @@ function updateCartDisplay() {
     if (checkoutBtn) checkoutBtn.style.display = 'flex';
 }
 
+function getShippingFee(productTotal) {
+    const { freeShipping } = getSettings();
+    return productTotal < freeShipping ? 150 : 0;
+}
+
 function _renderSummary(subTotal, discountTotal, total) {
     const area = document.getElementById('cart-total-price-area');
     if (!area) return;
+    const shipping  = getShippingFee(total);
+    const grandTotal = total + shipping;
     area.innerHTML = `
         <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#64748b;font-size:13px;">
             <span>Ara Toplam</span>
@@ -461,9 +468,13 @@ function _renderSummary(subTotal, discountTotal, total) {
             <span>🎁 İndirim</span>
             <span>−₺${discountTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
         </div>` : ''}
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:${shipping > 0 ? '#dc2626' : '#16a34a'};font-size:13px;font-weight:700;">
+            <span>${shipping > 0 ? '🚚 Kargo' : '🎉 Kargo (Ücretsiz)'}</span>
+            <span>${shipping > 0 ? '₺' + shipping.toLocaleString('tr-TR') : 'Ücretsiz'}</span>
+        </div>
             <div style="display:flex;justify-content:space-between;color:var(--primary);font-weight:900;font-size:18px;margin-top:10px;padding-top:10px;border-top:2px solid #f1f5f9;">
                 <span>TOPLAM</span>
-                <span style="font-weight:900;font-size:22px;color:var(--primary);">₺${total.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
+                <span style="font-weight:900;font-size:22px;color:var(--primary);">₺${grandTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
             </div>
             <div id="checkout-options" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
                 <button onclick="whatsappCheckout()" style="padding:16px; border-radius:15px; background:linear-gradient(135deg,#22c55e,#16a34a); border:none; cursor:pointer; color:white; font-size:13px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
@@ -597,6 +608,9 @@ function whatsappCheckout() {
         return;
     }
 
+    const shipping   = getShippingFee(total);
+    const grandTotal = total + shipping;
+
     let msg = '*Moderra — Yeni Sipariş*\n\n';
     cart.forEach(item => {
         const itemQty = item.quantity || 1;
@@ -609,7 +623,8 @@ function whatsappCheckout() {
         if (item.isConcept) msg += `   └ 👑 VIP Premium Özel Tasarım\n`;
         if (item.logo) msg += `   └ 🖼️ Logo yüklendi (WhatsApp üzerinden iletilecek)\n`;
     });
-    msg += `\n*💰 Toplam: ₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}*\n\n`;
+    if (shipping > 0) msg += `\n🚚 Kargo: ₺${shipping.toLocaleString('tr-TR')}\n`;
+    msg += `\n*💰 Toplam: ₺${grandTotal.toLocaleString('tr-TR', {minimumFractionDigits:2})}*\n\n`;
     msg += `👤 ${user.name}\n📞 ${user.phone}\n🏠 ${user.address}`;
 
     window.open(`https://wa.me/905304640120?text=${encodeURIComponent(msg)}`, '_blank');
@@ -719,6 +734,9 @@ async function payWithPayTR() {
         return;
     }
 
+    const shipping   = getShippingFee(total);
+    const grandTotal = total + shipping;
+
     const userData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
     if (!userData.name || !userData.phone || !userData.address) {
         alert('Lütfen ödeme için profil bilgilerinizi doldurun.');
@@ -812,7 +830,7 @@ async function payWithPayTR() {
             body: JSON.stringify({
                 cart: cart,
                 user: userData,
-                totalAmount: total
+                totalAmount: grandTotal
             })
         });
 
