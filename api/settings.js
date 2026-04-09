@@ -15,7 +15,9 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         const data = await readData(collection, fallback);
-        return res.status(200).json(data || fallback);
+        // MongoDB .toArray() döndürdüğünde array gelir, objeye çevir
+        const result = Array.isArray(data) ? (data[0] || fallback) : (data || fallback);
+        return res.status(200).json(result);
     }
 
     if (req.method === 'POST') {

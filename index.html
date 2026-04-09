@@ -11,28 +11,44 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
     <style>
-        .search-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.4); backdrop-filter: blur(30px);
-            z-index: 10000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23,1,0.32,1);
+        /* ── Arama Çubuğu ─────────────────────────────────────────────── */
+        .search-bar-sticky {
+            position: fixed; top: 70px; left: 0; width: 100%; z-index: 9998;
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transform: translateY(-110%); opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), opacity 0.35s ease;
+            pointer-events: none;
         }
-        .search-container.active { opacity: 1; visibility: visible; }
-        .search-wrapper {
-            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
-            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23,1,0.32,1);
+        [data-theme="dark"] .search-bar-sticky {
+            background: rgba(15,23,42,0.97); border-bottom-color: rgba(255,255,255,0.08);
         }
-        .search-container.active .search-wrapper { transform: scale(1); }
-        .search-wrapper input {
-            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
-            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px;
-            border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none;
+        .search-bar-sticky.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+        .search-bar-inner {
+            max-width: 1200px; margin: 0 auto; padding: 14px 30px;
+            display: flex; align-items: center; gap: 14px;
         }
-        .search-close {
-            position: absolute; top: -80px; right: 40px; font-size: 40px;
-            color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s;
+        .search-bar-icon { font-size: 18px; color: #6366f1; flex-shrink: 0; }
+        .search-bar-input {
+            flex: 1; border: none; background: transparent; outline: none;
+            font-size: 16px; font-weight: 600; color: #1e293b;
+            font-family: inherit;
         }
-        .search-close:hover { opacity: 1; transform: rotate(90deg); }
+        [data-theme="dark"] .search-bar-input { color: #f1f5f9; }
+        .search-bar-input::placeholder { color: #94a3b8; font-weight: 400; }
+        .search-bar-count {
+            font-size: 12px; font-weight: 700; color: #6366f1;
+            background: #ede9fe; padding: 4px 12px; border-radius: 20px;
+            white-space: nowrap; display: none;
+        }
+        .search-bar-close {
+            width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9;
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #64748b; transition: all 0.2s; flex-shrink: 0;
+        }
+        .search-bar-close:hover { background: #fee2e2; color: #dc2626; }
+        [data-theme="dark"] .search-bar-close { background: #334155; color: #94a3b8; }
 
         .cart-drawer {
             position: fixed; top: 0; right: 0; width: 480px; height: 100%;
@@ -68,21 +84,18 @@
     </style>
 </head>
 <body>
-    <!-- Arama -->
-    <div class="search-container" id="search-bar">
-        <div class="search-wrapper">
-            <i class="fas fa-times search-close" id="close-search"></i>
-            <input type="text" id="search-input"
-                   placeholder="Hayalinizdeki ürünü arayın..."
-                   data-tr-placeholder="Hayalinizdeki ürünü arayın..."
-                   data-en-placeholder="Search your dream product...">
-            <div style="text-align:center;margin-top:30px;color:#1e293b;font-size:14px;font-weight:700;opacity:0.6;">
-                Trend:
-                <span style="cursor:pointer;margin-left:10px;border-bottom:1px solid #1e293b"
-                      onclick="document.getElementById('search-input').value='Bardak';document.getElementById('search-input').dispatchEvent(new Event('input'))">Bardak</span>,
-                <span style="cursor:pointer;margin-left:5px;border-bottom:1px solid #1e293b"
-                      onclick="document.getElementById('search-input').value='Yeni Yıl';document.getElementById('search-input').dispatchEvent(new Event('input'))">Yeni Yıl</span>
-            </div>
+    <!-- Arama (sticky bar) -->
+    <div class="search-bar-sticky" id="search-bar">
+        <div class="search-bar-inner">
+            <i class="fas fa-search search-bar-icon"></i>
+            <input type="text" id="search-input" class="search-bar-input"
+                   placeholder="Ürün ara..."
+                   data-tr-placeholder="Ürün ara..."
+                   data-en-placeholder="Search products...">
+            <span class="search-bar-count" id="search-count"></span>
+            <button class="search-bar-close" id="close-search" title="Kapat">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
 
@@ -601,25 +614,39 @@
     function initSearch() {
         const bar   = document.getElementById('search-bar');
         const input = document.getElementById('search-input');
+        const countEl = document.getElementById('search-count');
+
+        function closeSearch() {
+            bar.classList.remove('active');
+            input.value = '';
+            if (countEl) countEl.textContent = '';
+            renderProducts();
+        }
 
         document.getElementById('open-search')?.addEventListener('click', () => {
             bar.classList.add('active');
             input.value = '';
-            setTimeout(() => input.focus(), 100);
+            if (countEl) countEl.textContent = '';
+            setTimeout(() => input.focus(), 50);
         });
 
-        document.getElementById('close-search')?.addEventListener('click', () => {
-            bar.classList.remove('active');
-            input.value = '';
-            renderProducts();
+        document.getElementById('close-search')?.addEventListener('click', closeSearch);
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && bar.classList.contains('active')) closeSearch();
         });
 
         input?.addEventListener('input', () => {
             const term = input.value.toLowerCase().trim();
-            document.querySelectorAll('.product-card').forEach(card => {
+            const cards = document.querySelectorAll('.product-card');
+            let visible = 0;
+            cards.forEach(card => {
                 const title = card.querySelector('.product-title')?.textContent.toLowerCase() || '';
-                card.style.display = (term && !title.includes(term)) ? 'none' : '';
+                const show = !term || title.includes(term);
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
             });
+            if (countEl) countEl.textContent = term ? `${visible} sonuç` : '';
         });
     }
 

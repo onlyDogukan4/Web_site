@@ -50,6 +50,19 @@ export default async function handler(req, res) {
         const idx = orders.findIndex(o => o.orderId === merchant_oid);
 
         if (idx > -1) {
+            // Zaten işlenmiş başarılı/reddedilmiş siparişleri tekrar güncelleme
+            const currentStatus = orders[idx].status;
+            if (status === 'fail' && currentStatus === 'odeme-reddedildi') {
+                // Duplicate fail callback — zaten kaydedildi, sadece OK dön
+                res.status(200).send('OK');
+                return;
+            }
+            if (status === 'fail' && (currentStatus === 'onay-bekliyor' || currentStatus === 'hazirlaniyor' || currentStatus === 'kargoda' || currentStatus === 'teslim')) {
+                // Başarılı ödeme yapılmış sipariş — fail callback'i yoksay
+                res.status(200).send('OK');
+                return;
+            }
+
             if (status === 'success') {
                 // ── Tutar güvenlik kontrolü ───────────────────────────────
                 // Ödenen tutar (kuruş) siparişin beklenen tutarıyla eşleşmeli
