@@ -2,7 +2,7 @@
 
 let cart = (JSON.parse(localStorage.getItem('cart') || '[]')).map(item => ({
     ...item,
-    price: (isNaN(parseFloat(item.price)) || parseFloat(item.price) === null) ? 15.0 : parseFloat(item.price)
+    price: (isNaN(parseFloat(item.price)) || parseFloat(item.price) <= 0) ? 15.0 : parseFloat(item.price)
 }));
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────

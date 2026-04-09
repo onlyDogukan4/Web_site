@@ -823,16 +823,8 @@
             cupImg.style.transform = `scale(${scale})`;
             cupImg.src = targetSrc;
 
-            // Update Price display if exists or create it
-            let priceEl = section.querySelector('.concept-price');
-            if(!priceEl) {
-                priceEl = document.createElement('div');
-                priceEl.className = 'concept-price';
-                priceEl.style.cssText = "font-size:36px; font-weight:900; color:var(--theme-color); margin-bottom:20px; letter-spacing:-1px;";
-                section.querySelector('.concept-details p').after(priceEl);
-            }
-            const price = variantData.price || concept.price || 15.0;
-            priceEl.innerHTML = `₺${parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
+            // updateCupVisual'dan fiyat alanını kaldırdık çünkü updateConceptPrice bunu yönetmeli.
+            // Sadece WA butonunu burada güncelliyoruz.
 
             // Update WA
             const waBtn = section.querySelector('.order-btn:not([onclick*="addToCart"])'); // Find WA btn if any
@@ -897,9 +889,14 @@
             
             const variantPrice  = parseFloat(variant.price);
             const conceptPrice  = parseFloat(concept.price);
-            const cleanPrice    = (variantPrice  > 0) ? variantPrice
-                                : (conceptPrice  > 0) ? conceptPrice
-                                : 15.0;
+            
+            // Fiyat önceliği: Varyasyon > Konsept > 15
+            let cleanPrice = 15.0;
+            if (!isNaN(variantPrice) && variantPrice > 0) {
+                cleanPrice = variantPrice;
+            } else if (!isNaN(conceptPrice) && conceptPrice > 0) {
+                cleanPrice = conceptPrice;
+            }
             const stock = variant.stock === undefined ? 999 : variant.stock;
 
             const priceEl = document.getElementById(`price-display-${conceptId}`);
@@ -997,12 +994,17 @@
             const conceptPrice = parseFloat(concept.price);
             const priceEl      = document.getElementById(`price-display-${conceptId}`);
             const domPrice     = priceEl ? parseFloat(
-                (priceEl.innerText || '').replace('₺', '').replace(/\./g, '').replace(',', '.')
+                (priceEl.innerText || '').replace(/[^0-9,.]/g, '').replace(/\./g, '').replace(',', '.')
             ) : 0;
-            const price = (varPrice     > 0) ? varPrice
-                        : (conceptPrice > 0) ? conceptPrice
-                        : (domPrice     > 0) ? domPrice
-                        : 15.0;
+            
+            let price = 15.0;
+            if (!isNaN(varPrice) && varPrice > 0) {
+                price = varPrice;
+            } else if (!isNaN(conceptPrice) && conceptPrice > 0) {
+                price = conceptPrice;
+            } else if (!isNaN(domPrice) && domPrice > 0) {
+                price = domPrice;
+            }
 
             const logoInput = document.getElementById(`logo-upload-${conceptId}`);
             const logoData = logoInput?._base64 || null;
