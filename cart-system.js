@@ -791,8 +791,8 @@ async function payWithPayTR() {
 
             const script = document.createElement('script');
             const tt_token = 'e980c8427df5c612465f3cd69d3cf703cdfe0b98f3df0fed04b919a2605b01c0';
-            // tumu=1 yapıldı (Tüm seçenekleri göstermek için)
-            script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=${tt_token}&merchant_id=678000&amount=${total}&taksit=0&tumu=1`;
+            // taksit=5 (maksimum 5 taksit gösterir), tumu=0 (karışık ve avantajlı olanları gösterir)
+            script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=${tt_token}&merchant_id=678000&amount=${total}&taksit=5&tumu=0`;
             document.body.appendChild(script);
 
             // Sipariş ID sakla
