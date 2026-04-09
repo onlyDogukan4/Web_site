@@ -51,9 +51,38 @@ export default async function handler(req, res) {
 
         if (idx > -1) {
             if (status === 'success') {
+                // ── Tutar güvenlik kontrolü ───────────────────────────────
+                // Ödenen tutar (kuruş) siparişin beklenen tutarıyla eşleşmeli
+                const expectedKurus = Math.round(parseFloat(orders[idx].totalPrice) * 100);
+                const receivedKurus = parseInt(total_amount, 10);
+                if (expectedKurus > 0 && receivedKurus < expectedKurus) {
+                    // Eksik ödeme — siparişi işaretsiz bırak, logla
+                    console.error('PayTR callback: TUTAR UYUŞMAZLIĞI', {
+                        merchant_oid,
+                        expected: expectedKurus,
+                        received: receivedKurus
+                    });
+                    orders[idx].status     = 'tutar-uyusmazligi';
+                    orders[idx].lastUpdate = new Date().toISOString();
+                    await writeData('orders', orders);
+                    res.status(200).send('OK');
+                    return;
+                }
+
                 orders[idx].status          = 'onay-bekliyor'; // Admin onayına düşer
                 orders[idx].paymentType     = payment_type     || '';
                 orders[idx].installments    = installment_count || '1';
+
+                // Eğer bu bir manuel ödeme linki ise, payment-request'i güncelle
+                if (orders[idx].paymentRequestId) {
+                    const reqs = await readData('payment-requests', []);
+                    const updatedReqs = reqs.map(r =>
+                        r.id === orders[idx].paymentRequestId
+                            ? { ...r, status: 'odendi', paidAt: new Date().toISOString() }
+                            : r
+                    );
+                    await writeData('payment-requests', updatedReqs);
+                }
             } else {
                 orders[idx].status       = 'odeme-reddedildi';
                 orders[idx].failCode     = failed_reason_code || '';
