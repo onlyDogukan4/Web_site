@@ -306,7 +306,7 @@ function updateCartDisplay() {
 
         } else if (item.isConcept) {
             // ── VIP Premium Konsept Ürün ──────────────────────────────
-            const itemTotal = parseFloat(item.price) * item.quantity;
+            const itemTotal = (parseFloat(item.price) || 0) * (item.quantity || 1);
             el.style.cssText = `
                 background: linear-gradient(145deg, #fffdf5, #fef9e7);
                 border-radius: 20px;

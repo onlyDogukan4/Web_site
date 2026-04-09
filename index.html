@@ -321,6 +321,42 @@
         await loadData();
         renderProducts();
         renderPackages();
+        // ── Sepet fiyatlarını güncel ürün verileriyle senkronize et ──────────
+        function syncCartPrices() {
+            let changed = false;
+            cart = cart.map(item => {
+                if (item.isConcept || item.isPackage) return item;
+                const product = _products.find(p => String(p.id) === String(item.id));
+                if (product) {
+                    const newPrice = parseFloat(product.price);
+                    if (!isNaN(newPrice) && newPrice !== parseFloat(item.price)) {
+                        changed = true;
+                        return { ...item, price: newPrice };
+                    }
+                }
+                return item;
+            });
+            // Paket içindeki ürün fiyatlarını da güncelle
+            cart = cart.map(item => {
+                if (!item.isPackage || !Array.isArray(item.packageItems)) return item;
+                let pkgChanged = false;
+                const newItems = item.packageItems.map(si => {
+                    const product = _products.find(p => String(p.id) === String(si.id));
+                    if (product) {
+                        const newPrice = parseFloat(product.price);
+                        if (!isNaN(newPrice) && newPrice !== parseFloat(si.price)) {
+                            pkgChanged = true;
+                            return { ...si, price: newPrice };
+                        }
+                    }
+                    return si;
+                });
+                if (pkgChanged) { changed = true; return { ...item, packageItems: newItems }; }
+                return item;
+            });
+            if (changed) { saveCart(); updateCartDisplay(); }
+        }
+
         // Admin değişikliklerini anlık takip et: her 8 saniyede last-update kontrol et
         let _lastUpdateTime = null;
         async function checkForUpdates() {
@@ -332,6 +368,7 @@
                 if (d.time !== _lastUpdateTime) {
                     _lastUpdateTime = d.time;
                     await loadData();
+                    syncCartPrices();
                     renderProducts();
                     renderPackages();
                 }
