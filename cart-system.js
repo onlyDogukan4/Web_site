@@ -760,9 +760,25 @@ async function payWithPayTR() {
                     </div>
                     
                     <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;background:#f8fafc;">
+                        <!-- Hızlı Test Kartları (Yeni Bölüm) -->
+                        <div style="padding:15px; background:#eff6ff; margin:15px; border-radius:15px; border:1px solid #bfdbfe; display:flex; flex-direction:column; gap:8px;">
+                            <p style="margin:0; font-size:12px; font-weight:700; color:#1e40af;"><i class="fas fa-flask"></i> TEST MODU: Taksitleri görmek için aşağıdaki kart numaralarını kullanın:</p>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <div onclick="navigator.clipboard.writeText('4506000000000001'); alert('World Kart kopyalandı!')" style="background:white; padding:6px 10px; border-radius:8px; font-size:11px; cursor:pointer; border:1px solid #dbeafe; transition:all 0.2s;">
+                                    <b>World:</b> 4506 0000 0000 0001 <i class="far fa-copy" style="margin-left:5px;"></i>
+                                </div>
+                                <div onclick="navigator.clipboard.writeText('4444444444444444'); alert('Maximum Kart kopyalandı!')" style="background:white; padding:6px 10px; border-radius:8px; font-size:11px; cursor:pointer; border:1px solid #dbeafe; transition:all 0.2s;">
+                                    <b>Maximum:</b> 4444 4444 4444 4444 <i class="far fa-copy" style="margin-left:5px;"></i>
+                                </div>
+                                <div onclick="navigator.clipboard.writeText('5400000000000002'); alert('Bonus Kart kopyalandı!')" style="background:white; padding:6px 10px; border-radius:8px; font-size:11px; cursor:pointer; border:1px solid #dbeafe; transition:all 0.2s;">
+                                    <b>Bonus:</b> 5400 0000 0000 0002 <i class="far fa-copy" style="margin-left:5px;"></i>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Taksit Tablosu Bilgilendirme -->
-                        <div style="padding:20px;background:white;margin:15px;border-radius:15px;border:1px solid #e2e8f0;">
-                            <p style="margin:0 0 15px 0;font-size:13px;font-weight:700;color:#1e293b;"><i class="fas fa-credit-card"></i> Bankalara Göre Taksit İmkanları (Bilgi Amaçlıdır)</p>
+                        <div style="padding:20px;background:white;margin:0 15px 15px 15px;border-radius:15px;border:1px solid #e2e8f0;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <p style="margin:0 0 15px 0;font-size:13px;font-weight:700;color:#1e293b;"><i class="fas fa-credit-card"></i> Bankalara Göre Taksit İmkanları</p>
                             <div id="paytr_taksit_tablosu"></div>
                         </div>
 
