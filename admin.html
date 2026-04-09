@@ -1332,7 +1332,15 @@
                 });
                 
                 if (res.ok) {
-                    alert(`✅ BAŞARILI!\nAyarlar Veritabanına Yazıldı.\n\nMin Sepet: ${minOrderVal} TL\nKargo Limiti: ${freeShipVal} TL\n\nŞimdi ana sayfayı yenileyip kontrol edebilirsiniz.`);
+                    // last-update güncelle → site anlık yenilensin
+                    await fetch('/api/last-update', {
+                        method: 'POST',
+                        body: JSON.stringify({ time: new Date().toLocaleString('tr-TR') }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const t = document.getElementById('toast');
+                    if (t) { t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+                    else alert(`✅ Ayarlar kaydedildi.\nMin Sepet: ${minOrderVal} TL | Kargo Limiti: ${freeShipVal} TL`);
                 } else {
                     alert("❌ SUNUCU HATASI: Kaydedilemedi. Lütfen internet bağlantısını kontrol edin.");
                 }

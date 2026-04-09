@@ -879,14 +879,15 @@ async function payWithPayTR() {
                                 </div>
                             </div>
 
-                            <!-- Taksit Tablosu -->
+                            <!-- Taksit Tablosu (Daraltılabilir) -->
                             <div style="margin:12px 16px 0 16px;background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
-                                <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;background:linear-gradient(135deg,#f8fafc,#f1f5f9);">
+                                <div onclick="(function(el){var body=el.nextElementSibling;var icon=el.querySelector('.tt-chevron');var open=body.style.display!=='none';body.style.display=open?'none':'block';icon.style.transform=open?'rotate(0deg)':'rotate(180deg)';})(this)" style="padding:12px 14px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;" onmouseover="this.style.background='linear-gradient(135deg,#f1f5f9,#e2e8f0)'" onmouseout="this.style.background='linear-gradient(135deg,#f8fafc,#f1f5f9)'">
                                     <p style="margin:0;font-size:11px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.8px;">
                                         <i class="fas fa-credit-card" style="color:#6366f1;"></i> Taksit Seçenekleri
                                     </p>
+                                    <i class="fas fa-chevron-down tt-chevron" style="color:#6366f1;font-size:12px;transition:transform 0.25s;transform:rotate(0deg);"></i>
                                 </div>
-                                <div style="padding:12px 10px;">
+                                <div style="display:none;padding:12px 10px;">
                                     <div id="paytr_taksit_tablosu"></div>
                                 </div>
                             </div>
