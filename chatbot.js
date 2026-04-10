@@ -15,6 +15,7 @@ class ModerraAI {
         this.preloadImages();
         this.addEventListeners();
         this.startBlinking();
+        this.showAttentionBadge();
         await this.prepareContext();
         this.welcomeUser();
     }
@@ -24,6 +25,65 @@ class ModerraAI {
             const img = new Image();
             img.src = src;
         });
+    }
+
+    showAttentionBadge() {
+        // Sadece oturumda ilk açılışta göster
+        if (sessionStorage.getItem('chatbot_seen')) return;
+        sessionStorage.setItem('chatbot_seen', '1');
+
+        const btn = document.getElementById('chatbot-toggle');
+        if (!btn) return;
+
+        const badge = document.createElement('div');
+        badge.id = 'chatbot-badge';
+        badge.textContent = 'Yardım ister misiniz? 👋';
+        badge.style.cssText = `
+            position: absolute;
+            bottom: 110%;
+            right: 0;
+            background: #4338ca;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 9px 14px;
+            border-radius: 16px 16px 4px 16px;
+            white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(67,56,202,0.35);
+            animation: badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            pointer-events: none;
+            z-index: 10010;
+        `;
+
+        // Mobilde badge metni kısalt
+        if (window.innerWidth <= 480) badge.textContent = 'Yardım? 👋';
+
+        btn.style.position = 'relative';
+        btn.appendChild(badge);
+
+        // Kapatma animasyonu
+        setTimeout(() => {
+            badge.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            badge.style.opacity = '0';
+            badge.style.transform = 'translateY(-8px)';
+            setTimeout(() => badge.remove(), 420);
+        }, 4500);
+
+        // Badge animasyon keyframe
+        const ks = document.createElement('style');
+        ks.textContent = `
+            @keyframes badgePop {
+                from { opacity:0; transform: scale(0.7) translateY(10px); }
+                to   { opacity:1; transform: scale(1) translateY(0); }
+            }
+            /* Chatbot buton hafif nabız — dikkat çekici */
+            @keyframes chatPulse {
+                0%,100% { filter: drop-shadow(0 0 0px rgba(67,56,202,0)); }
+                50%      { filter: drop-shadow(0 0 14px rgba(67,56,202,0.55)); }
+            }
+            #chatbot-toggle { animation: chatPulse 2.5s ease-in-out 3; }
+        `;
+        document.head.appendChild(ks);
     }
 
     async prepareContext() {
@@ -175,8 +235,20 @@ class ModerraAI {
         toggleBtn.addEventListener('click', () => {
             this.isOpen = !this.isOpen;
             windowEl.classList.toggle('active', this.isOpen);
-            toggleBtn.classList.toggle('avatar-active', this.isOpen);
+
+            // Avatar lean pose sadece masaüstünde — mobilde ekranı kapatmasın
+            const isMobile = window.innerWidth <= 768;
+            if (!isMobile) {
+                toggleBtn.classList.toggle('avatar-active', this.isOpen);
+            } else {
+                toggleBtn.classList.remove('avatar-active');
+            }
+
             mainImg.src = this.isOpen ? 'images/kırpmamis.png' : 'images/profesor.png';
+
+            // Badge varsa kapat
+            const badge = document.getElementById('chatbot-badge');
+            if (badge) badge.remove();
         });
 
         const sendMessage = () => {
