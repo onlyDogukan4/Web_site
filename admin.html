@@ -1086,11 +1086,29 @@
             syncData('campaigns');
         }
         
+        function openEditCampaign(i) {
+            const c = campaigns[i];
+            if(!c) return;
+            editCampaignIdx = i;
+            document.getElementById('c-modal-title').innerText = "Kampanyayı Düzenle";
+            document.getElementById('c-name').value = c.name || "";
+            document.getElementById('c-theme').value = c.theme || "premium";
+            document.getElementById('c-top-text').value = c.top_text || "";
+            document.getElementById('c-desc').value = c.description || "";
+            document.getElementById('c-border-color').value = c.border_color || "#ffd700";
+            document.getElementById('c-text-color').value = c.text_color || "#000000";
+            if(document.getElementById('c-type')) document.getElementById('c-type').value = c.type || "percent";
+            if(document.getElementById('c-buy-x')) document.getElementById('c-buy-x').value = c.params?.buy || "";
+            if(document.getElementById('c-pay-y')) document.getElementById('c-pay-y').value = c.params?.pay || "";
+            updateCampaignPreview();
+            document.getElementById('campaign-modal').style.display = 'flex';
+        }
+
         async function deleteCampaign(idx) {
             if(confirm("Bu kampanyayı silmek istediğine emin misin?")) {
                 campaigns.splice(idx, 1);
                 renderAll();
-                await syncData('campaigns'); 
+                await syncData('campaigns');
             }
         }
         
@@ -1102,6 +1120,7 @@
                     <td style="font-weight:700">${c.name}</td>
                     <td style="color:var(--text-muted); font-size:13px;">${c.description || '-'}</td>
                     <td style="text-align:right;">
+                        <button class="btn btn-secondary" style="padding:8px 12px; background:#3b82f6; color:white;" onclick="openEditCampaign(${i})"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-danger" onclick="deleteCampaign(${i})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
