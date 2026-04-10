@@ -5,10 +5,8 @@ const MERCHANT_KEY  = '5fgrzYub5qo81AFu';
 const MERCHANT_SALT = 'oM2A83JNkpDmNogQ';
 
 // PayTR bu endpoint'e application/x-www-form-urlencoded POST gönderir
-// Vercel otomatik olarak urlencoded body'yi parse eder
 
 export default async function handler(req, res) {
-    // PayTR sadece POST gönderir
     if (req.method !== 'POST') {
         res.status(405).end();
         return;
@@ -45,74 +43,84 @@ export default async function handler(req, res) {
             return;
         }
 
-        // ─── Siparişi güncelle ────────────────────────────────────────────
-        const orders = await readData('orders', []);
-        const idx = orders.findIndex(o => o.orderId === merchant_oid);
+        // ─── Ödeme girişimini bul ─────────────────────────────────────────
+        const attempts = await readData('payment_attempts', []);
+        const attempt  = attempts.find(a => a.orderId === merchant_oid);
 
-        if (idx > -1) {
-            // Zaten işlenmiş başarılı/reddedilmiş siparişleri tekrar güncelleme
-            const currentStatus = orders[idx].status;
-            if (status === 'fail' && currentStatus === 'odeme-reddedildi') {
-                // Duplicate fail callback — zaten kaydedildi, sadece OK dön
+        if (status === 'success') {
+            // ── Başarılı ödeme ────────────────────────────────────────────
+
+            // Tutar güvenlik kontrolü
+            const expectedKurus = attempt ? Math.round(parseFloat(attempt.totalPrice) * 100) : 0;
+            const receivedKurus = parseInt(total_amount, 10);
+
+            if (expectedKurus > 0 && receivedKurus < expectedKurus) {
+                console.error('PayTR callback: TUTAR UYUŞMAZLIĞI', {
+                    merchant_oid,
+                    expected: expectedKurus,
+                    received: receivedKurus
+                });
+                // Girişimi sil, order oluşturma
+                await writeData('payment_attempts', attempts.filter(a => a.orderId !== merchant_oid));
                 res.status(200).send('OK');
                 return;
             }
-            if (status === 'fail' && (currentStatus === 'onay-bekliyor' || currentStatus === 'hazirlaniyor' || currentStatus === 'kargoda' || currentStatus === 'teslim')) {
-                // Başarılı ödeme yapılmış sipariş — fail callback'i yoksay
+
+            // Siparişi orders koleksiyonuna ekle
+            const orders = await readData('orders', []);
+
+            // Aynı orderId zaten orders'da varsa tekrar ekleme (duplicate callback)
+            if (orders.some(o => o.orderId === merchant_oid)) {
                 res.status(200).send('OK');
                 return;
             }
 
-            if (status === 'success') {
-                // ── Tutar güvenlik kontrolü ───────────────────────────────
-                // Ödenen tutar (kuruş) siparişin beklenen tutarıyla eşleşmeli
-                const expectedKurus = Math.round(parseFloat(orders[idx].totalPrice) * 100);
-                const receivedKurus = parseInt(total_amount, 10);
-                if (expectedKurus > 0 && receivedKurus < expectedKurus) {
-                    // Eksik ödeme — siparişi işaretsiz bırak, logla
-                    console.error('PayTR callback: TUTAR UYUŞMAZLIĞI', {
-                        merchant_oid,
-                        expected: expectedKurus,
-                        received: receivedKurus
-                    });
-                    orders[idx].status     = 'tutar-uyusmazligi';
-                    orders[idx].lastUpdate = new Date().toISOString();
-                    await writeData('orders', orders);
-                    res.status(200).send('OK');
-                    return;
-                }
+            const newOrder = {
+                orderId:          merchant_oid,
+                customerName:     attempt?.customerName    || 'Bilinmiyor',
+                customerPhone:    attempt?.customerPhone   || '',
+                customerAddress:  attempt?.customerAddress || '',
+                customerEmail:    attempt?.customerEmail   || '',
+                items:            attempt?.items           || '',
+                totalPrice:       attempt?.totalPrice      || (receivedKurus / 100).toFixed(2),
+                cartData:         attempt?.cartData        || [],
+                status:           'onay-bekliyor',
+                paymentMethod:    attempt?.paymentMethod   || 'paytr',
+                paymentType:      payment_type             || '',
+                installments:     installment_count        || '1',
+                lastUpdate:       new Date().toISOString(),
+                estimatedDelivery: 'Bilgi Bekleniyor'
+            };
 
-                orders[idx].status          = 'onay-bekliyor'; // Admin onayına düşer
-                orders[idx].paymentType     = payment_type     || '';
-                orders[idx].installments    = installment_count || '1';
+            await writeData('orders', [...orders, newOrder]);
 
-                // Eğer bu bir manuel ödeme linki ise, payment-request'i güncelle
-                if (orders[idx].paymentRequestId) {
-                    const reqs = await readData('payment-requests', []);
-                    const updatedReqs = reqs.map(r =>
-                        r.id === orders[idx].paymentRequestId
-                            ? { ...r, status: 'odendi', paidAt: new Date().toISOString() }
-                            : r
-                    );
-                    await writeData('payment-requests', updatedReqs);
-                }
-            } else {
-                orders[idx].status       = 'odeme-reddedildi';
-                orders[idx].failCode     = failed_reason_code || '';
-                orders[idx].failReason   = failed_reason_msg  || '';
+            // Manuel ödeme linki ise payment-request'i güncelle
+            if (attempt?.paymentRequestId) {
+                const reqs = await readData('payment-requests', []);
+                await writeData('payment-requests', reqs.map(r =>
+                    r.id === attempt.paymentRequestId
+                        ? { ...r, status: 'odendi', paidAt: new Date().toISOString() }
+                        : r
+                ));
             }
-            orders[idx].lastUpdate = new Date().toISOString();
-            await writeData('orders', orders);
+
+            // Geçici girişimi temizle
+            await writeData('payment_attempts', attempts.filter(a => a.orderId !== merchant_oid));
+
         } else {
-            console.warn('PayTR callback: sipariş bulunamadı', merchant_oid);
+            // ── Başarısız/iptal ödeme — sadece geçici girişimi sil ────────
+            // orders koleksiyonuna HİÇ yazma. Admin panelinde gözükmez.
+            if (attempt) {
+                await writeData('payment_attempts', attempts.filter(a => a.orderId !== merchant_oid));
+            }
+            console.log(`PayTR: ${merchant_oid} iptal/red — orders'a yazılmadı. Kod: ${failed_reason_code}`);
         }
 
-        // PayTR "OK" beklyor, aksi halde callback 3 kez tekrar edilir
+        // PayTR "OK" bekliyor, aksi halde callback 3 kez tekrar edilir
         res.status(200).send('OK');
 
     } catch (e) {
         console.error('paytr-callback handler hatası:', e);
-        // Hata olsa bile "OK" dön — yoksa PayTR defalarca dener
         res.status(200).send('OK');
     }
 }

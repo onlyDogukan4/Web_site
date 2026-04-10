@@ -60,24 +60,26 @@ export default async function handler(req, res) {
             .update(hashStr + MERCHANT_SALT)
             .digest('base64');
 
-        // ─── Siparişi "Ödeme Bekleniyor" olarak kaydet ───────────────────
-        const orderData = {
-            orderId:          merchant_oid,
-            customerName:     user.name    || 'Bilinmiyor',
-            customerPhone:    user.phone   || '',
-            customerAddress:  user.address || '',
-            customerEmail:    email,
-            items:            cart.map(i => `${i.quantity}× ${i.name}`).join(', '),
-            totalPrice:       totalAmount,
-            status:           'odeme-bekleniyor',
-            paymentMethod:    'paytr',
-            lastUpdate:       new Date().toISOString(),
-            estimatedDelivery: 'Bilgi Bekleniyor',
-            cartData:         cart
+        // ─── Ödeme girişimini geçici koleksiyona kaydet ─────────────────
+        // Siparişi ancak ödeme BAŞARILI olduğunda (paytr-callback) orders'a ekleyeceğiz.
+        // Bu sayede iptal/reddedilen girişimler admin panelini kirletmez.
+        const attemptData = {
+            orderId:       merchant_oid,
+            customerName:  user.name    || 'Bilinmiyor',
+            customerPhone: user.phone   || '',
+            customerAddress: user.address || '',
+            customerEmail: email,
+            items:         cart.map(i => `${i.quantity}× ${i.name}`).join(', '),
+            totalPrice:    totalAmount,
+            paymentMethod: 'paytr',
+            cartData:      cart,
+            createdAt:     new Date().toISOString()
         };
 
-        const existing = await readData('orders', []);
-        await writeData('orders', [...existing, orderData]);
+        const existingAttempts = await readData('payment_attempts', []);
+        // Eski girişimi (aynı sipariş ID) varsa temizle, sonra ekle
+        const cleanedAttempts = existingAttempts.filter(a => a.orderId !== merchant_oid);
+        await writeData('payment_attempts', [...cleanedAttempts, attemptData]);
 
         // ─── PayTR API isteği ─────────────────────────────────────────────
         const params = new URLSearchParams({
