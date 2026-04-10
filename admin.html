@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderra | Yönetici Paneli</title>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -1494,8 +1495,6 @@
                     minOrder: minOrderVal,
                     freeShipping: freeShipVal
                 };
-                
-                console.log("Sunucuya gönderiliyor:", settings);
                 
                 // Manuel Sync Çağrısı (syncData fonksiyonuna güvenmeden doğrudan fetch atıyorum)
                 const res = await fetch('/api/settings', {

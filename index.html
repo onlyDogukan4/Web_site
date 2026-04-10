@@ -2,12 +2,17 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderra | Premium Karton Bardak ve Özel Tasarım Çözümleri</title>
     <meta name="description" content="Moderra ile işletmenize özel baskılı karton bardaklar, düğün paketleri ve özel konsept tasarımlar. Hızlı teslimat ve premium kalite.">
     <meta name="keywords" content="karton bardak, özel tasarım bardak, baskılı bardak, düğün paketi, moderra">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CLS fix: Font Awesome'u önce yükle, render-blocking etkisini azalt -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <!-- CLS fix: İlk slider resmini önce yükle -->
+    <link rel="preload" href="images/slider1.png" as="image" fetchpriority="high">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
     <style>
@@ -130,7 +135,8 @@
         <section class="slider container">
             <div class="slides">
                 <div class="slide">
-                    <img src="images/slider1.png" alt="Yeni Sezon" style="width:100%;height:600px;object-fit:cover;">
+                    <!-- CLS fix: width/height tarayıcıya en-boy oranı bildirir, yüklemeden önce alan açar -->
+                    <img src="images/slider1.png" alt="Yeni Sezon" width="1200" height="600" fetchpriority="high">
                     <div class="slide-content">
                         <h2 data-tr="Yeni Sezon Ürünleri" data-en="New Season Products">Yeni Sezon Ürünleri</h2>
                         <p data-tr="En yüksek kalite standartlarında üretilen yeni nesil karton bardaklarımızla tanışın." data-en="Meet our next generation paper cups produced to the highest quality standards.">En yüksek kalite standartlarında üretilen yeni nesil karton bardaklarımızla tanışın.</p>
@@ -138,7 +144,7 @@
                     </div>
                 </div>
                 <div class="slide">
-                    <img src="images/slider2.png" alt="Haftanın Fırsatları" style="width:100%;height:600px;object-fit:cover;">
+                    <img src="images/slider2.png" alt="Haftanın Fırsatları" width="1200" height="600" loading="lazy">
                     <div class="slide-content">
                         <h2 data-tr="Haftanın Fırsatları" data-en="Deals of the Week">Haftanın Fırsatları</h2>
                         <p data-tr="Stoklarla sınırlı özel fiyatlı ambalaj çözümlerini kaçırmayın." data-en="Don't miss out on special priced packaging solutions, limited stock.">Stoklarla sınırlı özel fiyatlı ambalaj çözümlerini kaçırmayın.</p>
@@ -146,7 +152,7 @@
                     </div>
                 </div>
                 <div class="slide">
-                    <img src="images/slider3.png" alt="Konsept Bardaklar" style="width:100%;height:600px;object-fit:cover;">
+                    <img src="images/slider3.png" alt="Konsept Bardaklar" width="1200" height="600" loading="lazy">
                     <div class="slide-content">
                         <h2 data-tr="Konsept Tasarımlar" data-en="Concept Designs">Konsept Tasarımlar</h2>
                         <p data-tr="Özel günleriniz için tasarlanmış birbirinden şık konsept bardak serilerimiz." data-en="Elegant concept cup series designed for your special days.">Özel günleriniz için tasarlanmış birbirinden şık konsept bardak serilerimiz.</p>
@@ -173,7 +179,7 @@
         <section class="container" id="paketler" style="margin-top:80px;">
             <h2 class="section-title" data-tr="Moderra Süper Paketler" data-en="Moderra Super Bundles">Moderra Süper Paketler</h2>
             <p style="text-align:center;color:var(--text-muted);margin-top:-20px;margin-bottom:40px;" data-tr="İhtiyacınız olan her şey tek bir pakette!" data-en="Everything you need in one package!">İhtiyacınız olan her şey tek bir pakette!</p>
-            <div id="packages-container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:30px;"></div>
+            <div id="packages-container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:30px;min-height:350px;contain:layout;"></div>
         </section>
     </main>
 
@@ -724,6 +730,7 @@
             card.style.position = 'relative';
             card.innerHTML = `
                 <img src="${p.image || 'images/bardak.png'}" alt="${name}" class="product-img" loading="lazy"
+                     width="400" height="280"
                      style="${isOOS ? 'filter:grayscale(1) opacity(.5);' : 'cursor:pointer;'}"
                      onclick="${isOOS ? '' : `openProductDetail('${p.id}')`}">
                 ${badge}
