@@ -41,11 +41,11 @@
         .search-container.active .search-wrapper { transform: scale(1); }
         .search-wrapper input {
             width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
-            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
+            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px 30px 80px; border-radius: 30px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
             letter-spacing: -0.5px;
         }
-        .search-close { position: absolute; top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .search-close { position: absolute; top: 50%; right: 24px; transform: translateY(-50%); font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
         .search-close:hover { opacity: 1; transform: rotate(90deg); }
 
         @keyframes oos-shake {
@@ -428,6 +428,15 @@
         </div>
     </nav>
 
+    <!-- Arama Overlay -->
+    <div class="search-container" id="search-overlay">
+        <div class="search-wrapper">
+            <i class="fas fa-search" style="position:absolute;left:55px;top:50%;transform:translateY(-50%);font-size:22px;color:#94a3b8;pointer-events:none;"></i>
+            <input type="text" id="search-input" placeholder="Konsept ara...">
+            <span class="search-close" id="close-search">&times;</span>
+        </div>
+    </div>
+
     <div class="category-nav" id="category-nav">
         <!-- Kategoriler JS ile gelecek -->
     </div>
@@ -618,7 +627,9 @@
         @media (max-width: 500px) { .cart-drawer { width: 100%; } }
     </style>
 
-
+    <!-- cart-system.js ÖNCE yüklenmeli: aksi halde kendi addToCartConcept(item) fonksiyonu
+         aşağıdaki addToCartConcept(conceptId)'i ezer, name=null ve price=NaN hatası oluşur -->
+    <script src="cart-system.js"></script>
 
     <script>
         const root = document.documentElement;
@@ -932,13 +943,6 @@
 
             document.querySelectorAll('.concept-section').forEach(s => observer.observe(s));
 
-            // Search Bar Logic
-            const sb = document.getElementById('search-bar');
-            const openSearch = document.getElementById('open-search');
-            const closeSearch = document.getElementById('close-search');
-            if(openSearch) openSearch.onclick = () => sb.classList.add('active');
-            if(closeSearch) closeSearch.onclick = () => sb.classList.remove('active');
-
             // Navbar Active Tab
             const currentPath = window.location.pathname.split('/').pop() || 'index.html';
             document.querySelectorAll('.nav-links a').forEach(link => {
@@ -1027,7 +1031,7 @@
                     id: `concept-${concept.id}-${Date.now()}`,
                     conceptId: String(concept.id),
                     variantKey: variantKey,
-                    name: `${concept.name} (${ozVariant})`,
+                    name: `${concept.name || concept.name_en || 'Konsept'} (${ozVariant})`,
                     image: variantData?.img || concept.base_image,
                     price: price,
                     quantity: 1,
@@ -1184,10 +1188,20 @@
             const searchInput = document.getElementById('search-input');
 
             if(searchIcon) searchIcon.onclick = () => {
-                searchContainer.classList.add('active');
-                setTimeout(() => searchInput.focus(), 100);
+                if(searchContainer) searchContainer.classList.add('active');
+                setTimeout(() => { if(searchInput) searchInput.focus(); }, 100);
             };
-            if(closeSearch) closeSearch.onclick = () => searchContainer.classList.remove('active');
+            if(closeSearch) closeSearch.onclick = () => {
+                if(searchContainer) searchContainer.classList.remove('active');
+                if(searchInput) searchInput.value = '';
+            };
+            // ESC tuşuyla kapat
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && searchContainer?.classList.contains('active')) {
+                    searchContainer.classList.remove('active');
+                    if(searchInput) searchInput.value = '';
+                }
+            });
         });
 
         function updateLanguage() {
@@ -1209,7 +1223,6 @@
             }
         })();
     </script>
-    <script src="cart-system.js"></script>
     <script src="chatbot.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>

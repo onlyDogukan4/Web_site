@@ -514,10 +514,6 @@ function addToCart(idOrItem, name, price, isConcept = false) {
     }
 }
 
-function addToCartConcept(item) {
-    addToCart(item, null, null, true);
-}
-
 async function addPackageToCart(packageId) {
     try {
         const [pkgRes, prodRes] = await Promise.all([
@@ -675,7 +671,6 @@ window.addEventListener('storage', e => {
 
 // Global erişim
 window.addToCart = addToCart;
-window.addToCartConcept = addToCartConcept;
 window.addPackageToCart = addPackageToCart;
 window.removeFromCart = removeFromCart;
 window.updateItemQuantity = updateItemQuantity;
