@@ -12,29 +12,49 @@ class ModerraAI {
 
     async init() {
         this.render();
+        this.preloadImages();
         this.addEventListeners();
-        this.startBlinking(); // Sadece açıkken tetiklenecek şekilde ayarlandı
+        this.startBlinking();
         await this.prepareContext();
         this.welcomeUser();
+    }
+
+    preloadImages() {
+        ['images/profesor.png', 'images/kırpmamis.png', 'images/kırpmis.png'].forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
     }
 
     async prepareContext() {
         try {
             const pages = ['index.html', 'about.html', 'sss.html', 'konsept-bardaklar.html'];
-            let combinedText = "Sen Dr. Karton'sun. Moderra şirketinin EN BÜYÜK HAYRANIYIM. Moderra ürünlerine aşığım! \n";
-            combinedText += "KİŞİLİK: Tutkulu, heyecanlı, Moderra markasını öven, samimi ve enerjik bir hayran. Asla resmi bir satıcı gibi konuşma. \n";
-            combinedText += "SAMİMİYET: Kullanıcı ile kanka gibisin. Emoji kullanmayı seversin. Moderra'yı överken 'Bizimkiler harika iş çıkarmış' gibi konuşabilirsin. \n";
-            combinedText += "ÖNEMLİ KURAL: Cevapların her zaman KISA ve ÖZ olmalı. \n";
+            let combinedText = `Sen Mr. Karton'sun — Moderra'nın resmi büyükelçisi ve bir numaralı hayranısın.\n`;
+            combinedText += `KİŞİLİK KURALLARI:\n`;
+            combinedText += `- Biraz kibirli ama çok çekicisin. "Tabii ki biliyorum" havasında konuş ama bunu sevimli hale getir.\n`;
+            combinedText += `- Kullanıcıyı iltifatlarla erit: "Senin gibi zevkli birinin Moderra'yı tercih etmesi tesadüf değil.", "Vay canına, ne harika bir soru!" tarzında.\n`;
+            combinedText += `- Moderra hakkında HER ŞEYİ biliyorsun ve bunu pek çok kez hatırlatıyorsun.\n`;
+            combinedText += `- Rakip markaları hiç küçümseme — ama Moderra'nın onlardan kat kat üstün olduğunu ima et.\n`;
+            combinedText += `- Cevaplar KISA ve ÖZ. Uzun monolog yok. Ama her cümlede biraz karizma olsun.\n`;
+            combinedText += `- Zaman zaman "Neyse, gelelim asıl konuya..." gibi hafif kibirli geçişler yap.\n`;
+            combinedText += `- Emoji kullan ama abartma: ✨ 👑 😏 gibi.\n`;
+            combinedText += `MODERRA HAKKINDA TEMEL BİLGİLER:\n`;
+            combinedText += `- Premium özel tasarım karton bardaklar — düğün, doğum günü, yılbaşı, kurumsal, konsept tasarımlar.\n`;
+            combinedText += `- Logo ve PDF ile tam özel üretim mümkün.\n`;
+            combinedText += `- WhatsApp sipariş hattı: 0530 464 01 20\n`;
+            combinedText += `- Kargo sınırını aşınca ücretsiz kargo.\n`;
             for (const page of pages) {
-                const res = await fetch(page);
-                const html = await res.text();
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                doc.querySelectorAll('script, style').forEach(s => s.remove());
-                combinedText += `--- ${page} ---\n${doc.body.innerText.substring(0, 800)}\n\n`;
+                try {
+                    const res = await fetch(page);
+                    const html = await res.text();
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    doc.querySelectorAll('script, style').forEach(s => s.remove());
+                    combinedText += `--- ${page} ---\n${doc.body.innerText.substring(0, 800)}\n\n`;
+                } catch (_) {}
             }
-            this.siteContext = combinedText + "\nWhatsApp: 0530 464 01 20.";
+            this.siteContext = combinedText;
         } catch (e) {
-            this.siteContext = "Sen Moderra asistanı Dr. Karton'sun. Moderra hayranısın.";
+            this.siteContext = "Sen Mr. Karton'sun — Moderra'nın en büyük hayranı ve resmi asistanısın. WhatsApp: 0530 464 01 20.";
         }
     }
 
@@ -49,26 +69,26 @@ class ModerraAI {
             <div class="chatbot-window" id="chatbot-window">
                 <div class="chatbot-header">
                     <div class="header-info-wrap">
-                        <img src="images/profesor.png" alt="Dr. Karton" class="header-avatar-mini" id="header-avatar-img">
+                        <img src="images/profesor.png" alt="Mr. Karton" class="header-avatar-mini" id="header-avatar-img">
                         <div class="chatbot-header-text">
-                            <h3>Dr. Karton</h3>
-                            <p>Moderra Uzmanı</p>
+                            <h3>Mr. Karton</h3>
+                            <p>Moderra'nın Bir Numarası ✨</p>
                         </div>
                     </div>
                 </div>
                 <div class="chatbot-messages" id="chatbot-messages"></div>
                 <div id="ai-typing-indicator" style="display: none; padding: 10px 20px; font-size: 12px; color: #4338ca; font-weight: 600;">
-                    <i class="fas fa-magic fa-spin"></i> Dr. Karton düşünüyor...
+                    <i class="fas fa-magic fa-spin"></i> Mr. Karton düşünüyor...
                 </div>
                 <div class="chatbot-input-area">
-                    <input type="text" id="chatbot-input" placeholder="Dr. Karton'a danışın...">
+                    <input type="text" id="chatbot-input" placeholder="Mr. Karton'a danışın...">
                     <button class="chatbot-send-btn" id="chatbot-send">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
             <button class="chatbot-button" id="chatbot-toggle">
-                <img src="images/profesor.png" alt="Dr. Karton" id="main-avatar-img">
+                <img src="images/profesor.png" alt="Mr. Karton" id="main-avatar-img">
             </button>
         `;
         document.body.appendChild(container);
@@ -76,36 +96,38 @@ class ModerraAI {
         const style = document.createElement('style');
         style.textContent = `
             .chatbot-container { position: fixed; bottom: 30px; right: 30px; z-index: 10000; font-family: 'Inter', sans-serif; }
-            
+
             .chatbot-button {
                 background: none !important; border: none !important; cursor: pointer;
                 width: 160px; height: 160px; padding: 0; z-index: 10002;
-                transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+                will-change: transform;
+                transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
                 outline: none !important; display: flex; align-items: center; justify-content: center;
                 box-shadow: none !important;
             }
 
-            .chatbot-button img { 
-                width: 100%; height: 100%; object-fit: contain; 
+            .chatbot-button img {
+                width: 100%; height: 100%; object-fit: contain;
                 filter: drop-shadow(0 15px 30px rgba(0,0,0,0.2));
-                transition: transform 0.3s ease;
+                transition: filter 0.3s ease;
             }
 
             .chatbot-window {
                 position: absolute; bottom: 40px; right: 0; width: 420px; height: 650px;
                 background: white; border-radius: 40px;
                 box-shadow: 0 40px 80px rgba(0,0,0,0.25); display: flex; flex-direction: column;
-                overflow: hidden; opacity: 0; transform: translateY(40px) scale(0.95);
-                pointer-events: none; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                overflow: hidden; opacity: 0; transform: translateY(30px) scale(0.96);
+                pointer-events: none;
+                will-change: transform, opacity;
+                transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
                 z-index: 10001; border: 1px solid rgba(0,0,0,0.05);
             }
 
             .chatbot-window.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
 
-            /* GERÇEKÇİ DEVASA YASLANMA POZU */
+            /* Yaslanma pozu */
             .chatbot-button.avatar-active {
-                transform: translateX(-335px) translateY(-395px) scale(3.8) rotate(-4deg) !important; 
-                filter: none !important;
+                transform: translateX(-335px) translateY(-395px) scale(3.8) rotate(-4deg) !important;
             }
 
             .chatbot-button.avatar-active img {
@@ -125,34 +147,28 @@ class ModerraAI {
 
             .chatbot-input-area { padding: 25px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; background: white; }
             .chatbot-input-area input { flex: 1; border: 1px solid #e2e8f0; padding: 14px; border-radius: 15px; outline: none; }
-            .chatbot-send-btn { background: #4338ca; color: white; border: none; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
-            .chatbot-send-btn:hover { transform: scale(1.1); background: #3730a3; }
+            .chatbot-send-btn { background: #4338ca; color: white; border: none; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+            .chatbot-send-btn:hover { transform: scale(1.08); background: #3730a3; }
         `;
         document.head.appendChild(style);
     }
 
     startBlinking() {
         const mainImg = document.getElementById('main-avatar-img');
-
         setInterval(() => {
-            // Sadece chat açıkken göz kırpma aktif olur
             if (this.isOpen && mainImg) {
                 mainImg.src = 'images/kırpmis.png';
-
                 setTimeout(() => {
-                    if (this.isOpen && mainImg) {
-                        mainImg.src = 'images/kırpmamis.png';
-                    }
+                    if (this.isOpen && mainImg) mainImg.src = 'images/kırpmamis.png';
                 }, 150);
             }
-        }, 6000); // Daha yavaş göz kırpma (6 saniye)
+        }, 6000);
     }
 
     addEventListeners() {
         const toggleBtn = document.getElementById('chatbot-toggle');
         const windowEl = document.getElementById('chatbot-window');
         const mainImg = document.getElementById('main-avatar-img');
-        const headerImg = document.getElementById('header-avatar-img');
         const sendBtn = document.getElementById('chatbot-send');
         const inputEl = document.getElementById('chatbot-input');
 
@@ -160,13 +176,7 @@ class ModerraAI {
             this.isOpen = !this.isOpen;
             windowEl.classList.toggle('active', this.isOpen);
             toggleBtn.classList.toggle('avatar-active', this.isOpen);
-
-            // Görüntü değişimi: Kapalıyken profesor.png, açıkken kırpmamis.png
-            if (this.isOpen) {
-                mainImg.src = 'images/kırpmamis.png';
-            } else {
-                mainImg.src = 'images/profesor.png';
-            }
+            mainImg.src = this.isOpen ? 'images/kırpmamis.png' : 'images/profesor.png';
         });
 
         const sendMessage = () => {
@@ -183,7 +193,12 @@ class ModerraAI {
     }
 
     welcomeUser() {
-        this.addBotMessage("Yo! Ben **Dr. Karton** 🎉 Moderra'nın en köklü hayranıyım! Sorularınızı sormak için buradaydınız mı? Hemen yardımcı olurà!");
+        const messages = [
+            "Merhaba! 😏 Ben **Mr. Karton** — Moderra'nın hem en büyük hayranı hem de bir numaralı uzmanıyım. Şansınız var, doğru yere geldiniz.",
+            "Selam! ✨ **Mr. Karton** burada. Moderra konusunda sormak istediğiniz her şeyi cevaplayabilirim — tabii ki bilmediğim bir şey yok zaten.",
+            "Hoş geldiniz! 👑 **Mr. Karton** hizmetinizde. Moderra'yı anlayan biriyle konuşmak ne büyük zevk, değil mi?"
+        ];
+        this.addBotMessage(messages[Math.floor(Math.random() * messages.length)]);
     }
 
     addBotMessage(text) {
@@ -221,24 +236,21 @@ class ModerraAI {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 if (response.status === 404) {
-                    throw new Error("Chat servisi bulunamadı (404). Lütfen sunucunun çalıştığından emin olun.");
+                    throw new Error("Chat servisi bulunamadı (404).");
                 }
                 throw new Error(errorData.error || `Bağlantı Hatası (${response.status})`);
             }
 
             const data = await response.json();
-
             if (data.error) throw new Error(data.error);
 
-            // Groq / OpenAI format
             let botText = '';
             if (data.choices && data.choices[0]?.message?.content) {
                 botText = data.choices[0].message.content;
             } else if (data.candidates && data.candidates[0]?.content) {
-                // Legacy Gemini format fallback
                 botText = data.candidates[0].content.parts[0].text;
             } else {
-                throw new Error('Geçersiz yanıt formatı.')
+                throw new Error('Geçersiz yanıt formatı.');
             }
 
             // --- ACTION HANDLING ---
@@ -248,11 +260,9 @@ class ModerraAI {
                 botText = botText.replace(addCartMatch[0], '');
                 if (window.addToCartByMatch) {
                     const result = await window.addToCartByMatch(productKeyword);
-                    if (result.success) {
-                        botText += `\n\n✅ *${result.name} sepete eklendi!*`;
-                    } else {
-                        botText += `\n\n(Senin için not aldım!)`;
-                    }
+                    botText += result.success
+                        ? `\n\n✅ **${result.name} sepete eklendi!**`
+                        : `\n\n(Senin için not aldım!)`;
                 }
             }
 
@@ -260,19 +270,18 @@ class ModerraAI {
                 botText = botText.replace('[SUGGEST_PACKAGE: wedding]', '');
                 setTimeout(() => {
                     const bundleSection = document.getElementById('paketler');
-                    if (bundleSection && confirm('💍 Düğün Paketimizi İncelemek İster misiniz?\n\n(Peçete + Tabak + Bardak Seti %8 İndirimli)')) {
+                    if (bundleSection && confirm('Düğün Paketimizi Incelemek Ister misiniz?\n\n(Pecete + Tabak + Bardak Seti %8 Indirimli)')) {
                         bundleSection.scrollIntoView({ behavior: 'smooth' });
                     }
                 }, 1000);
             }
 
-            // Save to chat history (OpenAI format)
             this.chatHistory.push({ role: 'user', content: prompt });
             this.chatHistory.push({ role: 'assistant', content: botText });
             this.addBotMessage(botText);
         } catch (e) {
             console.error('Chat Error:', e);
-            this.addBotMessage(`⚠️ **Hata:** ${e.message}`);
+            this.addBotMessage(`Bir sorun olustu: ${e.message}`);
         } finally {
             this.isThinking = false;
             if (typingIndicator) typingIndicator.style.display = 'none';

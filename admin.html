@@ -377,8 +377,18 @@
 
     <!-- ORDER MODAL (SADECE SİPARİŞE ÖZEL) -->
     <div class="modal-overlay" id="order-modal">
-        <div class="modal-card" style="max-width: 500px;">
-            <h2 style="margin-bottom:20px">Manuel Sipariş Oluştur</h2>
+        <div class="modal-card" id="order-modal-card" style="max-width: 500px;">
+            <h2 id="o-modal-title" style="margin-bottom:20px">Manuel Sipariş Oluştur</h2>
+
+            <!-- Tasarım Detayları (sadece edit modunda, cartData varsa görünür) -->
+            <div id="o-design-section" style="display:none; margin-bottom:20px; background:#f8fafc; border-radius:16px; padding:20px; border:2px solid #e0e7ff;">
+                <div style="font-size:12px; font-weight:800; color:#6366f1; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-paint-brush"></i> Müşteri Tasarım & Logo Detayları
+                </div>
+                <div id="o-customer-info" style="margin-bottom:12px; font-size:13px; color:#475569; display:grid; grid-template-columns:1fr 1fr; gap:6px;"></div>
+                <div id="o-design-items" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+
             <div class="form-group">
                 <label>Müşteri Ad Soyad</label>
                 <input type="text" id="o-customer" class="editable-input" placeholder="Ahmet Yılmaz">
@@ -396,8 +406,8 @@
                     <label>Durum</label>
                     <select id="o-status" class="editable-input">
                         <option value="onay-bekliyor">💳 Onay Bekliyor (Ödeme Tamam)</option>
+                        <option value="hazirlaniyor">🔧 Hazırlanıyor</option>
                         <option value="alindi">Sipariş Alındı</option>
-                        <option value="hazirlaniyor">Hazırlanıyor</option>
                         <option value="kargoda">Kargoda</option>
                         <option value="teslim">Teslim Edildi</option>
                         <option value="odeme-bekleniyor">⌛ Ödeme Bekleniyor</option>
@@ -411,7 +421,7 @@
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
                 <button class="btn btn-secondary" onclick="closeModal('order-modal')">Vazgeç</button>
-                <button class="btn btn-primary" onclick="createManualOrder()">Kaydet ve Kod Üret</button>
+                <button class="btn btn-primary" id="o-save-btn" onclick="createManualOrder()">Kaydet ve Kod Üret</button>
             </div>
             <span class="close-btn" onclick="closeModal('order-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
         </div>
@@ -559,7 +569,7 @@
                     <h1>Sipariş Yönetimi</h1>
                     <p style="color: var(--text-muted); font-size: 14px;">Manuel eklenen ve aktif siparişlerin takibi.</p>
                 </div>
-                <button class="btn btn-primary" onclick="document.getElementById('order-modal').style.display='flex'"><i class="fas fa-plus"></i> Yeni Sipariş</button>
+                <button class="btn btn-primary" onclick="openNewOrder()"><i class="fas fa-plus"></i> Yeni Sipariş</button>
             </div>
             <div class="section-card">
                 <div style="overflow-x: auto;">
@@ -868,9 +878,11 @@
                 orders.sort((a,b) => new Date(b.lastUpdate) - new Date(a.lastUpdate)).forEach((o, i) => {
                     const tr = document.createElement('tr');
                     const priceText = o.totalPrice ? `<b style="color:#10b981">₺${parseFloat(o.totalPrice).toLocaleString('tr-TR')}</b>` : '<span style="color:#94a3b8">-</span>';
+                    const hasDesign = (o.cartData || []).some(i => i.isConcept || i.note || i.logo);
+                    const designBadge = hasDesign ? `<span title="Tasarım dosyası var" style="display:inline-flex;align-items:center;gap:4px;background:#e0e7ff;color:#4338ca;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;margin-left:6px;"><i class="fas fa-paint-brush"></i> TASARIM</span>` : '';
                     tr.innerHTML = `
                         <td><b style="color:var(--primary)">#${o.orderId}</b></td>
-                        <td><b>${o.customerName}</b></td>
+                        <td><b>${o.customerName}</b>${designBadge}</td>
                         <td><div style="font-size:12px; color:var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width:160px;">${o.items}</div></td>
                         <td>${priceText}</td>
                         <td><span class="status-badge status-${o.status}">${o.status.replace(/-/g, ' ')}</span></td>
@@ -895,17 +907,69 @@
         }
 
         let editOrderId = null;
+        function openNewOrder() {
+            editOrderId = null;
+            document.getElementById('o-modal-title').innerText = 'Manuel Sipariş Oluştur';
+            document.getElementById('o-save-btn').innerText = 'Kaydet ve Kod Üret';
+            document.getElementById('o-customer').value = '';
+            document.getElementById('o-items').value = '';
+            document.getElementById('o-status').value = 'onay-bekliyor';
+            document.getElementById('o-price').value = '';
+            document.getElementById('o-delivery').value = '';
+            document.getElementById('o-design-section').style.display = 'none';
+            document.getElementById('order-modal-card').style.maxWidth = '500px';
+            document.getElementById('order-modal').style.display = 'flex';
+        }
+
         function openEditOrder(id) {
             editOrderId = id;
             const o = orders.find(x => x.orderId === id);
             if(!o) return;
-            
+
+            document.getElementById('o-modal-title').innerText = 'Sipariş Düzenle — #' + o.orderId;
+            document.getElementById('o-save-btn').innerText = 'Kaydet';
             document.getElementById('o-customer').value = o.customerName;
             document.getElementById('o-items').value = o.items;
             document.getElementById('o-status').value = o.status;
-            document.getElementById('o-price').value = o.totalPrice || "";
-            document.getElementById('o-delivery').value = o.estimatedDelivery === "Bilgi Bekleniyor" ? "" : o.estimatedDelivery;
-            
+            document.getElementById('o-price').value = o.totalPrice || '';
+            document.getElementById('o-delivery').value = (o.estimatedDelivery === 'Bilgi Bekleniyor' || !o.estimatedDelivery) ? '' : o.estimatedDelivery;
+
+            // Tasarım detayları
+            const designSection = document.getElementById('o-design-section');
+            const designItems = document.getElementById('o-design-items');
+            const customerInfo = document.getElementById('o-customer-info');
+            const card = document.getElementById('order-modal-card');
+
+            const conceptItems = (o.cartData || []).filter(i => i.isConcept || i.note || i.logo);
+            if (conceptItems.length > 0) {
+                card.style.maxWidth = '760px';
+                designSection.style.display = 'block';
+
+                customerInfo.innerHTML = [
+                    o.customerPhone ? `<div><b>📞</b> ${o.customerPhone}</div>` : '',
+                    o.customerEmail ? `<div><b>📧</b> ${o.customerEmail}</div>` : '',
+                    o.customerAddress ? `<div style="grid-column:1/-1"><b>📍</b> ${o.customerAddress}</div>` : ''
+                ].join('');
+
+                designItems.innerHTML = conceptItems.map(item => {
+                    const isPDF = item.logo && item.logo.startsWith('data:application/pdf');
+                    const logoHTML = item.logo
+                        ? (isPDF
+                            ? `<a href="${item.logo}" download="${item.logoName || 'logo.pdf'}" style="display:inline-flex;align-items:center;gap:8px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:8px 14px;color:#dc2626;font-weight:700;font-size:12px;text-decoration:none;margin-top:8px;"><i class="fas fa-file-pdf fa-lg"></i> ${item.logoName || 'logo.pdf'} — İndir</a>`
+                            : `<img src="${item.logo}" style="max-height:90px;max-width:180px;border-radius:10px;border:1px solid #e2e8f0;object-fit:contain;margin-top:8px;">`)
+                        : '<span style="font-size:12px;color:#94a3b8;font-style:italic;">Logo yüklenmemiş</span>';
+
+                    return `<div style="background:white;border-radius:12px;padding:14px 16px;border:1px solid #e2e8f0;">
+                        <div style="font-weight:800;font-size:13px;color:#1e293b;margin-bottom:6px;"><i class="fas fa-crown" style="color:#d4af37;margin-right:6px;"></i>${item.name}</div>
+                        ${item.note ? `<div style="background:#fffbeb;border-left:3px solid #d4af37;padding:7px 11px;border-radius:8px;font-size:12px;color:#7c5f00;font-style:italic;margin-bottom:6px;">"${item.note}"</div>` : ''}
+                        ${logoHTML}
+                    </div>`;
+                }).join('');
+            } else {
+                card.style.maxWidth = '500px';
+                designSection.style.display = 'none';
+            }
+
             document.getElementById('order-modal').style.display = 'flex';
         }
 
