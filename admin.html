@@ -271,9 +271,15 @@
     <div class="modal-overlay" id="concept-modal">
         <div class="modal-card" style="max-width: 700px;">
             <h2 id="con-modal-title">Konsept Düzenle</h2>
-            <div class="form-group">
-                <label>Konsept Adı</label>
-                <input type="text" id="con-name" class="editable-input" placeholder="Örn: Yılbaşı">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Konsept Adı (TR)</label>
+                    <input type="text" id="con-name" class="editable-input" placeholder="Örn: Yılbaşı">
+                </div>
+                <div class="form-group">
+                    <label>Concept Name (EN)</label>
+                    <input type="text" id="con-name-en" class="editable-input" placeholder="E.g. New Year">
+                </div>
             </div>
             <div class="form-row">
                  <div class="form-group">
@@ -508,7 +514,7 @@
             </div>
             <div class="section-card">
                 <table>
-                    <thead><tr><th>Konsept</th><th>Tema</th><th>Açıklama</th><th>İşlem</th></tr></thead>
+                    <thead><tr><th>Konsept</th><th>Durum</th><th>Fiyat</th><th>Etiket</th><th>İşlem</th></tr></thead>
                     <tbody id="con-table"></tbody>
                 </table>
             </div>
@@ -1291,13 +1297,14 @@
 
             document.getElementById('con-modal-title').innerText = "Konsepti Düzenle";
             document.getElementById('con-name').value = c.name || "";
+            document.getElementById('con-name-en').value = c.name_en || "";
             document.getElementById('con-color').value = c.theme_color || "#e74c3c";
             document.getElementById('con-bg').value = c.bg_color || "#ffffff";
             document.getElementById('con-label').value = c.label_text || "";
             document.getElementById('con-price').value = c.price || '';
             document.getElementById('con-desc-tr').value = c.desc_tr || "";
             document.getElementById('con-desc-en').value = c.desc_en || "";
-            document.getElementById('con-published').checked = c.published || false;
+            document.getElementById('con-published').checked = c.published !== false;
             
             const prev = document.getElementById('con-preview');
             const txt = document.getElementById('con-drop-text');
@@ -1309,21 +1316,30 @@
         }
 
         function handleConceptSave() {
+            const name = document.getElementById('con-name').value.trim();
+            if(!name) return alert("Konsept adı (TR) gerekli!");
+            const price = parseFloat(document.getElementById('con-price').value);
+            if(isNaN(price) || price <= 0) return alert("Geçerli bir varsayılan fiyat girin!");
+
+            // Mevcut kaydın korunması gereken alanları sakla (text_color gibi)
+            const existing = editConIdx > -1 ? concepts[editConIdx] : {};
             const con = {
-                id: editConIdx>-1 ? concepts[editConIdx].id : 'con-'+Date.now(),
-                name: document.getElementById('con-name').value,
+                ...existing,
+                id: editConIdx > -1 ? existing.id : 'con-' + Date.now(),
+                name,
+                name_en: document.getElementById('con-name-en').value.trim() || name,
                 theme_color: document.getElementById('con-color').value,
                 bg_color: document.getElementById('con-bg').value,
-                label_text: document.getElementById('con-label').value,
-                price: parseFloat(document.getElementById('con-price').value) || 0,
-                desc_tr: document.getElementById('con-desc-tr').value,
-                desc_en: document.getElementById('con-desc-en').value,
+                text_color: existing.text_color || '#1e293b',
+                label_text: document.getElementById('con-label').value.trim(),
+                price,
+                desc_tr: document.getElementById('con-desc-tr').value.trim(),
+                desc_en: document.getElementById('con-desc-en').value.trim(),
                 published: document.getElementById('con-published').checked,
-                base_image: curConceptBaseImg,
-                variations: curVariantData // curVariantData already contains price, stock, and image
+                base_image: curConceptBaseImg || existing.base_image || 'images/bardak.png',
+                variations: curVariantData
             };
-            if(!con.name) return alert("Konsept adı gerekli!");
-            if(editConIdx>-1) concepts[editConIdx]=con; else concepts.push(con);
+            if(editConIdx > -1) concepts[editConIdx] = con; else concepts.push(con);
             renderAll(); closeModal('concept-modal'); syncData('concepts');
         }
 
@@ -1364,8 +1380,11 @@
         }
 
         function resetConModal() {
-            document.querySelectorAll('#concept-modal input').forEach(e=>e.value='');
+            document.querySelectorAll('#concept-modal input[type="text"], #concept-modal input[type="number"]').forEach(e=>e.value='');
             document.querySelectorAll('#concept-modal textarea').forEach(e=>e.value='');
+            document.getElementById('con-color').value = '#6366f1';
+            document.getElementById('con-bg').value = '#f0f4ff';
+            document.getElementById('con-published').checked = true;
             document.getElementById('con-preview').style.display='none';
             document.getElementById('con-drop-text').style.display='block';
             fillVariationInputs();
