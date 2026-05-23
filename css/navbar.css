@@ -149,6 +149,28 @@
     line-height: 1;
 }
 
+/* Masaüstü / tablet geniş: mobil çekmece öğeleri görünmesin */
+@media (min-width: 769px) {
+    .nav-drawer-header,
+    .nav-mobile-tools,
+    .nav-mobile-section-label {
+        display: none !important;
+    }
+
+    .nav-backdrop {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    body.nav-open {
+        overflow: auto !important;
+    }
+
+    .nav-links.active {
+        transform: none !important;
+    }
+}
+
 /* Masaüstünde hamburger gizle */
 @media (min-width: 901px) {
     .hamburger {

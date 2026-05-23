@@ -1,0 +1,219 @@
+/* ── Ana sayfa paket kartları ─────────────────────────────────── */
+
+.package-card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.package-card-badge {
+    position: absolute;
+    top: 20px;
+    right: -35px;
+    background: var(--primary);
+    color: #fff;
+    padding: 5px 40px;
+    transform: rotate(45deg);
+    font-weight: 800;
+    font-size: 12px;
+    z-index: 1;
+}
+
+.package-card-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.package-card-head img {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    border-radius: 14px;
+    background: #f8fafc;
+    padding: 8px;
+    flex-shrink: 0;
+}
+
+.package-card-head h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.package-card-head p {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.package-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.package-items-grid.items-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.package-item {
+    background: var(--bg-body);
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.package-item img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+}
+
+.package-item-name {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text-main, #1e293b);
+}
+
+.package-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card, #fff);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 4px 8px;
+}
+
+.package-item-qty span {
+    font-weight: 900;
+    min-width: 20px;
+    text-align: center;
+}
+
+.package-item-qty .qty-btn {
+    min-width: 28px;
+    min-height: 28px;
+}
+
+.package-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--border);
+    flex-wrap: wrap;
+}
+
+.package-price-block {
+    flex: 1;
+    min-width: 140px;
+}
+
+.package-price {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1.1;
+}
+
+.package-price-note {
+    font-size: 11px;
+    color: #16a34a;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
+.package-add-btn {
+    padding: 16px 28px;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .package-card {
+        padding: 18px;
+        border-radius: 20px;
+    }
+
+    .package-card-head {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .package-card-head img {
+        width: 72px;
+        height: 72px;
+    }
+
+    .package-card-head h3 {
+        font-size: 1.15rem;
+    }
+
+    .package-items-grid,
+    .package-items-grid.items-3 {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .package-item {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .package-item img {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+    }
+
+    .package-item-name {
+        flex: 1;
+        min-width: 0;
+        font-size: 13px;
+    }
+
+    .package-item-qty {
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    .package-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .package-add-btn {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 20px;
+    }
+
+    .package-price {
+        font-size: 1.5rem;
+    }
+}
