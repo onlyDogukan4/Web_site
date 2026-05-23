@@ -104,58 +104,78 @@
         const searchBtn = document.getElementById('open-search');
         const themeBtn = document.getElementById('theme-toggle');
         const profileBtn = document.getElementById('open-profile-modal');
-        if (!searchBtn && !themeBtn && !profileBtn) return;
-
-        const label = document.createElement('li');
-        label.className = 'nav-mobile-section-label nav-mobile-only';
-        label.textContent = 'Hızlı erişim';
-
-        const row = document.createElement('li');
-        row.className = 'nav-mobile-tools nav-mobile-only';
-        row.innerHTML = `
-            <div class="nav-mobile-tools-inner" role="group" aria-label="Hızlı erişim">
-                <button type="button" class="nav-mobile-tool nav-mobile-tool--full" data-nav-tool="search">
-                    <i class="fas fa-search"></i><span>Ürün ara</span>
-                </button>
-                <button type="button" class="nav-mobile-tool" data-nav-tool="theme">
-                    <i class="fas fa-moon"></i><span>Tema</span>
-                </button>
-                <button type="button" class="nav-mobile-tool" data-nav-tool="profile">
-                    <i class="fas fa-user"></i><span>Hesabım</span>
-                </button>
-            </div>`;
 
         const pagesLabel = document.createElement('li');
         pagesLabel.className = 'nav-mobile-section-label nav-mobile-only';
         pagesLabel.textContent = 'Sayfalar';
 
-        const firstPageLink = navLinks.querySelector('li:not(.nav-drawer-header):not(.nav-mobile-tools):not(.lang-switch) a');
+        const firstPageLink = navLinks.querySelector(
+            'li:not(.nav-drawer-header):not(.nav-mobile-tools):not(.nav-mobile-section-label):not(.lang-switch) a'
+        );
         const insertBefore = firstPageLink?.closest('li') || navLinks.children[1];
 
-        if (insertBefore) {
-            navLinks.insertBefore(pagesLabel, insertBefore);
-            navLinks.insertBefore(row, pagesLabel);
-            navLinks.insertBefore(label, row);
-        } else {
-            navLinks.appendChild(label);
-            navLinks.appendChild(row);
+        const toolParts = [];
+        if (searchBtn) {
+            toolParts.push(`
+                <button type="button" class="nav-mobile-tool nav-mobile-tool--full" data-nav-tool="search">
+                    <i class="fas fa-search"></i><span>Ürün ara</span>
+                </button>`);
+        }
+        if (themeBtn) {
+            toolParts.push(`
+                <button type="button" class="nav-mobile-tool" data-nav-tool="theme">
+                    <i class="fas fa-moon"></i><span>Tema</span>
+                </button>`);
+        }
+        if (profileBtn) {
+            toolParts.push(`
+                <button type="button" class="nav-mobile-tool" data-nav-tool="profile">
+                    <i class="fas fa-user"></i><span>Hesabım</span>
+                </button>`);
         }
 
-        row.querySelector('[data-nav-tool="search"]')?.addEventListener('click', () => {
-            searchBtn?.click();
-            closeNavMenu();
-        });
-        row.querySelector('[data-nav-tool="theme"]')?.addEventListener('click', () => {
-            themeBtn?.click();
-            const icon = row.querySelector('[data-nav-tool="theme"] i');
-            if (icon && themeBtn) {
-                icon.className = themeBtn.classList.contains('fa-sun') ? 'fas fa-sun' : 'fas fa-moon';
+        if (toolParts.length) {
+            const label = document.createElement('li');
+            label.className = 'nav-mobile-section-label nav-mobile-only';
+            label.textContent = 'Hızlı erişim';
+
+            const row = document.createElement('li');
+            row.className = 'nav-mobile-tools nav-mobile-only';
+            row.innerHTML = `
+                <div class="nav-mobile-tools-inner" role="group" aria-label="Hızlı erişim">
+                    ${toolParts.join('')}
+                </div>`;
+
+            if (insertBefore) {
+                navLinks.insertBefore(pagesLabel, insertBefore);
+                navLinks.insertBefore(row, pagesLabel);
+                navLinks.insertBefore(label, row);
+            } else {
+                navLinks.appendChild(label);
+                navLinks.appendChild(row);
+                navLinks.appendChild(pagesLabel);
             }
-        });
-        row.querySelector('[data-nav-tool="profile"]')?.addEventListener('click', () => {
-            profileBtn?.click();
-            closeNavMenu();
-        });
+
+            row.querySelector('[data-nav-tool="search"]')?.addEventListener('click', () => {
+                searchBtn?.click();
+                closeNavMenu();
+            });
+            row.querySelector('[data-nav-tool="theme"]')?.addEventListener('click', () => {
+                themeBtn?.click();
+                const icon = row.querySelector('[data-nav-tool="theme"] i');
+                if (icon && themeBtn) {
+                    icon.className = themeBtn.classList.contains('fa-sun') ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            });
+            row.querySelector('[data-nav-tool="profile"]')?.addEventListener('click', () => {
+                profileBtn?.click();
+                closeNavMenu();
+            });
+        } else if (insertBefore) {
+            navLinks.insertBefore(pagesLabel, insertBefore);
+        } else if (!navLinks.querySelector('.nav-mobile-section-label')) {
+            navLinks.appendChild(pagesLabel);
+        }
     }
 
     function ensureNavBackdrop() {
@@ -177,6 +197,10 @@
         if (!navLinks || !hamburger) return;
 
         if (!hamburger.id) hamburger.id = 'hamburger-btn';
+        if (hamburger.tagName !== 'BUTTON') {
+            hamburger.setAttribute('role', 'button');
+            hamburger.setAttribute('tabindex', '0');
+        }
 
         const bindMobileNav = () => {
             if (!isMobileNavViewport()) {
@@ -224,6 +248,21 @@
         window.matchMedia('(max-width: 768px)').addEventListener('change', bindMobileNav);
     }
 
+    function initConceptDropdowns() {
+        if (!isMobileNavViewport()) return;
+        document.querySelectorAll('.navbar .dropdown > a').forEach((trigger) => {
+            if (trigger.dataset.dropdownBound) return;
+            trigger.dataset.dropdownBound = '1';
+            trigger.addEventListener('click', (e) => {
+                const parent = trigger.closest('.dropdown');
+                if (!parent || !parent.querySelector('.dropdown-content')) return;
+                e.preventDefault();
+                e.stopPropagation();
+                parent.classList.toggle('open');
+            });
+        });
+    }
+
     function initCartScrollLock() {
         const observer = new MutationObserver(() => {
             const open = document.body.classList.contains('cart-open');
@@ -234,7 +273,9 @@
 
     function boot() {
         initNav();
+        initConceptDropdowns();
         initCartScrollLock();
+        window.matchMedia('(max-width: 768px)').addEventListener('change', initConceptDropdowns);
     }
 
     if (document.readyState === 'loading') {

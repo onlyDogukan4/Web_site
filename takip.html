@@ -7,6 +7,7 @@
     <title>Sipariş Takibi | Moderra</title>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -35,7 +36,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            padding: 0 20px 40px;
         }
 
         .container {
@@ -204,35 +205,60 @@
             align-items: center;
             gap: 10px;
         }
+
+        @media (max-width: 768px) {
+            body { padding: 72px 12px 28px; }
+            .header { margin-bottom: 28px; }
+            .header h1 { font-size: 1.5rem; }
+            .search-box { flex-direction: column; padding: 12px; }
+            .search-box input { padding: 12px 14px; font-size: 16px; }
+            .search-box button { width: 100%; padding: 14px; border-radius: 12px; }
+            #result-container { padding: 22px 16px; border-radius: 20px; }
+            .order-info-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .stepper { margin: 28px 0; }
+            .step-icon { width: 44px; height: 44px; font-size: 16px; }
+            .step-label { font-size: 10px; }
+            .details-grid { grid-template-columns: 1fr; }
+            .hide-mobile { display: none; }
+            .nav-back-button {
+                top: 10px !important;
+                left: 10px !important;
+                padding: 10px 12px !important;
+                font-size: 12px !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="nav-back-button" style="position: fixed; top: 20px; left: 20px; font-weight: 700; color: #6366f1; text-decoration: none; font-size: 13px; background: #eef2ff; padding: 12px 24px; border-radius: 12px; display: flex; align-items: center; gap: 10px; transition: 0.3s; z-index: 9999; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15); border: 2px solid white;">
-        <i class="fas fa-arrow-left"></i> <span class="hide-mobile">ANA SAYFAYA DÖN</span>
-    </a>
-
-    <nav class="navbar" style="background: transparent; border-bottom: none; padding: 15px 0; position: sticky; top: 0; z-index: 1000; height: 75px; display: flex; align-items: center;">
-        <div class="container" style="display: flex; justify-content: center; width: 100%; max-width: 1200px; margin: 0 auto; min-height: 45px; align-items: center;">
-            <div style="font-size: 24px; font-weight: 800; color: #4e54c8; display: flex; align-items: center; gap: 10px; white-space: nowrap; cursor: default;">
-                <i class="fas fa-cube"></i> Moderra
+    <!-- Navbar -->
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
+            </ul>
+            <div class="nav-icons">
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count" style="display:none;">0</span>
+                </i>
+                <i class="fas fa-user-circle" id="open-profile-modal"></i>
+                <button type="button" class="hamburger" id="hamburger-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="nav-links">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </nav>
-    <style>
-        .nav-back-button:hover {
-            background: #6366f1;
-            color: white !important;
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
-        }
-        @media (max-width: 600px) {
-            .hide-mobile { display: none; }
-            .nav-back-button { padding: 10px; top: 10px; left: 10px; }
-        }
-    </style>
 
-    <div class="container">
+    <div class="container" style="padding-top: 32px;">
         <div class="header">
             <h1>Siparişini Takip Et</h1>
             <p>Sipariş numaranı girerek güncel durumu öğrenebilirsin.</p>
@@ -392,5 +418,7 @@
             document.documentElement.setAttribute('data-theme', 'dark');
         }
     </script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

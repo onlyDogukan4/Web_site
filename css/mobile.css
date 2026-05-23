@@ -140,9 +140,8 @@ textarea {
         margin: 0 !important;
     }
 
-    .navbar .nav-icons > #open-search,
-    .navbar .nav-icons > #theme-toggle,
-    .navbar .nav-icons > #open-profile-modal {
+    /* Mobilde üst çubukta yalnızca sepet + menü; ID'siz eski ikonları da gizle */
+    .navbar .nav-icons > i:not(#open-cart-modal) {
         display: none !important;
         visibility: hidden !important;
         width: 0 !important;
@@ -155,7 +154,8 @@ textarea {
     }
 
     .navbar .nav-icons > #open-cart-modal,
-    .navbar .nav-icons > .hamburger {
+    .navbar .nav-icons > .hamburger,
+    .navbar .nav-icons > button.hamburger {
         width: 44px !important;
         height: 44px !important;
         min-width: 44px;
@@ -167,17 +167,20 @@ textarea {
         border: 1px solid rgba(99, 102, 241, 0.12);
     }
 
-    .navbar .nav-icons > .hamburger {
+    .navbar .nav-icons > .hamburger,
+    .navbar .nav-icons > button.hamburger {
         background: var(--primary-gradient);
         color: #fff !important;
         border: none;
     }
 
-    .navbar .nav-icons > .hamburger i {
+    .navbar .nav-icons > .hamburger i,
+    .navbar .nav-icons > button.hamburger i {
         color: #fff;
     }
 
-    .navbar .nav-icons > .hamburger.is-open {
+    .navbar .nav-icons > .hamburger.is-open,
+    .navbar .nav-icons > button.hamburger.is-open {
         background: #1e293b;
     }
 
@@ -354,10 +357,15 @@ textarea {
         -webkit-tap-highlight-color: transparent;
     }
 
-    .hamburger {
+    .hamburger,
+    button.hamburger {
         display: flex !important;
         align-items: center;
         justify-content: center;
+        border: none;
+        font: inherit;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
     }
 
     /* Arama çubuğu — navbar altında */

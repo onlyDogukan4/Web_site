@@ -47,6 +47,7 @@
         </div>
     </div>
 
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
@@ -54,20 +55,20 @@
                 <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
                 <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
-                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li> 
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons" id="main-nav-icons">
+            <div class="nav-icons">
                 <i class="fas fa-search" id="open-search"></i>
                 <i class="fas fa-moon" id="theme-toggle"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal" onclick="document.body.classList.add('cart-open')">
-                    <span id="cart-count">0</span>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count" style="display:none;">0</span>
                 </i>
                 <i class="fas fa-user-circle" id="open-profile-modal"></i>
-                <div class="hamburger" id="hamburger-btn">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <button type="button" class="hamburger" id="hamburger-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="nav-links">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </nav>
@@ -230,10 +231,6 @@
             }
         }
 
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.getElementById('nav-links');
-        hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
-
         const langToggle = document.getElementById('lang-toggle');
         let currentLang = localStorage.getItem('lang') || 'tr';
 
@@ -364,6 +361,7 @@
         .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
         #cart-modal[style*="display: block"] { transform: translateX(0); }
     </style>
+        <script src="js/site/nav-active.js" defer></script>
     <script src="js/mobile.js" defer></script>
 </body>
 </html>
