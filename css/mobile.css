@@ -83,113 +83,248 @@ textarea {
         padding-bottom: var(--safe-bottom);
     }
 
+    :root {
+        --nav-height: 56px;
+    }
+
     .navbar {
         padding-top: var(--safe-top);
     }
 
     .navbar .container {
-        padding-left: max(14px, var(--safe-left));
-        padding-right: max(14px, var(--safe-right));
+        padding-left: max(12px, var(--safe-left));
+        padding-right: max(12px, var(--safe-right));
     }
 
-    .navbar-container {
-        padding: 8px 0;
-        gap: 6px;
+  .navbar-container {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas: 'logo actions';
+        align-items: center;
+        padding: 6px 0;
+        gap: 8px;
         min-height: var(--nav-height);
+        position: relative;
     }
 
     .logo {
-        font-size: 17px !important;
-        max-width: 50vw;
+        grid-area: logo;
+        font-size: 16px !important;
+        max-width: none;
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        flex-shrink: 1;
     }
 
     .logo i {
-        font-size: 18px !important;
-        margin-right: 6px !important;
+        font-size: 17px !important;
+        margin-right: 5px !important;
     }
 
-    /* Üst çubukta sadece sepet + menü — arama/tema/profil menü içinde */
+    /* Üst çubuk: yalnızca sepet + menü */
     .nav-icons {
-        gap: 4px;
+        grid-area: actions;
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
         flex-shrink: 0;
+        margin: 0 !important;
     }
 
-    .nav-icons > #open-search,
-    .nav-icons > #theme-toggle,
-    .nav-icons > #open-profile-modal {
+    .navbar .nav-icons > #open-search,
+    .navbar .nav-icons > #theme-toggle,
+    .navbar .nav-icons > #open-profile-modal {
         display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        pointer-events: none !important;
     }
 
-    .nav-icons > i,
-    .nav-icons > .hamburger {
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px;
-        min-height: 42px;
+    .navbar .nav-icons > #open-cart-modal,
+    .navbar .nav-icons > .hamburger {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px;
+        min-height: 44px;
+        margin: 0 !important;
         font-size: 18px !important;
+        border-radius: 12px;
+        background: rgba(99, 102, 241, 0.06);
+        border: 1px solid rgba(99, 102, 241, 0.12);
     }
 
-    /* Mobil menü — hızlı ara / tema / hesap */
+    .navbar .nav-icons > .hamburger {
+        background: var(--primary-gradient);
+        color: #fff !important;
+        border: none;
+    }
+
+    .navbar .nav-icons > .hamburger i {
+        color: #fff;
+    }
+
+    .navbar .nav-icons > .hamburger.is-open {
+        background: #1e293b;
+    }
+
+    /* Menü: sağdan kayan panel */
+    .nav-links {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: auto;
+        width: min(300px, 88vw);
+        max-height: none;
+        margin: 0;
+        padding: calc(12px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        background: var(--bg-card, #fff);
+        box-shadow: -8px 0 40px rgba(0, 0, 0, 0.2);
+        z-index: 10001;
+        transform: translateX(105%);
+        transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        border: none;
+        border-left: 1px solid var(--border);
+    }
+
+    .nav-links.active {
+        transform: translateX(0);
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        padding: 14px 16px !important;
+        font-size: 15px !important;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .nav-drawer-header {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 4px 14px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nav-drawer-header strong {
+        font-size: 18px;
+        color: var(--text-main, #1e293b);
+    }
+
+    .nav-drawer-close {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .nav-mobile-section-label {
+        list-style: none;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        padding: 12px 4px 6px;
+        margin: 0;
+    }
+
     .nav-mobile-tools {
         list-style: none;
         width: 100%;
-        margin: 0 0 8px;
-        padding: 0 0 10px;
-        border-bottom: 1px solid var(--border);
+        margin: 0 0 4px;
+        padding: 0;
     }
 
     .nav-mobile-tools-inner {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
 
     .nav-mobile-tool {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 4px;
-        min-height: 56px;
-        padding: 10px 6px;
+        justify-content: flex-start;
+        gap: 10px;
+        min-height: 48px;
+        padding: 12px 14px;
         border: 1px solid var(--border);
         border-radius: 12px;
-        background: var(--bg);
+        background: var(--bg, #f8fafc);
         color: var(--secondary);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
     }
 
     .nav-mobile-tool i {
-        font-size: 18px;
+        font-size: 16px;
         color: var(--primary);
+        width: 20px;
+        text-align: center;
+    }
+
+    .nav-mobile-tool--full {
+        grid-column: 1 / -1;
+    }
+
+    .lang-switch {
+        margin-top: 4px;
+    }
+
+    .lang-switch a,
+    #lang-toggle {
+        display: block;
+        text-align: center;
+        padding: 12px !important;
+        border-radius: 12px;
+    }
+
+    /* Karartma — tıklanınca menü kapanır (mobile.js) */
+    body.nav-open .nav-backdrop {
+        display: block;
+    }
+
+    .nav-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        z-index: 10000;
+        border: none;
+        padding: 0;
+        cursor: pointer;
     }
 
     .hamburger {
         display: flex !important;
         align-items: center;
         justify-content: center;
-    }
-
-    .nav-links {
-        top: 100%;
-        left: 0;
-        right: 0;
-        max-height: min(70vh, calc(100dvh - var(--nav-height)));
-        overflow-y: auto;
-        padding-bottom: calc(12px + var(--safe-bottom));
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    .nav-links a {
-        padding: 14px 16px !important;
-        font-size: 15px;
     }
 
     /* Arama çubuğu — navbar altında */
@@ -369,6 +504,15 @@ textarea {
 
 /* ─── Küçük telefon (≤480px) ──────────────────────────────────── */
 @media (max-width: 480px) {
+    .logo {
+        font-size: 0 !important;
+    }
+
+    .logo i {
+        font-size: 22px !important;
+        margin-right: 0 !important;
+    }
+
     .products {
         grid-template-columns: 1fr !important;
     }

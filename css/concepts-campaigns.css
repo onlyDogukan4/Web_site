@@ -76,27 +76,7 @@
     color: white;
 }
 
-.nav-icons {
-    display: flex;
-    align-items: center;
-}
-
-.nav-icons i {
-    margin-left: 20px;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--secondary);
-    transition: color 0.3s;
-}
-
-.nav-icons i:hover {
-    color: var(--primary);
-}
-
-.close.nav-icons i:hover {
-    color: var(--primary);
-    transform: translateY(-2px);
-}
+/* Navbar stilleri: css/navbar.css + css/mobile.css */
 
 /* Premium Campaign Frames */
 .product-card.premium-campaign {

@@ -1,10 +1,9 @@
 /**
- * Moderra — mobil UX (menü, viewport, dokunmatik)
+ * Moderra — mobil UX (menü çekmecesi, viewport, dokunmatik)
  */
 (function initModerraMobile() {
     'use strict';
 
-    /** iOS 100vh hatası */
     function setAppHeight() {
         document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
     }
@@ -15,11 +14,45 @@
 
     function closeNavMenu() {
         const navLinks = document.getElementById('nav-links');
+        const hamburger = document.getElementById('hamburger-btn') || document.querySelector('.hamburger');
         navLinks?.classList.remove('active');
         document.body.classList.remove('nav-open');
+        hamburger?.classList.remove('is-open');
+        if (hamburger) {
+            const icon = hamburger.querySelector('i');
+            if (icon) {
+                icon.className = 'fas fa-bars';
+            }
+        }
     }
 
-    /** Mobil menüde ara / tema / hesap kısayolları */
+    function openNavMenu() {
+        const navLinks = document.getElementById('nav-links');
+        const hamburger = document.getElementById('hamburger-btn') || document.querySelector('.hamburger');
+        navLinks?.classList.add('active');
+        document.body.classList.add('nav-open');
+        hamburger?.classList.add('is-open');
+        if (hamburger) {
+            const icon = hamburger.querySelector('i');
+            if (icon) {
+                icon.className = 'fas fa-times';
+            }
+        }
+    }
+
+    function initMobileNavDrawer() {
+        const navLinks = document.getElementById('nav-links');
+        if (!navLinks || navLinks.querySelector('.nav-drawer-header')) return;
+
+        const header = document.createElement('li');
+        header.className = 'nav-drawer-header';
+        header.innerHTML = `
+            <strong>Menü</strong>
+            <button type="button" class="nav-drawer-close" aria-label="Menüyü kapat">&times;</button>`;
+        navLinks.insertBefore(header, navLinks.firstChild);
+        header.querySelector('.nav-drawer-close')?.addEventListener('click', closeNavMenu);
+    }
+
     function initMobileNavTools() {
         const navLinks = document.getElementById('nav-links');
         if (!navLinks || navLinks.querySelector('.nav-mobile-tools')) return;
@@ -29,22 +62,40 @@
         const profileBtn = document.getElementById('open-profile-modal');
         if (!searchBtn && !themeBtn && !profileBtn) return;
 
+        const label = document.createElement('li');
+        label.className = 'nav-mobile-section-label';
+        label.textContent = 'Hızlı erişim';
+
         const row = document.createElement('li');
         row.className = 'nav-mobile-tools';
         row.innerHTML = `
             <div class="nav-mobile-tools-inner" role="group" aria-label="Hızlı erişim">
-                <button type="button" class="nav-mobile-tool" data-nav-tool="search" aria-label="Ara">
-                    <i class="fas fa-search"></i><span>Ara</span>
+                <button type="button" class="nav-mobile-tool nav-mobile-tool--full" data-nav-tool="search">
+                    <i class="fas fa-search"></i><span>Ürün ara</span>
                 </button>
-                <button type="button" class="nav-mobile-tool" data-nav-tool="theme" aria-label="Tema">
+                <button type="button" class="nav-mobile-tool" data-nav-tool="theme">
                     <i class="fas fa-moon"></i><span>Tema</span>
                 </button>
-                <button type="button" class="nav-mobile-tool" data-nav-tool="profile" aria-label="Hesabım">
+                <button type="button" class="nav-mobile-tool" data-nav-tool="profile">
                     <i class="fas fa-user"></i><span>Hesabım</span>
                 </button>
             </div>`;
 
-        navLinks.insertBefore(row, navLinks.firstChild);
+        const pagesLabel = document.createElement('li');
+        pagesLabel.className = 'nav-mobile-section-label';
+        pagesLabel.textContent = 'Sayfalar';
+
+        const firstPageLink = navLinks.querySelector('li:not(.nav-drawer-header):not(.nav-mobile-tools):not(.lang-switch) a');
+        const insertBefore = firstPageLink?.closest('li') || navLinks.children[1];
+
+        if (insertBefore) {
+            navLinks.insertBefore(pagesLabel, insertBefore);
+            navLinks.insertBefore(row, pagesLabel);
+            navLinks.insertBefore(label, row);
+        } else {
+            navLinks.appendChild(label);
+            navLinks.appendChild(row);
+        }
 
         row.querySelector('[data-nav-tool="search"]')?.addEventListener('click', () => {
             searchBtn?.click();
@@ -63,22 +114,38 @@
         });
     }
 
-    /** Hamburger menü — tüm sayfalarda */
+    function ensureNavBackdrop() {
+        if (document.getElementById('nav-backdrop')) return;
+        const backdrop = document.createElement('button');
+        backdrop.type = 'button';
+        backdrop.id = 'nav-backdrop';
+        backdrop.className = 'nav-backdrop';
+        backdrop.setAttribute('aria-label', 'Menüyü kapat');
+        backdrop.addEventListener('click', closeNavMenu);
+        document.body.appendChild(backdrop);
+    }
+
     function initNav() {
         const navLinks = document.getElementById('nav-links');
         const hamburger =
-            document.getElementById('hamburger-btn') ||
-            document.querySelector('.hamburger');
+            document.getElementById('hamburger-btn') || document.querySelector('.hamburger');
 
         if (!navLinks || !hamburger) return;
 
-        if (!hamburger.id) hamburger.id = 'hamburger-btn';
+        ensureNavBackdrop();
 
+        if (!hamburger.id) hamburger.id = 'hamburger-btn';
+        hamburger.setAttribute('aria-label', 'Menüyü aç');
+        hamburger.setAttribute('aria-expanded', 'false');
+
+        initMobileNavDrawer();
         initMobileNavTools();
 
         const toggle = () => {
-            const open = navLinks.classList.toggle('active');
-            document.body.classList.toggle('nav-open', open);
+            const willOpen = !navLinks.classList.contains('active');
+            if (willOpen) openNavMenu();
+            else closeNavMenu();
+            hamburger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
         };
 
         hamburger.addEventListener('click', (e) => {
@@ -95,9 +162,12 @@
             if (navLinks.contains(e.target) || hamburger.contains(e.target)) return;
             closeNavMenu();
         });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeNavMenu();
+        });
     }
 
-    /** Sepet açıkken body kilidi (iOS bounce) */
     function initCartScrollLock() {
         const observer = new MutationObserver(() => {
             const open = document.body.classList.contains('cart-open');
@@ -106,13 +176,14 @@
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            initNav();
-            initCartScrollLock();
-        });
-    } else {
+    function boot() {
         initNav();
         initCartScrollLock();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
     }
 })();
