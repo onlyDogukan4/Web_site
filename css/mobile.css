@@ -563,14 +563,16 @@ body {
     overflow-x: hidden;
 }
 
-/* Menü açıkken arka plan kaydırma kilidi */
-body.nav-open {
-    overflow: hidden;
-    touch-action: none;
-}
+/* Menü açıkken arka plan kaydırma kilidi — yalnızca mobil */
+@media (max-width: 768px) {
+    body.nav-open {
+        overflow: hidden;
+        touch-action: none;
+    }
 
-body.nav-open .nav-links {
-    display: flex !important;
+    body.nav-open .nav-links {
+        display: flex !important;
+    }
 }
 
 /* Chatbot tam ekran — arka plan kaydırma kilidi */

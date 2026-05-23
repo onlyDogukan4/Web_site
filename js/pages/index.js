@@ -480,6 +480,11 @@ let _products  = [];
         return '₺' + Number(amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    function isWeddingPackage(pkg) {
+        const hay = `${pkg.name || ''} ${pkg.id || ''} ${pkg.description || ''}`.toLowerCase();
+        return /düğün|dugun|wedding|gelin|damat/.test(hay);
+    }
+
     // ── Paket Listesi ────────────────────────────────
     function renderPackages() {
         const container = document.getElementById('packages-container');
@@ -499,7 +504,9 @@ let _products  = [];
             const gridClass = itemIds.length === 3 ? 'package-items-grid items-3' : 'package-items-grid';
 
             const div = document.createElement('div');
-            div.className = 'package-card';
+            div.className = isWeddingPackage(pkg)
+                ? 'package-card package-card--wedding'
+                : 'package-card';
             div.innerHTML = `
                 <div class="package-card-badge">%${pkg.discount || 0} İNDİRİM</div>
                 <div class="package-card-head">

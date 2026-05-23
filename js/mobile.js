@@ -44,13 +44,24 @@
         return window.matchMedia('(max-width: 768px)').matches;
     }
 
+    function teardownMobileNav() {
+        const navLinks = document.getElementById('nav-links');
+        if (!navLinks) return;
+        navLinks
+            .querySelectorAll(
+                '.nav-drawer-header, .nav-mobile-tools, .nav-mobile-section-label, .nav-mobile-only'
+            )
+            .forEach((el) => el.remove());
+        closeNavMenu();
+    }
+
     function initMobileNavDrawer() {
         if (!isMobileNavViewport()) return;
         const navLinks = document.getElementById('nav-links');
         if (!navLinks || navLinks.querySelector('.nav-drawer-header')) return;
 
         const header = document.createElement('li');
-        header.className = 'nav-drawer-header';
+        header.className = 'nav-drawer-header nav-mobile-only';
         header.innerHTML = `
             <strong>Menü</strong>
             <button type="button" class="nav-drawer-close" aria-label="Menüyü kapat">&times;</button>`;
@@ -69,11 +80,11 @@
         if (!searchBtn && !themeBtn && !profileBtn) return;
 
         const label = document.createElement('li');
-        label.className = 'nav-mobile-section-label';
+        label.className = 'nav-mobile-section-label nav-mobile-only';
         label.textContent = 'Hızlı erişim';
 
         const row = document.createElement('li');
-        row.className = 'nav-mobile-tools';
+        row.className = 'nav-mobile-tools nav-mobile-only';
         row.innerHTML = `
             <div class="nav-mobile-tools-inner" role="group" aria-label="Hızlı erişim">
                 <button type="button" class="nav-mobile-tool nav-mobile-tool--full" data-nav-tool="search">
@@ -88,7 +99,7 @@
             </div>`;
 
         const pagesLabel = document.createElement('li');
-        pagesLabel.className = 'nav-mobile-section-label';
+        pagesLabel.className = 'nav-mobile-section-label nav-mobile-only';
         pagesLabel.textContent = 'Sayfalar';
 
         const firstPageLink = navLinks.querySelector('li:not(.nav-drawer-header):not(.nav-mobile-tools):not(.lang-switch) a');
@@ -142,7 +153,7 @@
 
         const bindMobileNav = () => {
             if (!isMobileNavViewport()) {
-                closeNavMenu();
+                teardownMobileNav();
                 return;
             }
 

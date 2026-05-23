@@ -1,5 +1,23 @@
 /* ── Ana sayfa paket kartları ─────────────────────────────────── */
 
+#paketler {
+    margin-top: 80px;
+}
+
+.packages-section-lead {
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: -20px;
+    margin-bottom: 40px;
+}
+
+#packages-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 28px;
+    min-height: 200px;
+}
+
 .package-card {
     background: var(--bg-card);
     border-radius: 24px;
@@ -146,6 +164,75 @@
     font-size: 15px;
     font-weight: 900;
     white-space: nowrap;
+}
+
+/* Düğün / özel konsept paketi — arka plan fotoğrafı + okunaklı metin */
+.package-card--wedding {
+    border: none;
+    color: #f8fafc;
+    background:
+        linear-gradient(145deg, rgba(15, 23, 42, 0.82) 0%, rgba(76, 29, 149, 0.72) 55%, rgba(15, 23, 42, 0.88) 100%),
+        url('images/slider2.png') center / cover no-repeat;
+    box-shadow: 0 20px 50px rgba(76, 29, 149, 0.25);
+}
+
+.package-card--wedding .package-card-badge {
+    background: linear-gradient(135deg, #f472b6, #c026d3);
+    color: #fff;
+}
+
+.package-card--wedding .package-card-head img {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.package-card--wedding .package-card-head h3,
+.package-card--wedding .package-card-head p {
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.package-card--wedding .package-card-head p {
+    color: rgba(248, 250, 252, 0.92);
+}
+
+.package-card--wedding .package-item {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.package-card--wedding .package-item-name {
+    color: #fff;
+}
+
+.package-card--wedding .package-item-qty {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: transparent;
+}
+
+.package-card--wedding .package-footer {
+    border-top-color: rgba(255, 255, 255, 0.25);
+}
+
+.package-card--wedding .package-price {
+    color: #fde68a;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.package-card--wedding .package-price-note {
+    color: #bbf7d0;
+}
+
+.package-card--wedding .package-add-btn {
+    background: #fff;
+    color: #5b21b6;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.package-card--wedding .package-add-btn:hover {
+    filter: brightness(1.05);
 }
 
 @media (max-width: 768px) {

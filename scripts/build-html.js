@@ -133,8 +133,9 @@ function bootstrapFromLegacy(force = false) {
     console.log('Partials hazır (templates/ + partials/)');
 }
 
-const forceBootstrap = process.argv.includes('--bootstrap');
-bootstrapFromLegacy(forceBootstrap);
+if (process.argv.includes('--bootstrap')) {
+    bootstrapFromLegacy(true);
+}
 
 build('index.html', 'index.html');
 build('admin.html', 'admin.html');
