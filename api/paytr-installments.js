@@ -5,7 +5,7 @@ import {
     parseInstallmentRateMap,
     INSTALLMENT_BRAND_LABELS,
     isPaytrMockEnabled,
-} from './lib/paytr.js';
+} from '../lib/paytr.js';
 
 function buildMockRates(amount) {
     const brands = ['bonus', 'world', 'maximum', 'axess'];

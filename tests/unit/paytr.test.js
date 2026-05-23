@@ -7,7 +7,7 @@ import {
     verifyCallbackHash,
     validateCallbackAmount,
     getPaytrConfig,
-} from '../../api/lib/paytr.js';
+} from '../../lib/paytr.js';
 
 describe('PayTR — birim testler', () => {
     const config = getPaytrConfig();

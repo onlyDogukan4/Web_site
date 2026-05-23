@@ -1,6 +1,6 @@
 import { corsHeaders } from './_db.js';
-import { groqChat, getGroqApiKey } from './lib/groq.js';
-import { buildSiteKnowledge } from './lib/site-knowledge.js';
+import { groqChat, getGroqApiKey } from '../lib/groq.js';
+import { buildSiteKnowledge } from '../lib/site-knowledge.js';
 
 export default async function handler(req, res) {
     corsHeaders(res);

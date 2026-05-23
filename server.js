@@ -122,7 +122,7 @@ const server = http.createServer(async (req, res) => {
             if (req.method === 'POST') {
                 const body = await parseBody(req);
                 if (key === 'orders') {
-                    const { normalizeOrders, upsertOrder } = await import('./api/lib/orders.js');
+                    const { normalizeOrders, upsertOrder } = await import('./lib/orders.js');
                     if (Array.isArray(body)) {
                         await writeData('orders', normalizeOrders(body));
                     } else if (body?.orderId) {
@@ -142,12 +142,12 @@ const server = http.createServer(async (req, res) => {
             }
         }
 
-    // ── AI (Groq — api/chat.js, cart-chat.js, site-context.js) ─────────────
+    // ── AI (Groq — api/chat.js, cart-chat.js) ──────────────────────────────
 
     const aiRoutes = {
         '/api/chat': './api/chat.js',
         '/api/cart-chat': './api/cart-chat.js',
-        '/api/site-context': './api/site-context.js',
+        '/api/site-context': './api/chat.js',
         '/api/paytr-installments': './api/paytr-installments.js',
     };
 

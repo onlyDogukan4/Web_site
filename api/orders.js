@@ -1,5 +1,5 @@
 import { readData, writeData, corsHeaders } from './_db.js';
-import { normalizeOrders, upsertOrder } from './lib/orders.js';
+import { normalizeOrders, upsertOrder } from '../lib/orders.js';
 
 export default async function handler(req, res) {
     corsHeaders(res);

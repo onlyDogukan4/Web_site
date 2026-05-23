@@ -29,7 +29,7 @@ const routes = {
     '/api/settings': () => import('../api/settings.js'),
     '/api/chat': () => import('../api/chat.js'),
     '/api/cart-chat': () => import('../api/cart-chat.js'),
-    '/api/site-context': () => import('../api/site-context.js'),
+    '/api/site-context': () => import('../api/chat.js'),
     '/api/paytr-installments': () => import('../api/paytr-installments.js'),
 };
 

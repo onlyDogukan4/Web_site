@@ -8,7 +8,7 @@ import {
     extractClientIp,
     isPaytrMockEnabled,
     createMockPaytrToken,
-} from './lib/paytr.js';
+} from '../lib/paytr.js';
 
 export default async function handler(req, res) {
     corsHeaders(res);

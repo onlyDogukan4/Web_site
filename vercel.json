@@ -3,6 +3,7 @@
     "rewrites": [
         { "source": "/orders.json", "destination": "/api/orders" },
         { "source": "/packages.json", "destination": "/api/packages" },
-        { "source": "/concepts.json", "destination": "/api/concepts" }
+        { "source": "/concepts.json", "destination": "/api/concepts" },
+        { "source": "/api/site-context", "destination": "/api/chat" }
     ]
 }

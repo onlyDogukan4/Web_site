@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeOrders, upsertOrder } from '../../api/lib/orders.js';
+import { normalizeOrders, upsertOrder } from '../../lib/orders.js';
 
 describe('orders normalize', () => {
     it('aynı orderId tekrarlarını birleştirir', () => {

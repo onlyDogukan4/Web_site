@@ -1,4 +1,4 @@
-import { buildCallbackHash, getPaytrConfig } from '../../api/lib/paytr.js';
+import { buildCallbackHash, getPaytrConfig } from '../../lib/paytr.js';
 
 export const TEST_CART = [
     { name: 'Test Bardak', price: 25.5, quantity: 2 },

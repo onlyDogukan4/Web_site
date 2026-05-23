@@ -1,4 +1,4 @@
-import { buildCallbackHash, getPaytrConfig } from '../../api/lib/paytr.js';
+import { buildCallbackHash, getPaytrConfig } from '../../lib/paytr.js';
 
 /** Playwright E2E: PayTR callback simülasyonu */
 export async function simulatePaytrSuccess(request, baseURL, orderId, totalPrice) {
