@@ -1,0 +1,72 @@
+<!-- CAMPAIGN MODAL (YENİ) -->
+    <div class="modal-overlay" id="campaign-modal">
+        <div class="modal-card" style="max-width: 450px;">
+            <h2 id="c-modal-title">Kampanya Düzenle</h2>
+            <div class="form-group">
+                <label>Kampanya Adı (Kısa)</label>
+                <input type="text" id="c-name" class="editable-input" placeholder="Örn: Yaz Fırsatları">
+            </div>
+            <div class="form-group">
+                <label>Stil / Tema</label>
+                <select id="c-theme" class="editable-input">
+                    <option value="premium">Premium (Altın/Gümüş)</option>
+                    <option value="gradient">Modern Gradient</option>
+                    <option value="danger">Acil / Kırmızı</option>
+                </select>
+            </div>
+            <div class="form-row">
+                 <div class="form-group">
+                    <label>Çerçeve Rengi</label>
+                    <input type="color" id="c-border-color" class="editable-input" value="#ffd700">
+                </div>
+                <div class="form-group">
+                    <label>Metin Rengi</label>
+                    <input type="color" id="c-text-color" class="editable-input" value="#000000">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Üst Yazı (Örn: FIRSAT)</label>
+                <input type="text" id="c-top-text" class="editable-input" placeholder="Çerçevenin üstünde yazar" oninput="updateCampaignPreview()">
+            </div>
+            <!-- Alt yazı kaldırıldı -->
+             <div class="form-group">
+                <label>Açıklama (Kısa)</label>
+                <input type="text" id="c-desc" class="editable-input" placeholder="Örn: Bardak alana kaşık bedava" oninput="updateCampaignPreview()">
+            </div>
+
+            <!-- REAL-TIME PREVIEW BOX -->
+            <div style="background:#f8f9fa; border:1px dashed #cbd5e1; border-radius:16px; padding:20px; margin-top:20px; text-align:center;">
+                <label style="display:block; margin-bottom:15px; font-weight:700; color:#475569;">Görünüm Önizlemesi</label>
+                
+                <div id="c-preview-card" style="width:220px; height:320px; background:white; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.1); position:relative; margin:0 auto; overflow:hidden; transition:0.3s;">
+                    
+                    <!-- Top Badge -->
+                    <div id="c-preview-top" style="position:absolute; top:12px; left:0; right:0; text-align:center; z-index:10;">
+                        <span style="display:inline-block; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:800; box-shadow:0 4px 6px rgba(0,0,0,0.1);">ÜST YAZI</span>
+                    </div>
+
+                    <img src="images/bardak.png" style="width:100%; height:180px; object-fit:contain; margin-top:30px;">
+                    
+                    <div style="padding:15px;">
+                        <div style="height:14px; background:#e2e8f0; border-radius:4px; margin-bottom:8px; width:80%;"></div>
+                        <div style="height:20px; background:#e2e8f0; border-radius:4px; width:40%;"></div>
+                        
+                        <!-- Description Preview -->
+                        <div id="c-preview-desc" style="font-size:10px; font-weight:700; color:#e11d48; margin-top:8px;"></div>
+                    </div>
+
+                    <!-- Bottom Badge -->
+                    <div id="c-preview-bottom" style="position:absolute; bottom:15px; left:0; right:0; text-align:center;">
+                         <span style="display:inline-block; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:800; box-shadow:0 4px 6px rgba(0,0,0,0.1);">ALT YAZI</span>
+                    </div>
+                </div>
+                <p style="font-size:11px; color:#94a3b8; margin-top:10px;">*Temsili ürün görünümüdür.</p>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="closeModal('campaign-modal')">İptal</button>
+                <button class="btn btn-primary" onclick="handleCampaignSave()">Kampanyayı Kaydet</button>
+            </div>
+            <span class="close-btn" onclick="closeModal('campaign-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+        </div>
+    </div>

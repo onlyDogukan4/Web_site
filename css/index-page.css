@@ -1,0 +1,64 @@
+/* ── Arama Çubuğu ─────────────────────────────────────────────── */
+        .search-bar-sticky {
+            position: fixed; top: 70px; left: 0; width: 100%; z-index: 9998;
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transform: translateY(-110%); opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), opacity 0.35s ease;
+            pointer-events: none;
+        }
+        [data-theme="dark"] .search-bar-sticky {
+            background: rgba(15,23,42,0.97); border-bottom-color: rgba(255,255,255,0.08);
+        }
+        .search-bar-sticky.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+        .search-bar-inner {
+            max-width: 1200px; margin: 0 auto; padding: 14px 30px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .search-bar-icon { font-size: 18px; color: #6366f1; flex-shrink: 0; }
+        .search-bar-input {
+            flex: 1; border: none; background: transparent; outline: none;
+            font-size: 16px; font-weight: 600; color: #1e293b;
+            font-family: inherit;
+        }
+        [data-theme="dark"] .search-bar-input { color: #f1f5f9; }
+        .search-bar-input::placeholder { color: #94a3b8; font-weight: 400; }
+        .search-bar-count {
+            font-size: 12px; font-weight: 700; color: #6366f1;
+            background: #ede9fe; padding: 4px 12px; border-radius: 20px;
+            white-space: nowrap; display: none;
+        }
+        .search-bar-close {
+            width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9;
+            border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #64748b; transition: all 0.2s; flex-shrink: 0;
+        }
+        .search-bar-close:hover { background: #fee2e2; color: #dc2626; }
+        [data-theme="dark"] .search-bar-close { background: #334155; color: #94a3b8; }
+
+        /* Sepet genişliği: css/layout.css + css/mobile.css */
+        body.cart-open .cart-drawer  { transform: translateX(0); }
+        body.cart-open .chatbot-container { display: none !important; }
+        .cart-overlay {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.5);
+            backdrop-filter: blur(8px); z-index: 9999;
+            opacity: 0; visibility: hidden; transition: 0.4s;
+        }
+        body.cart-open .cart-overlay { opacity: 1; visibility: visible; }
+        .cart-header {
+            padding: 30px; border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .vip-concept-frame {
+            background: linear-gradient(white,white) padding-box,
+                        linear-gradient(45deg,#d4af37,#f7ef8a,#d4af37) border-box !important;
+            border: 2px solid transparent !important;
+            box-shadow: 0 10px 30px rgba(212,175,55,0.15) !important;
+        }
+        .vip-badge {
+            background: linear-gradient(45deg,#d4af37,#b45309); color: white;
+            font-size: 9px; font-weight: 900; padding: 4px 10px; border-radius: 10px;
+            display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px;
+            text-transform: uppercase;
+        }

@@ -1,0 +1,32 @@
+<!-- Profil Modalı -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content" style="max-width:550px;">
+            <div class="modal-header-banner">
+                <span class="close-btn profile-close" style="color:white;">&times;</span>
+                <i class="fas fa-user-circle" style="font-size:64px;margin-bottom:15px;"></i>
+                <h2>Profilim</h2>
+                <p style="font-size:14px;opacity:.8;">Bilgilerinizi buradan yönetebilirsiniz.</p>
+            </div>
+            <div class="modal-body-padding">
+                <form id="profile-form">
+                    <div style="display:grid;gap:20px;">
+                        <div class="profile-field-item">
+                            <label><i class="fas fa-id-card"></i> Ad Soyad</label>
+                            <input type="text" id="user-name" placeholder="Örn: Doğan Aydın">
+                        </div>
+                        <div class="profile-field-item">
+                            <label><i class="fas fa-phone-alt"></i> Telefon</label>
+                            <input type="tel" id="user-phone" placeholder="05XX XXX XX XX">
+                        </div>
+                        <div class="profile-field-item">
+                            <label><i class="fas fa-map-marker-alt"></i> Teslimat Adresi</label>
+                            <textarea id="user-address" rows="3" placeholder="Açık adresinizi giriniz..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width:100%;margin-top:10px;padding:18px;">
+                        <i class="fas fa-save"></i> KAYDET
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>

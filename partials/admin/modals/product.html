@@ -1,0 +1,73 @@
+<!-- PRODUCT MODAL -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-card">
+            <h2 id="p-modal-title" style="margin-bottom:20px">Ürün Detayları</h2>
+            <div class="form-group">
+                <label>Görsel (Sürükle-Bırak)</label>
+                <div class="drop-zone" id="p-drop-zone">
+                    <div id="p-drop-text" style="text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-cloud-upload-alt fa-3x"></i><br>
+                        <span style="font-size: 12px;">Resim bırakın veya tıklayın</span>
+                    </div>
+                    <img id="p-preview" src="" style="display:none">
+                </div>
+                <input type="file" id="p-file" accept="image/*" style="display:none">
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Ürün Adı (TR)</label><input type="text" id="p-name-tr" class="editable-input"></div>
+                <div class="form-group"><label>Product Name (EN)</label><input type="text" id="p-name-en" class="editable-input"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Mevcut Fiyat (₺)</label><input type="number" id="p-price" class="editable-input"></div>
+                <div class="form-group"><label>Eski Fiyat (Opsiyonel ₺)</label><input type="number" id="p-old-price" class="editable-input" placeholder="İndirim etiketi için"></div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select id="p-status" class="editable-input">
+                        <option value="active">Aktif</option>
+                        <option value="oos">Stok Dışı</option>
+                        <option value="discount">İndirimde</option>
+                        <option value="hot">Kampanya (HOT)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Puan</label><input type="text" id="p-rating" class="editable-input" value="5.0"></div>
+                <div class="form-group">
+                    <label>Kampanya Grubu</label>
+                    <select id="p-campaign" class="editable-input">
+                        <option value="">Yok</option>
+                        <!-- JS ile dolacak -->
+                    </select>
+                </div>
+            </div>
+            <div style="background: #f1f5f9; padding:15px; border-radius:12px; margin-bottom:15px;">
+                <h4 style="margin-bottom:10px; font-size:14px;"><i class="fas fa-percentage"></i> Gelişmiş İndirimler</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Çoklu Alım İndirimi (%)</label>
+                        <input type="number" id="p-bulk-rate" class="editable-input" placeholder="Örn: 10 (Yüzde 10)">
+                    </div>
+                    <div class="form-group">
+                        <label>Kaç Adet Üstü?</label>
+                        <input type="number" id="p-bulk-threshold" class="editable-input" placeholder="Örn: 20">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Birlikte Alımda İndirim (%)</label>
+                        <input type="number" id="p-cross-rate" class="editable-input" placeholder="Örn: 20">
+                    </div>
+                    <div class="form-group">
+                        <label>Hangi Ürünle? (ID)</label>
+                        <input type="text" id="p-cross-target" class="editable-input" placeholder="Ürün ID girin">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group"><label>Açıklama (TR)</label><textarea id="p-desc-tr" class="editable-input" rows="2"></textarea></div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                <button class="btn btn-secondary" onclick="closeModal('product-modal')">İptal</button>
+                <button class="btn btn-primary" onclick="handleProductSave()">Değişiklikleri Kaydet</button>
+            </div>
+            <span class="close-btn" onclick="closeModal('product-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+        </div>
+    </div>

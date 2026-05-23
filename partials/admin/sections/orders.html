@@ -1,0 +1,29 @@
+<!-- Siparişler Bölümü -->
+        <section id="sec-o" style="display:none">
+            <div class="section-header">
+                <div>
+                    <h1>Sipariş Yönetimi</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Manuel eklenen ve aktif siparişlerin takibi.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openNewOrder()"><i class="fas fa-plus"></i> Yeni Sipariş</button>
+            </div>
+            <div class="section-card">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kod</th>
+                                <th>Müşteri</th>
+                                <th style="width: 25%;">Ürünler</th>
+                                <th>Fiyat</th>
+                                <th>Aşama</th>
+                                <th style="text-align: right;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody id="o-table">
+                            <!-- JS ile dolacak -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>

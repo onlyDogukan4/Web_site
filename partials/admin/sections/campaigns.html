@@ -1,0 +1,30 @@
+<!-- KAMPANYALAR BÖLÜMÜ (YENİ) -->
+        <section id="sec-c" style="display:none">
+            <div class="section-header">
+                <div>
+                    <h1>Kampanya Yönetimi</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Anasayfada öne çıkacak özel kampanya grupları oluşturun.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddCampaign()"><i class="fas fa-plus"></i> Yeni Kampanya</button>
+            </div>
+            <div class="section-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kampanya Adı</th>
+                            <th>Açıklama</th>
+                            <th style="text-align: right;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="c-table">
+                        <!-- JS ile dolacak -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align:right; margin-top:25px; border-top: 1px solid var(--border); padding-top: 20px;">
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">* Kampanyaları canlıya almak için basın.</p>
+                <button class="btn btn-primary" style="padding:15px 40px" onclick="syncData('campaigns')">
+                    <i class="fas fa-cloud-upload-alt"></i> KAMPANYALARI YAYINLA
+                </button>
+            </div>
+        </section>

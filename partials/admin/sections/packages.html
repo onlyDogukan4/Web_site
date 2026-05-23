@@ -1,0 +1,14 @@
+<!-- Paketler (YENİ) -->
+        <section id="sec-pkg" style="display:none">
+            <div class="section-header">
+                <div><h1>Paketler & Setler</h1><p>Düğün, parti gibi toplu setleri yönetin.</p></div>
+                <button class="btn btn-primary" onclick="openAddPackage()"><i class="fas fa-plus"></i> Yeni Paket</button>
+            </div>
+            <div class="section-card">
+                 <table>
+                    <thead><tr><th>Paket Adı</th><th>İçerik (Adet)</th><th>İndirim</th><th>İşlem</th></tr></thead>
+                    <tbody id="pkg-table"></tbody>
+                </table>
+            </div>
+             <div style="margin-top:20px; text-align:right;"><button class="btn btn-primary" onclick="syncData('packages')">PAKETLERİ YAYINLA</button></div>
+        </section>
