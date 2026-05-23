@@ -9,7 +9,7 @@ import { buildSuccessCallbackBody, TEST_CART, TEST_USER, TEST_TOTAL } from '../h
  */
 const memoryDb = createMemoryDb();
 
-vi.mock('../../api/_db.js', () => memoryDb.mockModule());
+vi.mock('../../lib/db.js', () => memoryDb.mockModule());
 
 describe('Ödeme akışı — uçtan uca (API seviyesi)', () => {
     beforeEach(() => {
@@ -19,8 +19,8 @@ describe('Ödeme akışı — uçtan uca (API seviyesi)', () => {
     });
 
     it('sepet ödemesi: token al → callback → sipariş onay-bekliyor', async () => {
-        const tokenHandler = (await import('../../api/paytr-token.js')).default;
-        const callbackHandler = (await import('../../api/paytr-callback.js')).default;
+        const tokenHandler = (await import('../../lib/routes/paytr-token.js')).default;
+        const callbackHandler = (await import('../../lib/routes/paytr-callback.js')).default;
 
         const tokenRes = createMockRes();
         await tokenHandler(
@@ -50,7 +50,7 @@ describe('Ödeme akışı — uçtan uca (API seviyesi)', () => {
     });
 
     it('callback öncesi sipariş yoktur (güvenlik)', async () => {
-        const tokenHandler = (await import('../../api/paytr-token.js')).default;
+        const tokenHandler = (await import('../../lib/routes/paytr-token.js')).default;
 
         const tokenRes = createMockRes();
         await tokenHandler(

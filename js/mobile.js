@@ -16,8 +16,10 @@
         const navLinks = document.getElementById('nav-links');
         const hamburger = document.getElementById('hamburger-btn') || document.querySelector('.hamburger');
         navLinks?.classList.remove('active');
+        navLinks?.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('nav-open');
         hamburger?.classList.remove('is-open');
+        hamburger?.setAttribute('aria-expanded', 'false');
         if (hamburger) {
             const icon = hamburger.querySelector('i');
             if (icon) {
@@ -29,9 +31,12 @@
     function openNavMenu() {
         const navLinks = document.getElementById('nav-links');
         const hamburger = document.getElementById('hamburger-btn') || document.querySelector('.hamburger');
+        dockNavLinksToBody();
         navLinks?.classList.add('active');
+        navLinks?.setAttribute('aria-hidden', 'false');
         document.body.classList.add('nav-open');
         hamburger?.classList.add('is-open');
+        hamburger?.setAttribute('aria-expanded', 'true');
         if (hamburger) {
             const icon = hamburger.querySelector('i');
             if (icon) {
@@ -44,6 +49,27 @@
         return window.matchMedia('(max-width: 768px)').matches;
     }
 
+    /** fixed menü navbar blur içinde kalmasın diye body'ye taşınır */
+    let navLinksDock = null;
+
+    function dockNavLinksToBody() {
+        const navLinks = document.getElementById('nav-links');
+        if (!navLinks || navLinks.dataset.docked === 'body') return;
+        navLinksDock = { parent: navLinks.parentNode, next: navLinks.nextSibling };
+        document.body.appendChild(navLinks);
+        navLinks.dataset.docked = 'body';
+    }
+
+    function undockNavLinks() {
+        const navLinks = document.getElementById('nav-links');
+        if (!navLinks || !navLinksDock) return;
+        const { parent, next } = navLinksDock;
+        if (next) parent.insertBefore(navLinks, next);
+        else parent.appendChild(navLinks);
+        delete navLinks.dataset.docked;
+        navLinksDock = null;
+    }
+
     function teardownMobileNav() {
         const navLinks = document.getElementById('nav-links');
         if (!navLinks) return;
@@ -53,6 +79,7 @@
             )
             .forEach((el) => el.remove());
         closeNavMenu();
+        undockNavLinks();
     }
 
     function initMobileNavDrawer() {
@@ -156,6 +183,11 @@
                 teardownMobileNav();
                 return;
             }
+
+            dockNavLinksToBody();
+            navLinks.setAttribute('role', 'dialog');
+            navLinks.setAttribute('aria-label', 'Site menüsü');
+            navLinks.setAttribute('aria-hidden', 'true');
 
             ensureNavBackdrop();
             initMobileNavDrawer();

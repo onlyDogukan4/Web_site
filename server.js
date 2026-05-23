@@ -2,7 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { readData, writeData } from './api/_db.js';
+import { readData, writeData } from './lib/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -145,17 +145,36 @@ const server = http.createServer(async (req, res) => {
     // ── AI (Groq — api/chat.js, cart-chat.js) ──────────────────────────────
 
     const aiRoutes = {
-        '/api/chat': './api/chat.js',
-        '/api/cart-chat': './api/cart-chat.js',
-        '/api/site-context': './api/chat.js',
-        '/api/paytr-installments': './api/paytr-installments.js',
+        '/api/chat': { path: './api/chat.js', query: {} },
+        '/api/cart-chat': { path: './api/chat.js', query: { mode: 'cart' } },
+        '/api/site-context': { path: './api/chat.js', query: {} },
+        '/api/paytr-installments': { path: './api/paytr.js', query: { action: 'installments' } },
+        '/api/paytr-token': { path: './api/paytr.js', query: { action: 'token' } },
+        '/api/paytr-callback': { path: './api/paytr.js', query: { action: 'callback' } },
+        '/api/payment-requests': { path: './api/paytr.js', query: { action: 'payment-requests' } },
     };
 
     if (aiRoutes[url]) {
         try {
-            return await runApiHandler(aiRoutes[url], req, res);
+            const route = aiRoutes[url];
+            const mod = await import(route.path);
+            const handler = mod.default;
+            const body = await parseBody(req);
+            const vercelReq = {
+                method: req.method,
+                headers: req.headers,
+                body,
+                query: {
+                    ...Object.fromEntries(new URL(req.url, 'http://localhost').searchParams),
+                    ...route.query,
+                },
+                socket: { remoteAddress: req.socket.remoteAddress },
+            };
+            const vercelRes = createVercelRes(res);
+            await handler(vercelReq, vercelRes);
+            return;
         } catch (e) {
-            return json(res, { error: 'AI API hatası: ' + e.message }, 500);
+            return json(res, { error: 'API hatası: ' + e.message }, 500);
         }
     }
 

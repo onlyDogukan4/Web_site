@@ -11,7 +11,7 @@ import {
 
 const memoryDb = createMemoryDb();
 
-vi.mock('../../api/_db.js', () => memoryDb.mockModule());
+vi.mock('../../lib/db.js', () => memoryDb.mockModule());
 
 describe('PayTR callback — entegrasyon testleri', () => {
     beforeEach(() => {
@@ -20,7 +20,7 @@ describe('PayTR callback — entegrasyon testleri', () => {
     });
 
     async function loadHandler() {
-        const mod = await import('../../api/paytr-callback.js');
+        const mod = await import('../../lib/routes/paytr-callback.js');
         return mod.default;
     }
 

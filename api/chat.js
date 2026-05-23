@@ -1,4 +1,5 @@
-import { corsHeaders } from './_db.js';
+import { corsHeaders } from '../lib/db.js';
+import cartChat from '../lib/routes/cart-chat.js';
 import { groqChat, getGroqApiKey } from '../lib/groq.js';
 import { buildSiteKnowledge, resolveConceptPrice } from '../lib/site-knowledge.js';
 import { parseAgentCommands } from '../lib/agent-commands.js';
@@ -57,6 +58,9 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
+    }
+    if (req.query?.mode === 'cart') {
+        return cartChat(req, res);
     }
     if (req.method === 'GET') {
         return handleSiteContext(req, res);

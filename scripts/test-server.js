@@ -1,14 +1,12 @@
 /**
  * E2E testleri için yerel sunucu.
- * Statik dosyalar + PayTR API route'ları (mock modda).
- *
- * Kullanım: npm run test:server
+ * Statik dosyalar + birleşik API route'ları (mock modda).
  */
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { resetMemoryDb } from '../api/_db.js';
+import { resetMemoryDb } from '../lib/db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -20,17 +18,21 @@ process.env.SITE_URL = `http://localhost:${PORT}`;
 
 resetMemoryDb();
 
+/** Eski URL'ler → birleşik handler + query */
 const routes = {
-    '/api/paytr-token': () => import('../api/paytr-token.js'),
-    '/api/paytr-callback': () => import('../api/paytr-callback.js'),
-    '/api/payment-requests': () => import('../api/payment-requests.js'),
-    '/api/orders': () => import('../api/orders.js'),
-    '/api/products': () => import('../api/products.js'),
-    '/api/settings': () => import('../api/settings.js'),
-    '/api/chat': () => import('../api/chat.js'),
-    '/api/cart-chat': () => import('../api/cart-chat.js'),
-    '/api/site-context': () => import('../api/chat.js'),
-    '/api/paytr-installments': () => import('../api/paytr-installments.js'),
+    '/api/products': { mod: () => import('../api/data.js'), query: { resource: 'products' } },
+    '/api/packages': { mod: () => import('../api/data.js'), query: { resource: 'packages' } },
+    '/api/concepts': { mod: () => import('../api/data.js'), query: { resource: 'concepts' } },
+    '/api/campaigns': { mod: () => import('../api/data.js'), query: { resource: 'campaigns' } },
+    '/api/settings': { mod: () => import('../api/data.js'), query: { resource: 'settings' } },
+    '/api/orders': { mod: () => import('../api/data.js'), query: { resource: 'orders' } },
+    '/api/paytr-token': { mod: () => import('../api/paytr.js'), query: { action: 'token' } },
+    '/api/paytr-callback': { mod: () => import('../api/paytr.js'), query: { action: 'callback' } },
+    '/api/paytr-installments': { mod: () => import('../api/paytr.js'), query: { action: 'installments' } },
+    '/api/payment-requests': { mod: () => import('../api/paytr.js'), query: { action: 'payment-requests' } },
+    '/api/chat': { mod: () => import('../api/chat.js'), query: {} },
+    '/api/cart-chat': { mod: () => import('../api/chat.js'), query: { mode: 'cart' } },
+    '/api/site-context': { mod: () => import('../api/chat.js'), query: {} },
 };
 
 const MIME = {
@@ -121,16 +123,17 @@ const server = http.createServer(async (nodeReq, nodeRes) => {
     const url = new URL(nodeReq.url, `http://localhost:${PORT}`);
     const pathname = url.pathname;
 
-    if (routes[pathname]) {
+    const route = routes[pathname];
+    if (route) {
         try {
-            const mod = await routes[pathname]();
+            const mod = await route.mod();
             const handler = mod.default;
             const body = await parseBody(nodeReq);
             const req = {
                 method: nodeReq.method,
                 headers: nodeReq.headers,
                 body,
-                query: Object.fromEntries(url.searchParams),
+                query: { ...Object.fromEntries(url.searchParams), ...route.query },
                 socket: { remoteAddress: nodeReq.socket.remoteAddress },
             };
             const res = createVercelRes(nodeRes);
@@ -147,5 +150,5 @@ const server = http.createServer(async (nodeReq, nodeRes) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Test sunucusu: http://localhost:${PORT} (PAYTR_MOCK + bellek DB)`);
+    console.log(`Test sunucusu: http://localhost:${PORT} (3 API fn + bellek DB)`);
 });

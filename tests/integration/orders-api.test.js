@@ -3,7 +3,7 @@ import { createMemoryDb } from '../helpers/memory-db.js';
 import { createMockReq, createMockRes } from '../helpers/mock-req-res.js';
 
 const memoryDb = createMemoryDb();
-vi.mock('../../api/_db.js', () => memoryDb.mockModule());
+vi.mock('../../lib/db.js', () => memoryDb.mockModule());
 
 describe('orders API', () => {
     beforeEach(() => {
@@ -12,7 +12,7 @@ describe('orders API', () => {
     });
 
     async function loadHandler() {
-        return (await import('../../api/orders.js')).default;
+        return (await import('../../lib/routes/orders.js')).default;
     }
 
     it('POST dizi gönderince append etmez, temiz listeyi yazar', async () => {

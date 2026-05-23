@@ -13,7 +13,8 @@
     "test:server": "node scripts/test-server.js",
     "test:all": "npm run test && npm run test:e2e",
     "build:html": "node scripts/build-html.js",
-    "vercel-build": "npm run build:html"
+    "verify:api": "node scripts/verify-api-count.js",
+    "vercel-build": "npm run build:html && npm run verify:api"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

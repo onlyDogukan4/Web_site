@@ -5,7 +5,7 @@ import { TEST_CART, TEST_USER, TEST_TOTAL } from '../helpers/paytr-fixtures.js';
 
 const memoryDb = createMemoryDb();
 
-vi.mock('../../api/_db.js', () => memoryDb.mockModule());
+vi.mock('../../lib/db.js', () => memoryDb.mockModule());
 
 describe('PayTR token — entegrasyon testleri', () => {
     beforeEach(() => {
@@ -16,7 +16,7 @@ describe('PayTR token — entegrasyon testleri', () => {
     });
 
     async function loadHandler() {
-        const mod = await import('../../api/paytr-token.js');
+        const mod = await import('../../lib/routes/paytr-token.js');
         return mod.default;
     }
 
