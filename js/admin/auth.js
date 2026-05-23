@@ -1,18 +1,18 @@
 import { Admin } from './state.js';
+import { init } from './core.js';
 
-export function checkLogin() { 
-    if(document.getElementById('admin-pass').value === Admin.PASS) { 
-        sessionStorage.setItem('adm_logged','1'); 
-        document.getElementById('login-overlay').style.display='none'; 
-        init(); 
+export function checkLogin() {
+    const pass = document.getElementById('admin-pass')?.value ?? '';
+    if (pass === Admin.PASS) {
+        sessionStorage.setItem('adm_logged', '1');
+        document.getElementById('login-overlay').style.display = 'none';
+        init();
     } else {
-        alert("Hatalı şifre!");
+        alert('Hatalı şifre!');
     }
 }
 
-export function logout() { sessionStorage.removeItem('adm_logged'); location.reload(); }
-
-if(sessionStorage.getItem('adm_logged')) { 
-    document.getElementById('login-overlay').style.display='none'; 
-    init(); 
+export function logout() {
+    sessionStorage.removeItem('adm_logged');
+    location.reload();
 }

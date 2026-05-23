@@ -1,4 +1,7 @@
 import { Admin } from './state.js';
+import { renderAll } from './core.js';
+import { closeModal } from './modals.js';
+import { syncData } from './orders.js';
 
 export function setupGenericDrop(zoneId, fileId, previewId, textId, callback) {
     const zone = document.getElementById(zoneId);
@@ -170,6 +173,6 @@ export function handleConceptSave() {
         base_image: curConceptBaseImg || existing.base_image || 'images/bardak.png',
         variations: curVariantData
     };
-    if(Admin.editConIdx > -1) Admin.concepts[Admin.editConIdx] = con; else concepts.push(con);
+    if(Admin.editConIdx > -1) Admin.concepts[Admin.editConIdx] = con; else Admin.concepts.push(con);
     renderAll(); closeModal('concept-modal'); syncData('concepts');
 }

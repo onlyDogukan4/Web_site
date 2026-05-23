@@ -1,4 +1,7 @@
 import { Admin } from './state.js';
+import { renderAll } from './core.js';
+import { closeModal } from './modals.js';
+import { syncData } from './orders.js';
 
 export function openAddCampaign() {
     Admin.editCampaignIdx = -1;
@@ -76,7 +79,7 @@ export function handleCampaignSave() {
     if(Admin.editCampaignIdx > -1) {
         Admin.campaigns[Admin.editCampaignIdx] = cmp;
     } else {
-        campaigns.push(cmp);
+        Admin.campaigns.push(cmp);
     }
     
     renderAll();
@@ -113,7 +116,7 @@ export async function deleteCampaign(idx) {
 export function renderCampaigns() {
     const tbody = document.getElementById('c-table');
     if(!tbody) return;
-    tbody.innerHTML = campaigns.map((c, i) => `
+    tbody.innerHTML = Admin.campaigns.map((c, i) => `
         <tr>
             <td style="font-weight:700">${c.name}</td>
             <td style="color:var(--text-muted); font-size:13px;">${c.description || '-'}</td>
@@ -127,7 +130,7 @@ export function renderCampaigns() {
     const pSelect = document.getElementById('p-campaign');
     if(pSelect) {
         let opts = '<option value="">Yok</option>'; // Changed from "Kampanya Yok" to "Yok" for consistency
-        campaigns.forEach(c => {
+        Admin.campaigns.forEach(c => {
             const sel = (Admin.curIdx > -1 && Admin.products[Admin.curIdx] && c.id === Admin.products[Admin.curIdx].campaign_id) ? 'selected' : '';
             opts += `<option value="${c.id}" ${sel}>${c.name}</option>`;
         });
@@ -177,8 +180,8 @@ export function renderPackages() {
     `).join('');
 }
 
-export async function deleteConcept(i) { if(confirm("Silmek istediğinize emin misiniz?")) { concepts.splice(i,1); renderAll(); await syncData('concepts'); } }
-export async function deletePackage(i) { if(confirm("Silmek istediğinize emin misiniz?")) { packages.splice(i,1); renderAll(); await syncData('packages'); } }
+export async function deleteConcept(i) { if(confirm("Silmek istediğinize emin misiniz?")) { Admin.concepts.splice(i,1); renderAll(); await syncData('concepts'); } }
+export async function deletePackage(i) { if(confirm("Silmek istediğinize emin misiniz?")) { Admin.packages.splice(i,1); renderAll(); await syncData('packages'); } }
 
 // Global state for images and editing
 let curConceptBaseImg = "";

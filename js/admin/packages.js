@@ -1,4 +1,9 @@
 import { Admin } from './state.js';
+import { renderAll } from './core.js';
+import { closeModal } from './modals.js';
+import { syncData } from './orders.js';
+import { fillVariationInputs, setupDropZones } from './utils.js';
+import { loadPaymentLinks } from './payment-links.js';
 
 export function openAddPackage() {
     Admin.editPkgIdx=-1; curPkgImg=""; resetPkgModal();
@@ -31,7 +36,7 @@ export function handlePackageSave() {
         image: curPkgImg
     };
     if(!pkg.name || !pkg.items) return alert("Hata");
-    if(Admin.editPkgIdx>-1) Admin.packages[Admin.editPkgIdx]=pkg; else packages.push(pkg);
+    if(Admin.editPkgIdx>-1) Admin.packages[Admin.editPkgIdx]=pkg; else Admin.packages.push(pkg);
     renderAll(); closeModal('package-modal'); syncData('packages');
 }
 

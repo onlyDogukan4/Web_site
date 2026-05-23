@@ -1,4 +1,6 @@
 import { Admin } from './state.js';
+import { renderAll } from './core.js';
+import { closeModal } from './modals.js';
 
 export async function createManualOrder() {
     const name = document.getElementById('o-customer').value.trim();

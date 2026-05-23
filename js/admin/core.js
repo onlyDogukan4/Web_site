@@ -1,4 +1,5 @@
 import { Admin } from './state.js';
+import { renderCampaigns, renderPackages, renderConcepts } from './campaigns.js';
 
 export async function checkDBStatus() {
     const dot = document.getElementById('db-status-dot');
@@ -87,7 +88,7 @@ export function renderAll() {
     
     pt.innerHTML = '';
     
-    let filtered = [...products]; // Create copy to avoid ref issues
+    let filtered = [...Admin.products];
 
     // Search and Filter logic
     const searchTerm = document.getElementById('search-box')?.value.toLowerCase();
@@ -117,7 +118,7 @@ export function renderAll() {
             // Kampanya adını bul
             let cmpName = "-";
             if(p.campaign_id && Admin.campaigns) {
-                 const c = campaigns.find(x => x.id == p.campaign_id);
+                 const c = Admin.campaigns.find(x => x.id == p.campaign_id);
                  if(c) cmpName = c.name;
             }
 
@@ -136,10 +137,10 @@ export function renderAll() {
                 <td><span class="status-badge status-${p.status}">${p.status === 'active' ? 'Aktif' : (p.status === 'oos' ? 'Stok Yok' : 'İndirim')}</span></td>
                 <td style="text-align:right;">
                     <div style="display:flex; gap:5px; justify-content:flex-end;">
-                        <button class="btn btn-secondary" style="padding:8px 12px; background:#3b82f6; color:white;" onclick="openEditProduct(${products.indexOf(p)})">
+                        <button class="btn btn-secondary" style="padding:8px 12px; background:#3b82f6; color:white;" onclick="openEditProduct(${Admin.products.indexOf(p)})">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-danger" style="padding:8px 12px;" onclick="deleteProduct(${products.indexOf(p)})">
+                        <button class="btn btn-danger" style="padding:8px 12px;" onclick="deleteProduct(${Admin.products.indexOf(p)})">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
@@ -181,12 +182,10 @@ export function renderAll() {
 
      // Ayarları input'a doldur
     if(document.getElementById('s-min-order')) {
-        document.getElementById('s-min-order').value = settings.minOrder || 500;
-        document.getElementById('s-free-shipping').value = settings.freeShipping || 1000;
+        document.getElementById('s-min-order').value = Admin.settings.minOrder || 500;
+        document.getElementById('s-free-shipping').value = Admin.settings.freeShipping || 1000;
     }
 }
-
-let Admin.editOrderId = null;
 export function openNewOrder() {
     Admin.editOrderId = null;
     document.getElementById('o-modal-title').innerText = 'Manuel Sipariş Oluştur';

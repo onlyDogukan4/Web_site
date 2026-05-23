@@ -1,4 +1,7 @@
 import { Admin } from './state.js';
+import { renderAll } from './core.js';
+import { closeModal, resetPModal } from './modals.js';
+import { syncData } from './orders.js';
 
 export function openAddProduct() { 
     Admin.curIdx = -1; Admin.curImg = ""; 
@@ -61,7 +64,7 @@ export async function handleProductSave() {
         description_tr: document.getElementById('p-desc-tr').value
     };
     if(!p.name_tr || isNaN(p.price)) return alert("Lütfen Ürün Adı ve Fiyat girin!");
-    if(Admin.curIdx > -1) Admin.products[Admin.curIdx] = p; else products.push(p);
+    if(Admin.curIdx > -1) Admin.products[Admin.curIdx] = p; else Admin.products.push(p);
     renderAll(); 
     closeModal('product-modal');
     await syncData('products'); 
@@ -69,7 +72,7 @@ export async function handleProductSave() {
 
 export async function deleteProduct(i) { 
     if(confirm("Bu ürünü silmek istediğinize emin misiniz?")) { 
-        products.splice(i,1); 
+        Admin.products.splice(i, 1); 
         renderAll(); 
         await syncData('products');
     } 
