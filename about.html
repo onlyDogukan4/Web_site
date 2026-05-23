@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Moderra | Hakkımızda</title>
     <meta name="description" content="Moderra'nın hikayesi, kalite politikası ve karton bardak üretimindeki uzmanlığı. Geleceğe yönelik vizyonumuz ve değerlerimiz.">
     <meta name="keywords" content="moderra hakkımızda, karton bardak üretimi, yerli üretim bardak">
@@ -65,7 +65,7 @@
                     <span id="cart-count">0</span>
                 </i>
                 <i class="fas fa-user-circle" id="open-profile-modal"></i>
-                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
+                <div class="hamburger" id="hamburger-btn">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
@@ -346,7 +346,7 @@
 
         updateLanguage();
     </script>
-    <script src="cart-system.js"></script>
+    <script type="module" src="js/cart/index.js"></script>
     <script src="chatbot.js"></script>
     
     <!-- Vercel Speed Insights -->
@@ -370,5 +370,6 @@
         .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
         #cart-modal[style*="display: block"] { transform: translateX(0); }
     </style>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

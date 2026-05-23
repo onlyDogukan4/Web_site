@@ -2,14 +2,21 @@ import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 dotenv.config();
 
+/** Test/E2E sunucusu için bellek içi depolama (USE_MEMORY_DB=true) */
+const memoryStore = new Map();
+
+export function resetMemoryDb() {
+    memoryStore.clear();
+}
+
 const uri = process.env.MONGODB_URI;
 let client;
 let clientPromise;
 
-if (uri) {
+if (uri && process.env.USE_MEMORY_DB !== 'true') {
     client = new MongoClient(uri);
     clientPromise = client.connect();
-} else {
+} else if (!uri) {
     console.warn('⚠️ MONGODB_URI tanımlanmamış. Yerel JSON moduna geçiliyor (Vercel\'de çalışmaz).');
 }
 
@@ -20,6 +27,9 @@ export async function getCollection(name) {
 }
 
 export async function readData(filename, fallback = []) {
+    if (process.env.USE_MEMORY_DB === 'true') {
+        return memoryStore.has(filename) ? memoryStore.get(filename) : fallback;
+    }
     try {
         const col = await getCollection(filename);
         if (!col) return fallback;
@@ -32,6 +42,10 @@ export async function readData(filename, fallback = []) {
 }
 
 export async function writeData(filename, data) {
+    if (process.env.USE_MEMORY_DB === 'true') {
+        memoryStore.set(filename, JSON.parse(JSON.stringify(data)));
+        return true;
+    }
     try {
         const col = await getCollection(filename);
         if (!col) return false;

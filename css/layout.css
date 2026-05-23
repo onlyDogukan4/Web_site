@@ -1,0 +1,110 @@
+/* CART DRAWER GLOBAL */
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(480px, 100vw);
+    height: 100vh;
+    height: 100dvh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    z-index: 10000;
+    box-shadow: -30px 0 60px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.cart-open {
+    overflow: hidden;
+}
+
+body.cart-open .cart-drawer {
+    transform: translateX(0);
+}
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.5s;
+}
+
+body.cart-open .cart-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+#cart-items-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+}
+
+#cart-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#cart-items-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#cart-items-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* Body & Scroll */
+body {
+    background: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.6;
+    transition: background 0.4s ease, color 0.4s ease;
+    user-select: none;
+}
+
+/* Hide Chatbot when Cart is Open */
+body.cart-open .chatbot-container,
+body.cart-open .chatbot-button {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.8) translateY(20px) !important;
+    transition: 0.3s ease !important;
+}
+
+/* Admin panelinde ve modallarda seçime izin ver */
+.main-content,
+.sidebar,
+#login-overlay,
+.modal-card,
+.modal-content {
+    user-select: auto !important;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: 0.3s;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+

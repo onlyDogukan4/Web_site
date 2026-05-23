@@ -1,0 +1,49 @@
+/* 
+    MODERRA PREMIUM DESIGN SYSTEM - RESTORED VERSION
+    Sleek, Professional, and Optimized
+*/
+
+/* Genel Stiller */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary: #4e54c8;
+    --primary-gradient: linear-gradient(135deg, #4e54c8, #8f94fb);
+    --secondary: #2c3e50;
+    --light: #f8fafc;
+    --dark: #0f172a;
+    --gray: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --bg-body: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+    --bg-section: #ffffff;
+    --bg-footer: #2c3e50;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-muted: #e2e8f0;
+}
+
+[data-theme='dark'] {
+    --secondary: #4e54c8;
+    /* Keep primary feel for accents */
+    --light: #1e293b;
+    --dark: #f8fafc;
+    --gray: #94a3b8;
+    --border: #334155;
+    --glass-bg: rgba(15, 23, 42, 0.95);
+    --bg-body: #0a0f1e;
+    --bg-section: #0f172a;
+    --bg-footer: #050810;
+    --card-bg: #1e293b;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-muted: #334155;
+}
+

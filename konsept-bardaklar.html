@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title data-tr="Konsept Bardaklar | Moderra" data-en="Concept Cups | Moderra">Konsept Bardaklar | Moderra</title>
     <!-- Performance: DNS prefetch & preconnect -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -440,7 +440,7 @@
                     <span id="cart-count">0</span>
                 </i>
                 <i class="fas fa-user-circle" id="open-profile-modal"></i>
-                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
+                <div class="hamburger" id="hamburger-btn">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
@@ -573,7 +573,7 @@
             position: fixed;
             top: 0;
             right: 0;
-            width: 480px;
+            width: min(480px, 100vw);
             height: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -648,7 +648,7 @@
 
     <!-- cart-system.js ÖNCE yüklenmeli: aksi halde kendi addToCartConcept(item) fonksiyonu
          aşağıdaki addToCartConcept(conceptId)'i ezer, name=null ve price=NaN hatası oluşur -->
-    <script src="cart-system.js"></script>
+    <script type="module" src="js/cart/index.js"></script>
 
     <script>
         const root = document.documentElement;
@@ -1244,5 +1244,6 @@
     </script>
     <script src="chatbot.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

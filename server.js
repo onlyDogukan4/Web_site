@@ -31,17 +31,47 @@ function json(res, data, status = 200) {
     res.end(JSON.stringify(data));
 }
 
-// ── Chatbot API anahtarı ─────────────────────────────────────────────────────
+// ── Vercel API handler adaptörü ─────────────────────────────────────────────
 
-function getGrokApiKey() {
-    if (process.env.GROK_API_KEY) return process.env.GROK_API_KEY;
-    try {
-        const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf-8');
-        const match = envContent.match(/GROK_API_KEY=(.*)/);
-        return match ? match[1].trim() : null;
-    } catch {
-        return null;
-    }
+function createVercelRes(nodeRes) {
+    const res = {
+        statusCode: 200,
+        setHeader(k, v) {
+            nodeRes.setHeader(k, v);
+        },
+        status(code) {
+            res.statusCode = code;
+            return res;
+        },
+        json(data) {
+            nodeRes.statusCode = res.statusCode;
+            nodeRes.setHeader('Content-Type', 'application/json');
+            nodeRes.end(JSON.stringify(data));
+        },
+        send(data) {
+            nodeRes.statusCode = res.statusCode;
+            nodeRes.end(typeof data === 'string' ? data : String(data));
+        },
+        end() {
+            nodeRes.statusCode = res.statusCode;
+            nodeRes.end();
+        },
+    };
+    return res;
+}
+
+async function runApiHandler(importPath, req, nodeRes) {
+    const mod = await import(importPath);
+    const handler = mod.default;
+    const body = await parseBody(req);
+    const vercelReq = {
+        method: req.method,
+        headers: req.headers,
+        body,
+        query: Object.fromEntries(new URL(req.url, 'http://localhost').searchParams),
+    };
+    const vercelRes = createVercelRes(nodeRes);
+    await handler(vercelReq, vercelRes);
 }
 
 // ── Sunucu ───────────────────────────────────────────────────────────────────
@@ -92,10 +122,13 @@ const server = http.createServer(async (req, res) => {
             if (req.method === 'POST') {
                 const body = await parseBody(req);
                 if (key === 'orders') {
-                    // Siparişleri biriktir (üzerine yazma)
-                    const existing = await readData('orders', []);
-                    const newOrders = Array.isArray(body) ? body : [body];
-                    await writeData('orders', [...existing, ...newOrders]);
+                    const { normalizeOrders, upsertOrder } = await import('./api/lib/orders.js');
+                    if (Array.isArray(body)) {
+                        await writeData('orders', normalizeOrders(body));
+                    } else if (body?.orderId) {
+                        const existing = await readData('orders', []);
+                        await writeData('orders', upsertOrder(existing, body));
+                    }
                 } else {
                     await writeData(key, body);
                 }
@@ -109,63 +142,20 @@ const server = http.createServer(async (req, res) => {
             }
         }
 
-    // ── Chatbot (xAI Grok) ──────────────────────────────────────────────────
+    // ── AI (Groq — api/chat.js, cart-chat.js, site-context.js) ─────────────
 
-    if (url === '/api/chat' && req.method === 'POST') {
-        const { prompt, chatHistory, siteContext } = await parseBody(req);
-        const API_KEY = getGrokApiKey();
+    const aiRoutes = {
+        '/api/chat': './api/chat.js',
+        '/api/cart-chat': './api/cart-chat.js',
+        '/api/site-context': './api/site-context.js',
+        '/api/paytr-installments': './api/paytr-installments.js',
+    };
 
-        if (!API_KEY) {
-            return json(res, { error: 'GROK_API_KEY .env dosyasında bulunamadı' }, 500);
-        }
-
+    if (aiRoutes[url]) {
         try {
-            const messages = [
-                {
-                    role: 'system',
-                    content: `Sen Dr. Karton'sun. Moderra'nın EN TUTKULU hayranısın! Moderra karton bardak ve ambalaj şirketidir. Kısa ve öz cevap ver (2-3 cümle). SİTE: ${siteContext}`
-                },
-                ...(chatHistory || []).map(h => ({
-                    role: h.role === 'model' ? 'assistant' : h.role,
-                    content: h.parts ? h.parts[0].text : h.content
-                })),
-                { role: 'user', content: prompt }
-            ];
-
-            const apiRes = await fetch('https://api.x.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
-                body: JSON.stringify({ model: 'grok-3-mini', messages, max_tokens: 400, temperature: 0.85 })
-            });
-            const data = await apiRes.json();
-            return json(res, { grok: true, choices: data.choices, error: data.error });
+            return await runApiHandler(aiRoutes[url], req, res);
         } catch (e) {
-            return json(res, { error: 'Grok API hatası: ' + e.message }, 500);
-        }
-    }
-
-    if (url === '/api/cart-chat' && req.method === 'POST') {
-        const { prompt, siteContext } = await parseBody(req);
-        const API_KEY = getGrokApiKey();
-        if (!API_KEY) return json(res, { choices: [{ message: { content: 'Harika seçimler!' } }] });
-
-        try {
-            const apiRes = await fetch('https://api.x.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
-                body: JSON.stringify({
-                    model: 'grok-3-mini',
-                    messages: [
-                        { role: 'system', content: `Moderra sepet danışmanısın. Kısa teşvik et. Ürünler: ${siteContext}` },
-                        { role: 'user', content: prompt }
-                    ],
-                    max_tokens: 150, temperature: 0.7
-                })
-            });
-            const data = await apiRes.json();
-            return json(res, { choices: data.choices });
-        } catch {
-            return json(res, { choices: [{ message: { content: 'Harika seçimler, Efendim!' } }] });
+            return json(res, { error: 'AI API hatası: ' + e.message }, 500);
         }
     }
 

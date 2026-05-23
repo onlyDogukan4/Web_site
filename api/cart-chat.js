@@ -1,62 +1,49 @@
-export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version')
+import { corsHeaders } from './_db.js';
+import { groqChat, getGroqApiKey } from './lib/groq.js';
+import { buildSiteKnowledge } from './lib/site-knowledge.js';
 
-    if (req.method === 'OPTIONS') { res.status(200).end(); return; }
+export default async function handler(req, res) {
+    corsHeaders(res);
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { prompt, siteContext } = req.body;
-    const API_KEY = process.env.GROQ_CART_API_KEY;
+    const { prompt } = req.body || {};
 
-    const systemPrompt = `Sen Moderra'nın VIP sepet asistanısın. Müşteriyi nazikçe yönlendirirsin.
-KURALLAR:
-- "Efendim", "Değerli Müşterimiz" gibi kibar hitaplar kullan.
-- Mağazaya çok hakim olduğunu hissettir.
-- Asla "Merhaba" deme. Konuya direkt gir.
-- Maksimum 1-2 cümle.
-- Ürünleri tamamlayıcı öneriler yap.
-${siteContext ? `\nMağaza Bilgisi: ${siteContext}` : ''}`;
+    const knowledge = await buildSiteKnowledge().catch(() => ({
+        text: '',
+        settings: { freeShipping: 1000 },
+    }));
 
-    if (API_KEY) try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 200,
-                temperature: 0.7
-            })
+    const system = `Sen Moderra'nın VIP sepet asistanısın (Mr. Karton ekibi üslubu).
+- "Siz" hitabı, kibar ve kısa (1-2 cümle).
+- Sepeti tamamlamaya teşvik et; ücretsiz kargo limitini hatırlat.
+Mağaza: ${knowledge.text}`;
+
+    if (!getGroqApiKey()) {
+        return res.status(200).json({
+            choices: [{ message: { content: 'Harika seçimler! Sepetiniz neredeyse hazır. ✨' } }],
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error?.message || 'Groq API error');
-        }
-
-        return res.status(200).json(data);
-    } catch (e) {
-        console.warn('Cart Groq API failed, using fallback:', e.message);
     }
 
-    // Fallback
-    const fallbacks = [
-        "Mükemmel bir seçim, Efendim! Ücretsiz kargoya çok az kaldı.",
-        "Harika bir kombinasyon! Yanına bir de kapak seti eklemenizi öneririm.",
-        "Çok isabetli tercihler, Efendim. Sepetin tamamlanmaya hazır görünüyor.",
-        "Bu ürünler birbirleriyle harika uyum sağlıyor. Tebrikler!"
-    ];
-
-    return res.status(200).json({
-        choices: [{ message: { content: fallbacks[Math.floor(Math.random() * fallbacks.length)] } }]
-    });
+    try {
+        const { content } = await groqChat({
+            system,
+            messages: [{ role: 'user', content: prompt || 'Sepet önerisi' }],
+            maxTokens: 180,
+            temperature: 0.65,
+        });
+        return res.status(200).json({ choices: [{ message: { content } }] });
+    } catch (e) {
+        console.warn('cart-chat groq:', e.message);
+        const fallbacks = [
+            'Mükemmel bir seçim. Ücretsiz kargoya çok az kaldı.',
+            'Sepetiniz harika görünüyor; onaylamaya hazırsınız.',
+        ];
+        return res.status(200).json({
+            choices: [{ message: { content: fallbacks[Math.floor(Math.random() * fallbacks.length)] } }],
+        });
+    }
 }

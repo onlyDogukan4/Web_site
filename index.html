@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Moderra | Premium Karton Bardak ve Özel Tasarım Çözümleri</title>
     <meta name="description" content="Moderra ile işletmenize özel baskılı karton bardaklar, düğün paketleri ve özel konsept tasarımlar. Hızlı teslimat ve premium kalite.">
     <meta name="keywords" content="karton bardak, özel tasarım bardak, baskılı bardak, düğün paketi, moderra">
@@ -55,13 +58,7 @@
         .search-bar-close:hover { background: #fee2e2; color: #dc2626; }
         [data-theme="dark"] .search-bar-close { background: #334155; color: #94a3b8; }
 
-        .cart-drawer {
-            position: fixed; top: 0; right: 0; width: 480px; height: 100%;
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
-            z-index: 10000; box-shadow: -20px 0 50px rgba(0,0,0,0.15);
-            transform: translateX(100%); transition: 0.5s cubic-bezier(0.19,1,0.22,1);
-            display: flex; flex-direction: column;
-        }
+        /* Sepet genişliği: css/layout.css + css/mobile.css */
         body.cart-open .cart-drawer  { transform: translateX(0); }
         body.cart-open .chatbot-container { display: none !important; }
         .cart-overlay {
@@ -313,7 +310,7 @@
     </footer>
 
     <!-- ── Sepet Sistemi ──────────────────────────────── -->
-    <script src="cart-system.js"></script>
+    <script type="module" src="js/cart/index.js"></script>
 
     <!-- ── Ana Uygulama Scripti ──────────────────────── -->
     <script>
@@ -431,9 +428,6 @@
 
     // ── Navigasyon ───────────────────────────────────
     function initNav() {
-        document.getElementById('hamburger-btn')?.addEventListener('click', () => {
-            document.getElementById('nav-links')?.classList.toggle('active');
-        });
         const path = location.pathname.split('/').pop() || 'index.html';
         document.querySelectorAll('.nav-links a').forEach(a => {
             a.classList.toggle('active', a.getAttribute('href') === path);
@@ -875,6 +869,7 @@
     };
     </script>
 
+    <script src="js/mobile.js" defer></script>
     <!-- ── Chatbot ────────────────────────────────── -->
     <script src="chatbot.js"></script>
 </body>

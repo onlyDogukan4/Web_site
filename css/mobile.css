@@ -1,0 +1,444 @@
+/**
+ * Moderra — Mobil & tablet düzenlemeleri
+ * Ek framework gerekmez; mevcut site ile uyumlu.
+ */
+
+:root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --nav-height: 60px;
+    --touch-min: 44px;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+img,
+video,
+iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* iOS odak zoom'unu engelle */
+input,
+select,
+textarea {
+    font-size: 16px;
+}
+
+/* ─── Tablet (≤900px) ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    #packages-container {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        min-height: 0 !important;
+    }
+
+    .premium-cards-grid,
+    .concept-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .product-detail-container {
+        flex-direction: column !important;
+    }
+
+    .modal-card,
+    .modal-content {
+        max-width: calc(100vw - 24px) !important;
+        margin: 12px !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ─── Telefon (≤768px) ────────────────────────────────────────── */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: var(--safe-bottom);
+    }
+
+    .navbar {
+        padding-top: var(--safe-top);
+    }
+
+    .navbar .container {
+        padding-left: max(14px, var(--safe-left));
+        padding-right: max(14px, var(--safe-right));
+    }
+
+    .navbar-container {
+        padding: 8px 0;
+        gap: 6px;
+        min-height: var(--nav-height);
+    }
+
+    .logo {
+        font-size: 17px !important;
+        max-width: 50vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex-shrink: 1;
+    }
+
+    .logo i {
+        font-size: 18px !important;
+        margin-right: 6px !important;
+    }
+
+    /* Üst çubukta sadece sepet + menü — arama/tema/profil menü içinde */
+    .nav-icons {
+        gap: 4px;
+        flex-shrink: 0;
+    }
+
+    .nav-icons > #open-search,
+    .nav-icons > #theme-toggle,
+    .nav-icons > #open-profile-modal {
+        display: none !important;
+    }
+
+    .nav-icons > i,
+    .nav-icons > .hamburger {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px;
+        min-height: 42px;
+        font-size: 18px !important;
+    }
+
+    /* Mobil menü — hızlı ara / tema / hesap */
+    .nav-mobile-tools {
+        list-style: none;
+        width: 100%;
+        margin: 0 0 8px;
+        padding: 0 0 10px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nav-mobile-tools-inner {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .nav-mobile-tool {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        min-height: 56px;
+        padding: 10px 6px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--secondary);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-mobile-tool i {
+        font-size: 18px;
+        color: var(--primary);
+    }
+
+    .hamburger {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: min(70vh, calc(100dvh - var(--nav-height)));
+        overflow-y: auto;
+        padding-bottom: calc(12px + var(--safe-bottom));
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-links a {
+        padding: 14px 16px !important;
+        font-size: 15px;
+    }
+
+    /* Arama çubuğu — navbar altında */
+    .search-bar-sticky {
+        top: calc(var(--nav-height) + var(--safe-top)) !important;
+    }
+
+    .search-bar-inner {
+        padding: 12px 16px !important;
+    }
+
+    /* Sepet — tam ekran (inline width override) */
+    .cart-drawer,
+    #cart-modal.cart-drawer,
+    #cart-modal[style*="width"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100dvh !important;
+        padding-bottom: var(--safe-bottom);
+    }
+
+    .cart-header {
+        padding: 16px 18px !important;
+    }
+
+    .cart-header h2 {
+        font-size: 18px !important;
+    }
+
+    #cart-items-list {
+        padding: 12px 14px !important;
+    }
+
+    #checkout-options {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    #checkout-options button {
+        min-height: var(--touch-min);
+        padding: 14px !important;
+    }
+
+    #whatsapp-checkout {
+        min-height: 52px;
+        padding: 16px !important;
+        font-size: 15px !important;
+    }
+
+    /* Slider */
+    .slider {
+        margin: 12px 0 !important;
+        border-radius: 14px !important;
+    }
+
+    .slide-content h2 {
+        font-size: 22px !important;
+    }
+
+  .slide-content .btn,
+    .slide-content .cta-button {
+        min-height: var(--touch-min);
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Ürün grid — tek kolon küçük ekranda daha okunaklı */
+    .products {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .product-img {
+        height: 120px !important;
+    }
+
+    /* Modallar tam ekran */
+    .modal-overlay {
+        padding: 0 !important;
+        align-items: flex-end !important;
+    }
+
+    .modal-content,
+    .modal-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92dvh !important;
+        border-radius: 20px 20px 0 0 !important;
+        margin: 0 !important;
+    }
+
+    .product-detail-image {
+        padding: 24px !important;
+    }
+
+    .product-detail-info {
+        padding: 20px 16px !important;
+    }
+
+  footer {
+        padding: 60px 0 40px !important;
+        margin-top: 60px !important;
+    }
+
+    .footer-content {
+        gap: 28px !important;
+    }
+
+    /* PayTR ödeme modalı */
+    #paytr-modal {
+        padding: 0 !important;
+        align-items: stretch !important;
+    }
+
+    .paytr-shell {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+    }
+
+    .paytr-head {
+        padding: 14px 16px !important;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .paytr-head-total {
+        display: none;
+    }
+
+    .paytr-body {
+        flex-direction: column !important;
+    }
+
+    .paytr-side {
+        width: 100% !important;
+        max-height: 38vh !important;
+        flex-shrink: 0;
+        border-right: none !important;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .paytr-frame {
+        flex: 1 !important;
+        min-height: 50vh !important;
+    }
+
+    #paytr-iframe {
+        min-height: 50vh !important;
+    }
+
+    /* Konsept sayfası */
+    .concept-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .confirm-footer {
+        grid-template-columns: 1fr !important;
+        padding: 16px !important;
+    }
+
+    /* Sipariş takip */
+    .track-form-row,
+    .details-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .nav-back-button {
+        top: calc(12px + var(--safe-top)) !important;
+        left: 12px !important;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* ─── Küçük telefon (≤480px) ──────────────────────────────────── */
+@media (max-width: 480px) {
+    .products {
+        grid-template-columns: 1fr !important;
+    }
+
+    .product-title {
+        height: auto !important;
+        min-height: 2.6em;
+    }
+
+    .section-title {
+        font-size: 1.35rem !important;
+        margin: 28px 0 16px !important;
+    }
+
+    #product-category-nav {
+        gap: 6px !important;
+        margin-bottom: 16px !important;
+    }
+
+    #product-category-nav button {
+        font-size: 11px !important;
+        padding: 8px 12px !important;
+    }
+
+    .slide-content {
+        left: 10px !important;
+        right: 10px !important;
+        padding: 12px !important;
+    }
+
+    .slide-content h2 {
+        font-size: 17px !important;
+    }
+
+    .slide-content p {
+        display: none;
+    }
+
+    .vip-toast-card,
+    #vip-toast-card {
+        min-width: 0 !important;
+        padding: 24px 20px !important;
+    }
+}
+
+/* Yatay taşmayı kes */
+body {
+    overflow-x: hidden;
+}
+
+/* Menü açıkken arka plan kaydırma kilidi */
+body.nav-open {
+    overflow: hidden;
+    touch-action: none;
+}
+
+body.nav-open .nav-links {
+    display: flex !important;
+}
+
+/* Chatbot tam ekran — arka plan kaydırma kilidi */
+body.chatbot-open {
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* Dokunmatik kaydırma alanları */
+.table-scroll,
+.admin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}

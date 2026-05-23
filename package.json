@@ -4,10 +4,21 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test",
+    "test:server": "node scripts/test-server.js",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
     "mongodb": "^7.1.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "vitest": "^3.2.4"
   }
 }
