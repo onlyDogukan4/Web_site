@@ -116,13 +116,13 @@
 
     </main>
 
-    <!-- Sepet Drawer -->
+    <!-- Sepet (tum sayfalarda ortak) -->
     <div id="cart-modal" class="cart-drawer">
         <div class="cart-header">
-            <h2 style="margin:0;font-size:22px;font-weight:900;color:#1e293b;">
-                <i class="fas fa-shopping-basket" style="color:var(--primary);margin-right:10px;"></i> Sepetim
+            <h2 class="cart-header-title">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i> Sepetim
             </h2>
-            <span style="cursor:pointer;font-size:28px;color:#cbd5e1;" onclick="document.body.classList.remove('cart-open')">&times;</span>
+            <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Sepeti kapat">&times;</button>
         </div>
         <div id="cart-progress-sticky"></div>
         <div id="cart-items-list"></div>
@@ -130,7 +130,7 @@
             <div id="cart-total-price-area"></div>
         </div>
     </div>
-    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
+    <div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
 
     <!-- Profil Modalı -->
     <div id="profile-modal" class="modal">
@@ -246,6 +246,6 @@
     <script type="module" src="js/pages/index.js"></script>
     <script src="js/site/nav-active.js" defer></script>
     <script src="js/mobile.js" defer></script>
-    <script src="chatbot.js"></script>
+    <script src="chatbot.js" defer></script>
 </body>
 </html>

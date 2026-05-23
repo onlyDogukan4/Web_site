@@ -41,13 +41,106 @@ body.cart-open .cart-overlay {
     visibility: visible;
 }
 
+.cart-header,
+#cart-progress-sticky {
+    flex-shrink: 0;
+}
+
 #cart-items-list {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 20px;
     scrollbar-width: thin;
     scrollbar-color: var(--primary) transparent;
+}
+
+.cart-drawer-footer {
+    flex-shrink: 0;
+    padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    background: var(--glass-bg, #fff);
+    border-top: 1px solid var(--border, #f1f5f9);
+    overflow-y: auto;
+    max-height: min(48vh, 420px);
+}
+
+#checkout-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+#checkout-options button {
+    min-height: 54px;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#checkout-options button:active {
+    transform: scale(0.98);
+}
+
+.cart-header-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-header-title i {
+    color: var(--primary);
+}
+
+.cart-close-btn {
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.cart-close-btn:hover {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+#checkout-options button:first-child {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+}
+
+#checkout-options button:last-child {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+}
+
+#whatsapp-checkout {
+    display: none !important;
+}
+
+.cart-item-highlight {
+    outline: 3px solid var(--primary, #6366f1);
+    outline-offset: 4px;
+    border-radius: 16px;
+    transition: outline 0.25s ease;
 }
 
 #cart-items-list::-webkit-scrollbar {
@@ -107,4 +200,4 @@ button {
     border: none;
     outline: none;
 }
-
+

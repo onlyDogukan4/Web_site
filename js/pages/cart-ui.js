@@ -1,8 +1,3 @@
-import { updateCartDisplay } from '../cart/display.js';
-
 export function initCart() {
-    document.getElementById('open-cart-modal')?.addEventListener('click', () => {
-        document.body.classList.add('cart-open');
-        updateCartDisplay();
-    });
+    /* Sepet aç/kapa cart/index.js içinde global bağlanır */
 }

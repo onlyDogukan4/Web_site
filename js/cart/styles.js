@@ -16,6 +16,14 @@ export function injectCartStyles() {
             color: #1e293b; transition: all 0.2s;
         }
         .qty-btn:hover { background: var(--primary,#6366f1); color: white; }
+        .qty-ctrl span, .qty-value {
+            font-weight: 900;
+            font-size: 14px;
+            min-width: 24px;
+            text-align: center;
+            color: #1e293b;
+            line-height: 1;
+        }
         .trash-btn {
             background: none; border: none; cursor: pointer; font-size: 15px;
             margin-top: 8px; padding: 4px; border-radius: 6px; opacity: 0.5;

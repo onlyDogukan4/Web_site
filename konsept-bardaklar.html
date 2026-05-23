@@ -422,6 +422,7 @@
 </head>
 <body data-scroll-container>
     <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
@@ -543,108 +544,7 @@
             </div>
         </div>
     </div>
-    <!-- Unified Cart Drawer (Matches index.html) -->
-    <div id="cart-modal" class="cart-drawer">
-        <div class="cart-header">
-            <h2 style="margin:0; font-size:22px; font-weight:900; color:#1e293b;"><i class="fas fa-shopping-basket" style="color:var(--primary); margin-right:10px;"></i> Sepetim</h2>
-            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px; color:#cbd5e1; transition:0.3s;" onclick="document.body.classList.remove('cart-open')">&times;</div>
-        </div>
-        <div id="cart-progress-sticky"></div>
-        
-        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;">
-            <!-- Items injected by JS -->
-        </div>
-
-        <div class="cart-footer" style="padding:20px 25px 25px; background:white; border-top:1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.03);">
-            <!-- AI Advisor -->
-            <div id="cart-ai-advisor-wrap"></div>
-            <div id="cart-total-price-area">
-                <!-- Summary injected by JS -->
-            </div>
-            <button id="whatsapp-checkout" class="btn" onclick="whatsappCheckout()" style="width:100%; margin:15px 0 0; padding:20px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg, #22c55e, #16a34a); box-shadow:0 10px 25px rgba(22, 163, 74, 0.25); border:none; cursor:pointer; color:white; font-size:16px; font-weight:800; transition:0.3s;">
-                <i class="fab fa-whatsapp" style="font-size:22px;"></i> SİPARİŞİ TAMAMLA
-            </button>
-        </div>
-    </div>
-    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
-
-    <style>
-        .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: min(480px, 100vw);
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 10000;
-            box-shadow: -20px 0 50px rgba(0,0,0,0.15);
-            transform: translateX(100%);
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid rgba(255,255,255,0.3);
-        }
-        body.cart-open .cart-drawer { transform: translateX(0); }
-        body.cart-open .cart-overlay { opacity: 1; visibility: visible; }
-        .cart-item-card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #f1f5f9;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-            animation: slideInCart 0.3s ease-out;
-        }
-        .cart-item-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 20000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(8px);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            border-radius: 32px;
-            width: 90%;
-            max-width: 550px;
-            position: relative;
-            animation: modalFadeIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        @keyframes modalFadeIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        .close-btn { position: absolute; right: 25px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; color: #64748b; transition: 0.3s; }
-        .close-btn:hover { color: #ef4444; }
-        
-        @keyframes slideInCart { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .vip-concept-frame {
-            background: linear-gradient(white, white) padding-box, linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box !important;
-            border: 2px solid transparent !important;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15) !important;
-            animation: vip-glow 3s infinite;
-        }
-        @keyframes vip-glow { 0%, 100% { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); } 50% { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.4); } }
-        
-        .vip-badge {
-            background: linear-gradient(45deg, #d4af37, #b45309);
-            color: white;
-            font-size: 9px;
-            font-weight: 900;
-            padding: 4px 10px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center; gap: 5px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        @media (max-width: 500px) { .cart-drawer { width: 100%; } }
-    </style>
+    
 
     <!-- cart-system.js ÖNCE yüklenmeli: aksi halde kendi addToCartConcept(item) fonksiyonu
          aşağıdaki addToCartConcept(conceptId)'i ezer, name=null ve price=NaN hatası oluşur -->
@@ -1245,6 +1145,26 @@
     <script src="chatbot.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
         <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
+
+<!-- Sepet (tum sayfalarda ortak) -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 class="cart-header-title">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i> Sepetim
+            </h2>
+            <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Sepeti kapat">&times;</button>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        <div id="cart-items-list"></div>
+        <div class="cart-drawer-footer">
+            <div id="cart-total-price-area"></div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
+
+    <script type="module" src="js/cart/index.js"></script>
+    <script src="js/site/nav-active.js" defer></script>
     <script src="js/mobile.js" defer></script>
 </body>
 </html>

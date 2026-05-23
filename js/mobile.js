@@ -133,6 +133,13 @@
                     <i class="fas fa-user"></i><span>Hesabım</span>
                 </button>`);
         }
+        const cartBtn = document.getElementById('open-cart-modal');
+        if (cartBtn) {
+            toolParts.push(`
+                <button type="button" class="nav-mobile-tool" data-nav-tool="cart">
+                    <i class="fas fa-shopping-cart"></i><span>Sepetim</span>
+                </button>`);
+        }
 
         if (toolParts.length) {
             const label = document.createElement('li');
@@ -169,6 +176,10 @@
             });
             row.querySelector('[data-nav-tool="profile"]')?.addEventListener('click', () => {
                 profileBtn?.click();
+                closeNavMenu();
+            });
+            row.querySelector('[data-nav-tool="cart"]')?.addEventListener('click', () => {
+                cartBtn?.click();
                 closeNavMenu();
             });
         } else if (insertBefore) {

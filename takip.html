@@ -233,6 +233,7 @@
 
     <!-- Navbar -->
     <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
@@ -418,6 +419,26 @@
             document.documentElement.setAttribute('data-theme', 'dark');
         }
     </script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
+
+<!-- Sepet (tum sayfalarda ortak) -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 class="cart-header-title">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i> Sepetim
+            </h2>
+            <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Sepeti kapat">&times;</button>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        <div id="cart-items-list"></div>
+        <div class="cart-drawer-footer">
+            <div id="cart-total-price-area"></div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
+
+    <script type="module" src="js/cart/index.js"></script>
     <script src="js/site/nav-active.js" defer></script>
     <script src="js/mobile.js" defer></script>
 </body>

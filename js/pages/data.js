@@ -19,8 +19,10 @@ export async function loadData() {
 
 export function startUpdatePolling({ syncCartPrices, renderProducts, renderPackages }) {
     let lastUpdateTime = null;
+    let timer = null;
 
     async function checkForUpdates() {
+        if (document.hidden) return;
         try {
             const r = await fetch('/api/settings?type=last-update&t=' + Date.now());
             if (!r.ok) return;
@@ -37,9 +39,26 @@ export function startUpdatePolling({ syncCartPrices, renderProducts, renderPacka
                 renderPackages();
             }
         } catch {
-            /* ağ hatası — sonraki turda tekrar dene */
+            /* ağ hatası */
         }
     }
 
-    setInterval(checkForUpdates, 8000);
+    function start() {
+        if (timer) return;
+        checkForUpdates();
+        timer = setInterval(checkForUpdates, 20000);
+    }
+
+    function stop() {
+        if (!timer) return;
+        clearInterval(timer);
+        timer = null;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop();
+        else start();
+    });
+
+    start();
 }

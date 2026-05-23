@@ -52,7 +52,7 @@ export function renderPackages() {
                                 <span class="package-item-name">${label}</span>
                                 <div class="package-item-qty">
                                     <button type="button" class="qty-btn" onclick="adjustPkgQty('${pkg.id}','${p.id}',-1)" aria-label="Azalt">−</button>
-                                    <span id="qty-${key}">${qty}</span>
+                                    <span class="qty-value" id="qty-${key}">${qty}</span>
                                     <button type="button" class="qty-btn" onclick="adjustPkgQty('${pkg.id}','${p.id}',1)" aria-label="Artır">+</button>
                                 </div>
                             </div>`;

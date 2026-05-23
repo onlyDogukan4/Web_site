@@ -4,7 +4,6 @@ import { getShippingFee } from './store.js';
 export function updateCartDisplay() {
     const list = document.getElementById('cart-items-list');
     const cartCount = document.getElementById('cart-count');
-    const checkoutBtn = document.getElementById('whatsapp-checkout');
     if (!list) return;
 
     const { minOrder, freeShipping } = getSettings();
@@ -57,13 +56,13 @@ export function updateCartDisplay() {
                 <p style="font-size:13px;color:#cbd5e1;margin-top:6px;">Ürünleri keşfetmek için alışverişe başlayın</p>
             </div>`;
         if (cartCount) cartCount.style.display = 'none';
-        if (checkoutBtn) checkoutBtn.style.display = 'none';
         _renderSummary(0, 0, 0);
         return;
     }
 
     getCart().forEach(item => {
         const el = document.createElement('div');
+        el.dataset.cartItemId = item.id;
 
         if (item.isPackage) {
             el.className = 'cart-item-card';
@@ -80,7 +79,7 @@ export function updateCartDisplay() {
                             <div style="font-size:11px;color:#64748b;margin-top:3px;">${item.packageItems ? item.packageItems.length + ' ürün' : ''} · %${item.discount || 0} indirim</div>
                             <div class="qty-ctrl" style="margin-top:10px;display:inline-flex;align-items:center;gap:8px;background:#f8fafc;border-radius:10px;padding:3px 8px;border:1px solid #e2e8f0;">
                                 <button class="qty-btn" onclick="updateItemQuantity('${item.id}',-1)">−</button>
-                                <span style="font-weight:900;font-size:14px;min-width:24px;text-align:center;">${item.quantity}</span>
+                                <span class="qty-value" style="font-weight:900;font-size:14px;min-width:24px;text-align:center;color:#1e293b;">${item.quantity}</span>
                                 <button class="qty-btn" onclick="updateItemQuantity('${item.id}',1)">+</button>
                             </div>
                         </div>
@@ -210,7 +209,7 @@ export function updateCartDisplay() {
                             <div style="font-weight:800;font-size:14px;color:#1e293b;line-height:1.3;margin-bottom:8px;">${item.name}</div>
                             <div class="qty-ctrl" style="display:inline-flex;align-items:center;gap:8px;background:#f8fafc;border-radius:10px;padding:3px 8px;border:1px solid #e2e8f0;">
                                 <button class="qty-btn" onclick="updateItemQuantity('${item.id}',-1)">−</button>
-                                <span style="font-weight:900;font-size:14px;min-width:24px;text-align:center;">${item.quantity}</span>
+                                <span class="qty-value" style="font-weight:900;font-size:14px;min-width:24px;text-align:center;color:#1e293b;">${item.quantity}</span>
                                 <button class="qty-btn" onclick="updateItemQuantity('${item.id}',1)">+</button>
                             </div>
                         </div>
@@ -232,7 +231,6 @@ export function updateCartDisplay() {
         cartCount.textContent = totalCount;
         cartCount.style.display = totalCount > 0 ? 'flex' : 'none';
     }
-    if (checkoutBtn) checkoutBtn.style.display = 'flex';
 }
 
 export function _renderSummary(subTotal, discountTotal, total) {
@@ -240,7 +238,7 @@ export function _renderSummary(subTotal, discountTotal, total) {
     if (!area) return;
     const shipping  = getShippingFee(total);
     const grandTotal = total + shipping;
-    const kdvAmount = grandTotal - grandTotal / 1.2;
+    const kdvAmount = Math.round((grandTotal - grandTotal / 1.2) * 100) / 100;
     area.innerHTML = `
         <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#64748b;font-size:13px;">
             <span>Ürünler (ara toplam)</span>
@@ -267,13 +265,19 @@ export function _renderSummary(subTotal, discountTotal, total) {
                 <span>ÖDENECEK TOPLAM</span>
                 <span style="font-weight:900;font-size:22px;color:var(--primary);">₺${grandTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
             </div>
-            <div id="checkout-options" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                <button onclick="whatsappCheckout()" style="padding:16px; border-radius:15px; background:linear-gradient(135deg,#22c55e,#16a34a); border:none; cursor:pointer; color:white; font-size:13px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
-                    <i class="fab fa-whatsapp" style="font-size:20px;"></i> WHATSAPP
+            ${
+                total > 0
+                    ? `<div id="checkout-options">
+                <button type="button" onclick="whatsappCheckout()">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    <span>WhatsApp</span>
                 </button>
-                <button onclick="payWithPayTR()" style="padding:16px; border-radius:15px; background:linear-gradient(135deg,#6366f1,#4f46e5); border:none; cursor:pointer; color:white; font-size:13px; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:5px;">
-                    <i class="fas fa-credit-card" style="font-size:20px;"></i> KREDİ KARTI
+                <button type="button" onclick="payWithPayTR()">
+                    <i class="fas fa-credit-card" aria-hidden="true"></i>
+                    <span>Kredi Kartı</span>
                 </button>
-            </div>
+            </div>`
+                    : ''
+            }
 `;
 }

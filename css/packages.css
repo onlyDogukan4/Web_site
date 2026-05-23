@@ -118,10 +118,19 @@
     padding: 4px 8px;
 }
 
-.package-item-qty span {
+.package-item-qty span,
+.package-item-qty .qty-value {
     font-weight: 900;
-    min-width: 20px;
+    min-width: 22px;
     text-align: center;
+    color: #1e293b;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.package-card--wedding .package-item-qty span,
+.package-card--wedding .package-item-qty .qty-value {
+    color: #1e293b;
 }
 
 .package-item-qty .qty-btn {
@@ -166,14 +175,14 @@
     white-space: nowrap;
 }
 
-/* Düğün / özel konsept paketi — arka plan fotoğrafı + okunaklı metin */
+/* Düğün paketi — düğün görselli arka plan */
 .package-card--wedding {
     border: none;
-    color: #f8fafc;
+    color: #fff;
     background:
-        linear-gradient(145deg, rgba(15, 23, 42, 0.82) 0%, rgba(76, 29, 149, 0.72) 55%, rgba(15, 23, 42, 0.88) 100%),
-        url('images/slider2.png') center / cover no-repeat;
-    box-shadow: 0 20px 50px rgba(76, 29, 149, 0.25);
+        linear-gradient(160deg, rgba(30, 20, 50, 0.78) 0%, rgba(120, 60, 100, 0.55) 45%, rgba(20, 15, 35, 0.85) 100%),
+        url('images/wedding.png') center / cover no-repeat;
+    box-shadow: 0 20px 50px rgba(88, 28, 135, 0.22);
 }
 
 .package-card--wedding .package-card-badge {
