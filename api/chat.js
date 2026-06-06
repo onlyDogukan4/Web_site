@@ -120,7 +120,7 @@ export default async function handler(req, res) {
             system,
             messages,
             maxTokens: 900,
-            temperature: 0.72,
+            temperature: 0.3,
         });
 
         const { actions, agentStateUpdate, cleanText } = parseAgentCommands(content);
