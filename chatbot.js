@@ -146,8 +146,8 @@ class ModerraAI {
             @media (max-width:768px) {
                 .chatbot-container { bottom:16px; right:16px; }
                 .chatbot-button { width:88px;height:88px; }
-                .chatbot-window { position:fixed;inset:0;bottom:0;right:0;width:100%;height:100dvh;max-height:100dvh;border-radius:0;z-index:10003; }
-                .chatbot-container.chat-open .chatbot-button { opacity:0;pointer-events:none;transform:scale(0.85); }
+                .chatbot-window { position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;z-index:10003!important; }
+                .chatbot-container.chat-open .chatbot-button { opacity:0;pointer-events:none; }
                 .chatbot-input-area { padding-bottom:max(14px,env(safe-area-inset-bottom)); }
             }
         `;
@@ -350,11 +350,14 @@ class ModerraAI {
     async actionAddCart(keyword) {
         if (!window.addToCartByMatch) return;
         const result = await window.addToCartByMatch(keyword);
-        this.addBotMessage(
-            result?.success
-                ? `✅ **${result.name}** sepetinize eklendi.`
-                : `Bu ürünü katalogda tam eşleştiremedim; ana sayfadaki ürün listesinden de seçebilirsiniz.`
-        );
+        if (result?.success) {
+            this.showCartAddedToast({ itemId: result.id, name: result.name });
+            this.addBotMessage(`✅ **${result.name}** sepetinize eklendi.`);
+        } else {
+            this.addBotMessage(
+                'Bu ürünü katalogda tam eşleştiremedim; ana sayfadaki ürün listesinden de seçebilirsiniz.'
+            );
+        }
     }
 
     async actionAddConceptCart(data) {
@@ -365,9 +368,10 @@ class ModerraAI {
         }
 
         const qty = data.quantity || 1;
+        const conceptItemId = `concept-ai-${data.conceptId}-${Date.now()}`;
         for (let i = 0; i < qty; i++) {
             window.addToCart({
-                id: `concept-ai-${data.conceptId}-${Date.now()}-${i}`,
+                id: i === 0 ? conceptItemId : `${conceptItemId}-${i}`,
                 conceptId: String(data.conceptId),
                 variantKey: `${data.size}-${data.lid}`,
                 name: data.conceptName,
@@ -384,13 +388,55 @@ class ModerraAI {
             JSON.stringify({ conceptId: data.conceptId, note: data.note })
         );
 
+        this.showCartAddedToast({ itemId: conceptItemId, name: data.conceptName });
+
         this.addBotMessage(
             `✅ **${qty} adet ${data.conceptName}** sepetinize eklendi (${data.size}, ${data.lid === 'lid' ? 'kapaklı' : 'kapaksız'}).` +
                 `<br><br>Logo dosyanızı **Konsept Bardaklar** sayfasından PNG/PDF olarak yükleyebilirsiniz — tasarım ekibimiz aynı notu görecek.`
         );
 
+        if (typeof window.updateCartDisplay === 'function') window.updateCartDisplay();
+    }
+
+    showCartAddedToast({ itemId, name }) {
+        if (!itemId || !name) return;
+
+        let toast = document.getElementById('moderra-cart-toast');
+        if (!toast) {
+            toast = document.createElement('button');
+            toast.type = 'button';
+            toast.id = 'moderra-cart-toast';
+            toast.className = 'moderra-cart-toast';
+            toast.setAttribute('aria-live', 'polite');
+            document.body.appendChild(toast);
+            toast.addEventListener('click', () => this.openCartAtItem(itemId));
+        }
+
+        toast.innerHTML = `<i class="fas fa-shopping-basket" aria-hidden="true"></i><span><strong>${name}</strong> sepete eklendi — görmek için dokunun</span>`;
+        toast.onclick = () => this.openCartAtItem(itemId);
+
+        clearTimeout(this._cartToastTimer);
+        toast.classList.add('visible');
+        this._cartToastTimer = setTimeout(() => toast.classList.remove('visible'), 7000);
+    }
+
+    openCartAtItem(itemId) {
+        const toast = document.getElementById('moderra-cart-toast');
+        toast?.classList.remove('visible');
+
+        if (this.isOpen) this.closeChat();
+
         document.body.classList.add('cart-open');
         if (typeof window.updateCartDisplay === 'function') window.updateCartDisplay();
+
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const row = document.querySelector(`[data-cart-item-id="${itemId}"]`);
+                row?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                row?.classList.add('cart-item-highlight');
+                setTimeout(() => row?.classList.remove('cart-item-highlight'), 2200);
+            }, 280);
+        });
     }
 
     actionSuggestPackage() {

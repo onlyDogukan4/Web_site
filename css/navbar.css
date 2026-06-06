@@ -125,6 +125,10 @@
     border: none;
     background: transparent;
     padding: 0;
+}
+
+.nav-icons > .hamburger,
+.nav-icons > button.hamburger {
     font: inherit;
 }
 

@@ -52,6 +52,27 @@ jobs:
                   PAYTR_MOCK: 'true'
                   USE_MEMORY_DB: 'true'
 
+    rollback:
+        name: Automatic Rollback on Failure
+        runs-on: ubuntu-latest
+        needs: [unit-and-integration, e2e]
+        if: failure() && github.ref == 'refs/heads/main'
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Git Config
+              run: |
+                  git config --global user.name "github-actions[bot]"
+                  git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            - name: Revert last commit
+              run: |
+                  git revert --no-edit HEAD
+                  git push origin main
+
     # İsteğe bağlı: Vercel preview deploy sonrası staging E2E
     # PAYTR gerçek test modu için GitHub Secrets gerekir:
     # PAYTR_MERCHANT_ID, PAYTR_MERCHANT_KEY, PAYTR_MERCHANT_SALT, MONGODB_URI

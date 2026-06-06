@@ -36,8 +36,11 @@ test.describe('Mobil menü', () => {
         await assertMobileDrawerWorks(page);
     });
 
-    test('sipariş takip sayfasında hamburger çalışır', async ({ page }) => {
+    test('sipariş takip sayfasında navbar görünmez ve geri butonu bulunur', async ({ page }) => {
         await page.goto('/takip.html');
-        await assertMobileDrawerWorks(page);
+        await expect(page.locator('.navbar')).toBeHidden();
+        const backBtn = page.locator('.back-btn');
+        await expect(backBtn).toBeVisible();
+        await expect(backBtn).toHaveAttribute('href', 'index.html');
     });
 });
