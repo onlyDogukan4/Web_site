@@ -76,9 +76,6 @@ export function getShippingFee(productTotal) {
     return productTotal < freeShipping ? 150 : 0;
 }
 
-/** Türkiye — fiyatlar KDV dahil gösterilir (%20) */
-export const KDV_RATE = 0.2;
-
 export function formatMoney(amount) {
     return `₺${parseFloat(amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
@@ -88,7 +85,6 @@ export function calculatePaymentBreakdown() {
     const { subTotal, discountTotal, total } = calculateCartTotal();
     const shipping = getShippingFee(total);
     const grandTotal = total + shipping;
-    const kdvAmount = grandTotal - grandTotal / (1 + KDV_RATE);
 
     return {
         subTotal,
@@ -96,8 +92,6 @@ export function calculatePaymentBreakdown() {
         productTotal: total,
         shipping,
         grandTotal,
-        kdvAmount: Math.round(kdvAmount * 100) / 100,
-        kdvRatePercent: Math.round(KDV_RATE * 100),
         freeShippingLimit: getSettings().freeShipping,
     };
 }

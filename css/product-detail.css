@@ -190,4 +190,37 @@
     line-height: 1.8;
     color: var(--text-muted);
 }
+
+/* Mobile Adjustments for Product Modal Symmetry */
+@media (max-width: 768px) {
+    .product-detail-container {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .product-detail-image {
+        padding: 40px 20px;
+        min-height: 250px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .product-detail-image img {
+        max-height: 220px;
+    }
+    .product-detail-info {
+        padding: 30px 20px;
+    }
+    #detail-title {
+        font-size: 26px;
+    }
+    #detail-price {
+        font-size: 24px;
+    }
+    #detail-desc {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+    #detail-add-btn {
+        width: 100%;
+    }
+}
 

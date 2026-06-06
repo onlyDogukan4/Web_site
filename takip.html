@@ -22,8 +22,19 @@
         </div>
 
         <div class="search-box">
-            <input type="text" id="order-id-input" placeholder="Sipariş kodunuzu girin (Örn: MOD12345 veya LINK12345)">
+            <input type="text" id="order-id-input" placeholder="Sipariş kodunuzu girin (Örn: MOD12345)">
             <button onclick="trackOrder()">Sorgula</button>
+        </div>
+
+        <div class="instruction-card" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:20px; margin-top:20px; color:#475569; font-size:14px; line-height:1.6;">
+            <h3 style="margin:0 0 10px 0; color:#1e293b; font-size:16px; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-info-circle" style="color:var(--primary);"></i> Siparişimi Nasıl Takip Ederim?
+            </h3>
+            <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;">
+                <li>Siparişinizi oluşturduktan sonra size verilen <strong>MOD...</strong> ile başlayan sipariş numarasını yukarıdaki kutucuğa girin.</li>
+                <li><strong>"Sorgula"</strong> butonuna tıklayarak siparişinizin anlık durumunu görüntüleyin.</li>
+                <li>Eğer sipariş kodunuzu bilmiyorsanız veya bulamıyorsanız WhatsApp destek hattımızdan bizimle iletişime geçebilirsiniz.</li>
+            </ul>
         </div>
 
         <div id="result-container">

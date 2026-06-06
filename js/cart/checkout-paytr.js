@@ -207,23 +207,22 @@ export async function payWithPayTR() {
                         <button type="button" id="paytr-modal-close" style="background:rgba(255,255,255,0.1);border:none;width:38px;height:38px;border-radius:50%;font-size:22px;cursor:pointer;color:#fff;">&times;</button>
                     </div>
                 </div>
-                <div class="paytr-body" style="flex:1;display:flex;overflow:hidden;min-height:0;">
-                    <div class="paytr-side" style="width:min(380px,42vw);flex-shrink:0;background:#f1f5f9;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow-y:auto;">
-                        <div style="padding:14px 14px 0;">${breakdownHtml(breakdown)}</div>
-                        <div style="margin:12px 14px;background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
-                            <div style="padding:12px 14px;background:linear-gradient(135deg,#eef2ff,#f8fafc);border-bottom:1px solid #e2e8f0;">
-                                <p style="margin:0;font-size:11px;font-weight:800;color:#4338ca;"><i class="fas fa-credit-card"></i> Taksit seçenekleri</p>
-                                <p style="margin:4px 0 0;font-size:10px;color:#64748b;">Güncel PayTR oranları · ${formatMoney(breakdown.grandTotal)}</p>
+                <div class="paytr-body" style="flex:1;display:flex;overflow:hidden;min-height:0;background:white;">
+                    <div class="paytr-side" style="width:340px;flex-shrink:0;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow-y:auto;">
+                        <div style="padding:20px;">
+                            <h4 style="margin:0 0 15px;font-size:14px;color:#1e293b;font-weight:800;">Sipariş Özeti</h4>
+                            ${breakdownHtml(breakdown)}
+                        </div>
+                        <div style="margin:0 20px 20px;background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <div style="padding:15px;background:linear-gradient(to right,#f8fafc,#f1f5f9);border-bottom:1px solid #e2e8f0;">
+                                <p style="margin:0;font-size:12px;font-weight:800;color:#334155;"><i class="fas fa-credit-card" style="color:#6366f1;"></i> Taksit Seçenekleri</p>
                             </div>
-                            <div id="paytr-installments-panel" style="padding:12px;max-height:42vh;overflow-y:auto;"></div>
+                            <div id="paytr-installments-panel" style="padding:15px;max-height:35vh;overflow-y:auto;"></div>
                             <div id="paytr_taksit_tablosu" style="display:none;"></div>
                         </div>
-                        <p style="margin:0 14px 14px;font-size:10px;color:#64748b;line-height:1.45;">
-                            Kart numaranızı sağdaki alana girdiğinizde bankanıza uygun taksitler otomatik listelenir.
-                        </p>
                     </div>
-                    <div class="paytr-frame" style="flex:1;display:flex;flex-direction:column;background:white;min-width:0;">
-                        <iframe src="https://www.paytr.com/odeme/guvenli/${data.token}" id="paytr-iframe" title="PayTR Ödeme" style="width:100%;flex:1;border:none;min-height:320px;"></iframe>
+                    <div class="paytr-frame" style="flex:1;display:flex;flex-direction:column;background:white;min-width:0;position:relative;">
+                        <iframe src="https://www.paytr.com/odeme/guvenli/${data.token}" id="paytr-iframe" title="PayTR Ödeme" style="width:100%;height:100%;flex:1;border:none;"></iframe>
                     </div>
                 </div>
             </div>`;
@@ -235,9 +234,9 @@ export async function payWithPayTR() {
             style.id = 'paytr-checkout-styles';
             style.textContent = `
                 @media (max-width:768px) {
-                    .paytr-body { flex-direction: column !important; }
-                    .paytr-side { width: 100% !important; max-height: 38vh !important; border-right: none !important; border-bottom: 1px solid #e2e8f0; }
-                    .paytr-frame { min-height: 50vh !important; }
+                    .paytr-shell { height: 100vh !important; max-height: 100dvh !important; border-radius: 0 !important; }
+                    .paytr-side { display: none !important; }
+                    .paytr-frame { height: 100% !important; }
                 }
             `;
             document.head.appendChild(style);
