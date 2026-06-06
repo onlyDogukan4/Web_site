@@ -17,6 +17,8 @@
     "build:html": "node scripts/build-html.js",
     "sync:navbars": "node scripts/sync-site-navbars.js",
     "verify:api": "node scripts/verify-api-count.js",
+    "install:sharp": "npm install -D sharp",
+    "optimize:images": "node scripts/optimize-images.js",
     "vercel-build": "npm run build:css && npm run build:js && npm run build:html && npm run verify:api"
   },
   "dependencies": {
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
+    "sharp": "^0.34.5",
     "vitest": "^3.2.4"
   }
 }
