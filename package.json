@@ -19,6 +19,7 @@
     "verify:api": "node scripts/verify-api-count.js",
     "install:sharp": "npm install -D sharp",
     "optimize:images": "node scripts/optimize-images.js",
+    "cleanup": "node scripts/cleanup.js",
     "vercel-build": "npm run build:css && npm run build:js && npm run build:html && npm run verify:api"
   },
   "dependencies": {
