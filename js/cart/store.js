@@ -1,20 +1,41 @@
-/** Sepet durumu ve hesaplamalar */
-let cart = (JSON.parse(localStorage.getItem('cart') || '[]')).map((item) => ({
-    ...item,
-    price: isNaN(parseFloat(item.price)) || parseFloat(item.price) <= 0 ? 15.0 : parseFloat(item.price),
-}));
+// source of truth
+if (typeof window !== 'undefined') {
+    if (!window.moderraCart) {
+        window.moderraCart = (JSON.parse(localStorage.getItem('cart') || '[]')).map((item) => ({
+            ...item,
+            price: isNaN(parseFloat(item.price)) || parseFloat(item.price) <= 0 ? 15.0 : parseFloat(item.price),
+        }));
+    }
+}
 
 export function getCart() {
-    return cart;
+    if (typeof window !== 'undefined') {
+        return window.moderraCart;
+    }
+    // Fallback for Node/Vitest tests
+    if (!global.moderraCart) {
+        global.moderraCart = (JSON.parse(localStorage.getItem('cart') || '[]')).map((item) => ({
+            ...item,
+            price: isNaN(parseFloat(item.price)) || parseFloat(item.price) <= 0 ? 15.0 : parseFloat(item.price),
+        }));
+    }
+    return global.moderraCart;
 }
 
 export function setCart(next) {
-    cart = next;
+    if (typeof window !== 'undefined') {
+        window.moderraCart = next;
+    } else {
+        global.moderraCart = next;
+    }
     saveCart();
 }
 
 export function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    const activeCart = getCart();
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('cart', JSON.stringify(activeCart));
+    }
 }
 export function getSettings() {
     try {
