@@ -49,7 +49,7 @@
 }
 
 .product-detail-image {
-    flex: 1.2;
+    flex: 1;
     background: #f8fafc;
     display: flex;
     align-items: center;

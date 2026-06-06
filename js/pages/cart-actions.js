@@ -10,8 +10,15 @@ export function addToCart(productId, productName, productPrice) {
     const image = p?.image || 'images/bardak.png';
     if (isNaN(price)) return;
 
-    const btn = document.querySelector(`.add-to-cart[onclick*="'${productId}'"]`);
-    const img = btn?.closest('.product-card')?.querySelector('img');
+    let img = null;
+    const modal = document.getElementById('product-detail-modal');
+    if (modal && modal.style.display === 'block') {
+        img = document.getElementById('detail-img');
+    }
+    if (!img) {
+        const btn = document.querySelector(`.add-to-cart[onclick*="'${productId}'"]`);
+        img = btn?.closest('.product-card')?.querySelector('img');
+    }
     if (img) flyToCart(img);
 
     const cartItems = getCart();
@@ -23,6 +30,7 @@ export function addToCart(productId, productName, productPrice) {
     }
     saveCart();
     updateCartDisplay();
+    document.body.classList.add('cart-open');
 }
 
 export function addPackageToCart(packageId) {
@@ -64,10 +72,8 @@ export function addPackageToCart(packageId) {
         });
     }
     saveCart();
-    setTimeout(() => {
-        updateCartDisplay();
-        document.body.classList.add('cart-open');
-    }, 800);
+    updateCartDisplay();
+    document.body.classList.add('cart-open');
 }
 
 export function registerChatbotBridge() {

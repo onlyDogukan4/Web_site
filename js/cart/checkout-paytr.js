@@ -29,10 +29,6 @@ function breakdownHtml(b, { compact = false } = {}) {
                 <span>${b.shipping > 0 ? 'Kargo' : 'Kargo (ücretsiz)'}</span>
                 <span>${b.shipping > 0 ? formatMoney(b.shipping) : 'Ücretsiz'}</span>
             </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#64748b;font-size:11px;">
-                <span>KDV (%${b.kdvRatePercent}, dahil)</span>
-                <span>${formatMoney(b.kdvAmount)}</span>
-            </div>
             <div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:6px;border-top:2px solid #e2e8f0;font-weight:900;font-size:${compact ? '15px' : '17px'};color:#4338ca;">
                 <span>Ödenecek tutar</span>
                 <span>${formatMoney(b.grandTotal)}</span>

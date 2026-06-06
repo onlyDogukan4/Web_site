@@ -84,4 +84,21 @@ test.describe('Ödeme E2E', () => {
         ).json();
         expect(reqAfter.status).toBe('odendi');
     });
+
+    test('ürün sepete eklenince sepet count güncellenir', async ({ page }) => {
+        await page.goto(BASE);
+        
+        // Sepet count elementini bul
+        const count = page.locator('#cart-count');
+        await expect(count).toBeHidden();
+
+        // İlk "Sepete Ekle" butonunu bul ve tıkla
+        const addToCartBtn = page.locator('.add-to-cart').first();
+        await expect(addToCartBtn).toBeVisible();
+        await addToCartBtn.click();
+
+        // Sepet count'unun 1 olduğunu ve görünür olduğunu doğrula
+        await expect(count).toBeVisible();
+        await expect(count).toHaveText('1');
+    });
 });

@@ -57,7 +57,7 @@ export async function fetchSettingsFromServer() {
 export function calculateCartTotal() {
     let subTotal = 0;
     let discountTotal = 0;
-    cart.forEach(item => {
+    getCart().forEach(item => {
         const itemPrice = parseFloat(item.price) || 0;
         if (item.isPackage && Array.isArray(item.packageItems)) {
             const base = item.packageItems.reduce((a, si) => a + (parseFloat(si.price) || 0) * (si.quantity || 1), 0);

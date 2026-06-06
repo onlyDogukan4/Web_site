@@ -11,6 +11,13 @@ const filesToDelete = [
     'cart-system.js'
 ];
 
+const dirsToDelete = [
+    'test-results',
+    'playwright-report',
+    'blob-report',
+    'coverage'
+];
+
 filesToDelete.forEach(file => {
     const filePath = path.join(rootDir, file);
     if (fs.existsSync(filePath)) {
@@ -20,7 +27,29 @@ filesToDelete.forEach(file => {
         } catch (e) {
             console.error(`✗ Error deleting ${file}:`, e.message);
         }
-    } else {
-        console.log(`- File already deleted or not found: ${file}`);
     }
 });
+
+dirsToDelete.forEach(dir => {
+    const dirPath = path.join(rootDir, dir);
+    if (fs.existsSync(dirPath)) {
+        try {
+            fs.rmSync(dirPath, { recursive: true, force: true });
+            console.log(`✓ Deleted unused directory: ${dir}`);
+        } catch (e) {
+            console.error(`✗ Error deleting directory ${dir}:`, e.message);
+        }
+    }
+});
+
+try {
+    const files = fs.readdirSync(rootDir);
+    files.forEach(file => {
+        if (file.endsWith('.log')) {
+            fs.unlinkSync(path.join(rootDir, file));
+            console.log(`✓ Deleted log file: ${file}`);
+        }
+    });
+} catch (e) {
+    console.error(`✗ Error cleaning up log files:`, e.message);
+}

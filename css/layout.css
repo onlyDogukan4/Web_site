@@ -3,9 +3,8 @@
     position: fixed;
     top: 0;
     right: 0;
+    bottom: 0;
     width: min(480px, 100vw);
-    height: 100vh;
-    height: 100dvh;
     background: var(--glass-bg);
     backdrop-filter: blur(25px);
     z-index: 10000;

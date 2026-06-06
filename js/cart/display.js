@@ -257,10 +257,6 @@ export function _renderSummary(subTotal, discountTotal, total) {
             <span>${shipping > 0 ? '🚚 Kargo' : '🎉 Kargo (Ücretsiz)'}</span>
             <span>${shipping > 0 ? '₺' + shipping.toLocaleString('tr-TR') : 'Ücretsiz'}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#64748b;font-size:11px;">
-            <span>KDV (%20, dahil)</span>
-            <span>₺${kdvAmount.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>
-        </div>
             <div style="display:flex;justify-content:space-between;color:var(--primary);font-weight:900;font-size:18px;margin-top:10px;padding-top:10px;border-top:2px solid #f1f5f9;">
                 <span>ÖDENECEK TOPLAM</span>
                 <span style="font-weight:900;font-size:22px;color:var(--primary);">₺${grandTotal.toLocaleString('tr-TR',{minimumFractionDigits:2})}</span>

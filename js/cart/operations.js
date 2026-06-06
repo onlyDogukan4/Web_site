@@ -13,6 +13,17 @@ export function addToCart(idOrItem, name, price, isConcept = false) {
         if (!item.quantity) item.quantity = 1;
     }
 
+    let img = null;
+    const modal = document.getElementById('product-detail-modal');
+    if (modal && modal.style.display === 'block') {
+        img = document.getElementById('detail-img');
+    }
+    if (!img) {
+        const btn = document.querySelector(`.add-to-cart[onclick*="'${item.id}'"]`);
+        img = btn?.closest('.product-card')?.querySelector('img');
+    }
+    if (img) flyToCart(img);
+
     const existing = getCart().find(x => x.id === item.id);
     if (existing) {
         existing.quantity += (item.quantity || 1);
@@ -21,7 +32,11 @@ export function addToCart(idOrItem, name, price, isConcept = false) {
     }
 
     saveCart();
-    updateCartDisplay();
+    
+    setTimeout(() => {
+        updateCartDisplay();
+        document.body.classList.add('cart-open');
+    }, 800);
 
     if (item.isConcept) {
         if (typeof showVIPToast === 'function') showVIPToast(item.name);
