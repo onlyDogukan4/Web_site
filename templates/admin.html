@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Moderra | Yönetici Paneli</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin-mobile.css">
+</head>
+<body>
+    <button type="button" class="admin-mobile-toggle" id="admin-sidebar-toggle" aria-label="Menü">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="admin-sidebar-backdrop" id="admin-sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- @include partials/admin/login.html -->
+    <!-- @include partials/admin/modals/product.html -->
+    <!-- @include partials/admin/modals/campaign.html -->
+    <!-- @include partials/admin/modals/concept.html -->
+    <!-- @include partials/admin/modals/package.html -->
+    <!-- @include partials/admin/modals/order.html -->
+
+    <!-- @include partials/admin/sidebar.html -->
+
+    <main class="main-content">
+        <!-- @include partials/admin/sections/products.html -->
+        <!-- @include partials/admin/sections/packages.html -->
+        <!-- @include partials/admin/sections/concepts.html -->
+        <!-- @include partials/admin/sections/campaigns.html -->
+        <!-- @include partials/admin/sections/orders.html -->
+        <!-- @include partials/admin/sections/settings.html -->
+    </main>
+
+    <div id="toast" class="toast">✔️ Başarıyla Aktarıldı!</div>
+
+    <script src="js/admin/mobile.js" defer></script>
+    <script type="module" src="js/admin/index.js"></script>
+</body>
+</html>

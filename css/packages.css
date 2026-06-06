@@ -1,0 +1,315 @@
+/* ── Ana sayfa paket kartları ─────────────────────────────────── */
+
+#paketler {
+    margin-top: 80px;
+}
+
+.packages-section-lead {
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: -20px;
+    margin-bottom: 40px;
+}
+
+#packages-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 28px;
+    min-height: 200px;
+}
+
+.package-card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.package-card-badge {
+    position: absolute;
+    top: 20px;
+    right: -35px;
+    background: var(--primary);
+    color: #fff;
+    padding: 5px 40px;
+    transform: rotate(45deg);
+    font-weight: 800;
+    font-size: 12px;
+    z-index: 1;
+}
+
+.package-card-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.package-card-head img {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    border-radius: 14px;
+    background: #f8fafc;
+    padding: 8px;
+    flex-shrink: 0;
+}
+
+.package-card-head h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.package-card-head p {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.package-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.package-items-grid.items-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.package-item {
+    background: var(--bg-body);
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.package-item img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+}
+
+.package-item-name {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text-main, #1e293b);
+}
+
+.package-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card, #fff);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 4px 8px;
+}
+
+.package-item-qty span,
+.package-item-qty .qty-value {
+    font-weight: 900;
+    min-width: 22px;
+    text-align: center;
+    color: #1e293b;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.package-card--wedding .package-item-qty span,
+.package-card--wedding .package-item-qty .qty-value {
+    color: #1e293b;
+}
+
+.package-item-qty .qty-btn {
+    min-width: 28px;
+    min-height: 28px;
+}
+
+.package-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--border);
+    flex-wrap: wrap;
+}
+
+.package-price-block {
+    flex: 1;
+    min-width: 140px;
+}
+
+.package-price {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1.1;
+}
+
+.package-price-note {
+    font-size: 11px;
+    color: #16a34a;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
+.package-add-btn {
+    padding: 16px 28px;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+/* Düğün paketi — düğün görselli arka plan */
+.package-card--wedding {
+    border: none;
+    color: #fff;
+    background:
+        linear-gradient(160deg, rgba(30, 20, 50, 0.78) 0%, rgba(120, 60, 100, 0.55) 45%, rgba(20, 15, 35, 0.85) 100%),
+        url('images/wedding.png') center / cover no-repeat;
+    box-shadow: 0 20px 50px rgba(88, 28, 135, 0.22);
+}
+
+.package-card--wedding .package-card-badge {
+    background: linear-gradient(135deg, #f472b6, #c026d3);
+    color: #fff;
+}
+
+.package-card--wedding .package-card-head img {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.package-card--wedding .package-card-head h3,
+.package-card--wedding .package-card-head p {
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.package-card--wedding .package-card-head p {
+    color: rgba(248, 250, 252, 0.92);
+}
+
+.package-card--wedding .package-item {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.package-card--wedding .package-item-name {
+    color: #fff;
+}
+
+.package-card--wedding .package-item-qty {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: transparent;
+}
+
+.package-card--wedding .package-footer {
+    border-top-color: rgba(255, 255, 255, 0.25);
+}
+
+.package-card--wedding .package-price {
+    color: #fde68a;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.package-card--wedding .package-price-note {
+    color: #bbf7d0;
+}
+
+.package-card--wedding .package-add-btn {
+    background: #fff;
+    color: #5b21b6;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.package-card--wedding .package-add-btn:hover {
+    filter: brightness(1.05);
+}
+
+@media (max-width: 768px) {
+    .package-card {
+        padding: 18px;
+        border-radius: 20px;
+    }
+
+    .package-card-head {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .package-card-head img {
+        width: 72px;
+        height: 72px;
+    }
+
+    .package-card-head h3 {
+        font-size: 1.15rem;
+    }
+
+    .package-items-grid,
+    .package-items-grid.items-3 {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .package-item {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .package-item img {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+    }
+
+    .package-item-name {
+        flex: 1;
+        min-width: 0;
+        font-size: 13px;
+    }
+
+    .package-item-qty {
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    .package-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .package-add-btn {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 20px;
+    }
+
+    .package-price {
+        font-size: 1.5rem;
+    }
+}

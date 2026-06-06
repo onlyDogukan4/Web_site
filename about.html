@@ -2,7 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Moderra | Hakkımızda</title>
     <meta name="description" content="Moderra'nın hikayesi, kalite politikası ve karton bardak üretimindeki uzmanlığı. Geleceğe yönelik vizyonumuz ve değerlerimiz.">
     <meta name="keywords" content="moderra hakkımızda, karton bardak üretimi, yerli üretim bardak">
@@ -46,6 +47,8 @@
         </div>
     </div>
 
+    <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
@@ -53,39 +56,25 @@
                 <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
                 <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
-                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li> 
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons" id="main-nav-icons">
+            <div class="nav-icons">
                 <i class="fas fa-search" id="open-search"></i>
                 <i class="fas fa-moon" id="theme-toggle"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal" onclick="document.body.classList.add('cart-open')">
-                    <span id="cart-count">0</span>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count" style="display:none;">0</span>
                 </i>
                 <i class="fas fa-user-circle" id="open-profile-modal"></i>
-                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <button type="button" class="hamburger" id="hamburger-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="nav-links">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </nav>
 
-    <!-- Unified Cart Drawer -->
-    <div id="cart-modal" class="cart-drawer">
-        <div class="cart-header">
-            <h2 style="margin:0; font-size:22px; font-weight:900;"><i class="fas fa-shopping-basket"></i> Sepetim</h2>
-            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px;" onclick="document.body.classList.remove('cart-open')">&times;</div>
-        </div>
-        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;"></div>
-        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9;">
-            <div id="cart-total-price-area"></div>
-            <button id="whatsapp-checkout" class="btn" style="width:100%; padding:20px; border-radius:18px; background:linear-gradient(45deg, #22c55e, #16a34a); color:white; font-weight:800; border:none; cursor:pointer; margin-top:15px;">
-                <i class="fab fa-whatsapp"></i> SİPARİŞİ TAMAMLA
-            </button>
-        </div>
-    </div>
-    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
+    
 
     <header class="page-header-premium">
         <div class="container">
@@ -233,10 +222,6 @@
     </footer>
 
     <script>
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.getElementById('nav-links');
-        hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
-
         const langToggle = document.getElementById('lang-toggle');
         let currentLang = localStorage.getItem('lang') || 'tr';
 
@@ -345,45 +330,7 @@
 
         updateLanguage();
     </script>
-    <script src="env.js"></script>
-    <script>
-        // Shared Cart Logic
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        function calculateCartTotal() {
-            let subTotal = 0, discountTotal = 0;
-            cart.forEach(item => {
-                let itemPrice = parseFloat(item.price) || 0;
-                let itemQty = parseInt(item.quantity) || 1;
-                subTotal += itemPrice * itemQty;
-                // Add discount logic if needed, simplify for static pages
-            });
-            return { total: subTotal, subTotal, discountTotal };
-        }
-        function updateCartDisplay() {
-            const list = document.getElementById('cart-items-list');
-            if(!list) return;
-            list.innerHTML = '';
-            const { total } = calculateCartTotal();
-            if (cart.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding:100px 20px; color:#cbd5e1;"><i class="fas fa-shopping-basket" style="font-size:60px; margin-bottom:20px; display:block;"></i><p>Sepetiniz boş.</p></div>';
-            } else {
-                cart.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = 'cart-item-card' + (item.isConcept ? ' vip-concept-frame' : '');
-                    el.style.cssText = "display:flex; align-items:center; gap:15px; background:white; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #eee;";
-                    el.innerHTML = `<img src="${item.image}" style="width:50px; height:50px; border-radius:10px; object-fit:contain; background:#f8fafc;"><div style="flex:1;"><div style="font-weight:700; font-size:14px;">${item.name}</div><div style="font-size:16px; font-weight:800; color:var(--primary);">₺${(parseFloat(item.price) * item.quantity).toLocaleString('tr-TR')}</div></div><i class="fas fa-trash-alt" style="color:#cbd5e1; cursor:pointer;" onclick="removeFromCart('${item.id}')"></i>`;
-                    list.appendChild(el);
-                });
-            }
-            const countEl = document.getElementById('cart-count');
-            const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
-            if(countEl) { countEl.innerText = totalQty; countEl.style.display = totalQty > 0 ? 'flex' : 'none'; }
-            const summary = document.getElementById('cart-total-price-area');
-            if(summary) summary.innerHTML = `<div style="display:flex; justify-content:space-between; font-weight:800; font-size:18px; padding-top:15px; border-top:2px dashed #eee;"><span>TOPLAM:</span><span>₺${total.toLocaleString('tr-TR')}</span></div>`;
-        }
-        function removeFromCart(id) { cart = cart.filter(i => i.id !== id); localStorage.setItem('cart', JSON.stringify(cart)); updateCartDisplay(); }
-        document.addEventListener('DOMContentLoaded', updateCartDisplay);
-    </script>
+    <script type="module" src="js/cart/index.js"></script>
     <script src="chatbot.js"></script>
     
     <!-- Vercel Speed Insights -->
@@ -391,21 +338,27 @@
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
-    <script>
-        document.getElementById('open-cart-modal').onclick = () => {
-            document.getElementById('cart-modal').style.display = 'block';
-            document.getElementById('cart-overlay').style.display = 'block';
-            updateCartDisplay();
-        };
-        document.getElementById('whatsapp-checkout').onclick = () => {
-             let msg = "Merhaba Moderra, Hakkımızda sayfasından geliyorum. Sipariş vermek istiyorum.\n";
-             window.open(`https://wa.me/905304640120?text=${encodeURIComponent(msg)}`, '_blank');
-        };
-        window.addEventListener('load', updateCartDisplay);
-    </script>
-    <style>
-        .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
-        #cart-modal[style*="display: block"] { transform: translateX(0); }
-    </style>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
+
+<!-- Sepet (tum sayfalarda ortak) -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 class="cart-header-title">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i> Sepetim
+            </h2>
+            <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Sepeti kapat">&times;</button>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        <div id="cart-items-list"></div>
+        <div class="cart-drawer-footer">
+            <div id="cart-total-price-area"></div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
+
+    <script type="module" src="js/cart/index.js"></script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

@@ -4,3 +4,8 @@ config.js
 node_modules/
 .vscode/
 *.log
+test-results/
+playwright-report/
+blob-report/
+coverage/
+.vercel

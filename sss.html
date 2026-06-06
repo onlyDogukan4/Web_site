@@ -2,7 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Moderra hakkında merak ettiğiniz tüm soruların cevapları. Karton bardak siparişi, teslimat süreçleri ve özel tasarım detayları.">
     <meta name="keywords" content="karton bardak sss, moderra yardım, bardak siparişi nasıl verilir">
     <title data-tr="Sıkça Sorulan Sorular | Moderra" data-en="F.A.Q. | Moderra">Moderra | Sıkça Sorulan Sorular</title>
@@ -10,32 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="chatbot.css">
-    <style>
-        /* Modernized Search Bar */
-        .search-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            z-index: 10000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .search-container.active { opacity: 1; visibility: visible; }
-        .search-wrapper {
-            width: 100%; max-width: 800px; padding: 0 40px; position: relative;
-            transform: scale(0.9); transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .search-container.active .search-wrapper { transform: scale(1); }
-        .search-wrapper input {
-            width: 100%; background: white; border: 1px solid rgba(0,0,0,0.05);
-            color: #1e293b; font-size: 32px; font-weight: 800; padding: 30px 40px; border-radius: 30px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1); outline: none; transition: 0.4s;
-            letter-spacing: -0.5px;
-        }
-        .search-close { position: absolute; top: -80px; right: 40px; font-size: 40px; color: #1e293b; cursor: pointer; opacity: 0.4; transition: 0.3s; }
-        .search-close:hover { opacity: 1; transform: rotate(90deg); }
-
-    </style>
 </head>
 <body data-scroll-container>
     <!-- Impressive Search UI -->
@@ -46,6 +21,8 @@
         </div>
     </div>
 
+    <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
             <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
@@ -53,39 +30,25 @@
                 <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
                 <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
-                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li> 
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
                 <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
                 <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-            <div class="nav-icons" id="main-nav-icons">
+            <div class="nav-icons">
                 <i class="fas fa-search" id="open-search"></i>
                 <i class="fas fa-moon" id="theme-toggle"></i>
-                <i class="fas fa-shopping-cart" id="open-cart-modal" onclick="document.body.classList.add('cart-open')">
-                    <span id="cart-count">0</span>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count" style="display:none;">0</span>
                 </i>
                 <i class="fas fa-user-circle" id="open-profile-modal"></i>
-                <div class="hamburger" onclick="document.getElementById('nav-links').classList.toggle('active')">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <button type="button" class="hamburger" id="hamburger-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="nav-links">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </nav>
 
-    <!-- Unified Cart Drawer -->
-    <div id="cart-modal" class="cart-drawer">
-        <div class="cart-header">
-            <h2 style="margin:0; font-size:22px; font-weight:900;"><i class="fas fa-shopping-basket"></i> Sepetim</h2>
-            <div class="cart-close-drawer" style="cursor:pointer; font-size:28px;" onclick="document.body.classList.remove('cart-open')">&times;</div>
-        </div>
-        <div id="cart-items-list" style="padding:20px; overflow-y:auto; flex:1;"></div>
-        <div class="cart-footer" style="padding:25px; background:white; border-top:1px solid #f1f5f9;">
-            <div id="cart-total-price-area"></div>
-            <button id="whatsapp-checkout" class="btn" style="width:100%; padding:20px; border-radius:18px; background:linear-gradient(45deg, #22c55e, #16a34a); color:white; font-weight:800; border:none; cursor:pointer; margin-top:15px;">
-                <i class="fab fa-whatsapp"></i> SİPARİŞİ TAMAMLA
-            </button>
-        </div>
-    </div>
-    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>
+    
 
     <header class="page-header-premium">
         <div class="container">
@@ -210,121 +173,7 @@
         </div>
     </footer>
 
-    <script>
-        function toggleAnswer(element) {
-            const answer = element.nextElementSibling;
-            const isExpanded = element.getAttribute('aria-expanded') === 'true';
-            
-            document.querySelectorAll('.faq-question[aria-expanded="true"]').forEach(q => {
-                q.nextElementSibling.style.display = 'none';
-                q.setAttribute('aria-expanded', 'false');
-                q.querySelector('.icon').style.transform = 'rotate(0deg)';
-                q.querySelector('.icon i').className = 'fas fa-plus';
-            });
-
-            if (!isExpanded) {
-                answer.style.display = 'block';
-                element.setAttribute('aria-expanded', 'true');
-                element.querySelector('.icon i').className = 'fas fa-minus';
-            }
-        }
-
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.getElementById('nav-links');
-        hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
-
-        const langToggle = document.getElementById('lang-toggle');
-        let currentLang = localStorage.getItem('lang') || 'tr';
-
-        function updateLanguage() {
-            document.querySelectorAll('[data-tr]').forEach(el => {
-                el.textContent = el.getAttribute('data-' + currentLang);
-            });
-            langToggle.textContent = currentLang === 'tr' ? 'EN' : 'TR';
-            document.documentElement.lang = currentLang;
-        }
-
-        langToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            currentLang = currentLang === 'tr' ? 'en' : 'tr';
-            localStorage.setItem('lang', currentLang);
-            updateLanguage();
-        });
-
-        // Theme Toggle Logic
-        const themeToggle = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        
-        if (currentTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            themeToggle.classList.replace('fa-moon', 'fa-sun');
-        }
-
-        themeToggle.onclick = () => {
-            const theme = document.documentElement.getAttribute('data-theme');
-            if (theme === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                themeToggle.classList.replace('fa-sun', 'fa-moon');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.classList.replace('fa-moon', 'fa-sun');
-            }
-        };
-
-        updateLanguage();
-        // Search logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const pm = document.getElementById('profile-modal');
-            const opm = document.getElementById('open-profile-modal');
-            const cl = document.querySelector('.profile-close');
-            const profileForm = document.getElementById('profile-form');
-            
-            if(opm) opm.onclick = () => { pm.style.display = 'block'; };
-            if(cl) cl.onclick = () => { pm.style.display = 'none'; };
-            window.onclick = (e) => { if(e.target === pm) pm.style.display = 'none'; };
-
-            // Load saved profile
-            const savedData = JSON.parse(localStorage.getItem('moderra_user_data') || '{}');
-            if(savedData.name) document.getElementById('user-name').value = savedData.name;
-            if(savedData.phone) document.getElementById('user-phone').value = savedData.phone;
-            if(savedData.address) document.getElementById('user-address').value = savedData.address;
-
-            if(profileForm) {
-                profileForm.onsubmit = (e) => {
-                    e.preventDefault();
-                    const data = {
-                        name: document.getElementById('user-name').value,
-                        phone: document.getElementById('user-phone').value,
-                        address: document.getElementById('user-address').value
-                    };
-                    localStorage.setItem('moderra_user_data', JSON.stringify(data));
-                    alert(currentLang === 'tr' ? 'Profil güncellendi!' : 'Profile updated!');
-                    pm.style.display = 'none';
-                };
-            }
-
-            // Navbar Active Tab
-            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                if(link.getAttribute('href') === currentPath) link.classList.add('active');
-            });
-
-            // Search Logic
-            const searchIcon = document.getElementById('open-search');
-            const searchContainer = document.getElementById('search-bar');
-            const closeSearch = document.getElementById('close-search');
-            const searchInput = document.getElementById('search-input');
-
-            if(searchIcon) searchIcon.onclick = () => {
-                searchContainer.classList.add('active');
-                setTimeout(() => searchInput.focus(), 100);
-            };
-            if(closeSearch) closeSearch.onclick = () => searchContainer.classList.remove('active');
-        });
-    </script>
-    <script src="env.js"></script>
+    <script src="js/pages/sss.js" defer></script>
     <script src="chatbot.js"></script>
     
     <!-- Cart Drawer -->
@@ -344,63 +193,10 @@
             </button>
         </div>
     </div>
-    <style>
-        .cart-drawer[style*="display: block"] { display: flex !important; transform: translateX(0); }
-        .cart-item-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    </style>
     <div id="cart-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.5); z-index:9999; backdrop-filter:blur(8px);" onclick="document.getElementById('cart-modal').style.display='none'; this.style.display='none';"></div>
 
-    <script>
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        function updateCartDisplay() {
-            const list = document.getElementById('cart-items-list');
-            const totalEl = document.getElementById('cart-total-price');
-            const countEl = document.getElementById('cart-count');
-            if(!list) return;
-            list.innerHTML = '';
-            let total = 0;
-            cart.forEach(item => {
-                total += (parseFloat(item.price) * item.quantity);
-                const el = document.createElement('div');
-                el.className = 'cart-item-card';
-                el.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:12px; flex:1;">
-                        <img src="${item.image}" style="width:50px; height:50px; object-fit:contain; border-radius:12px; background:#f8fafc; border:1px solid #eee; padding:5px;">
-                        <div>
-                            <div style="font-weight:900; font-size:14px; color:#1e293b;">${item.name}</div>
-                            <div style="font-size:12px; color:var(--primary); font-weight:800; margin-top:2px;">${item.quantity} x ₺${item.price.toFixed(2)}</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-trash-alt" onclick="removeFromCart('${item.id}')" style="cursor:pointer; color:#cbd5e1; font-size:14px; transition:0.3s; padding:5px;"></i>
-                `;
-                list.appendChild(el);
-            });
-            if(totalEl) totalEl.innerText = `₺${total.toLocaleString('tr-TR', {minimumFractionDigits:2})}`;
-            if(countEl) {
-                const qty = cart.reduce((s,i)=>s+i.quantity,0);
-                countEl.innerText = qty;
-                countEl.style.display = qty > 0 ? 'flex' : 'none';
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-        function removeFromCart(id) {
-            cart = cart.filter(x => x.id !== id);
-            updateCartDisplay();
-        }
-        document.getElementById('open-cart-modal').onclick = () => {
-            document.getElementById('cart-modal').style.display = 'block';
-            document.getElementById('cart-overlay').style.display = 'block';
-            updateCartDisplay();
-        };
-        document.getElementById('whatsapp-checkout').onclick = () => {
-             let msg = "Merhaba Moderra, SSS sayfasından geliyorum. Sipariş vermek istiyorum.\n";
-             window.open(`https://wa.me/905304640120?text=${encodeURIComponent(msg)}`, '_blank');
-        };
-        window.addEventListener('load', updateCartDisplay);
-    </script>
-    <style>
-        .cart-drawer { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); transform: translateX(100%); }
-        #cart-modal[style*="display: block"] { transform: translateX(0); }
-    </style>
+    <script type="module" src="js/cart/index.js"></script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

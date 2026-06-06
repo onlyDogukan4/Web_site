@@ -1,0 +1,57 @@
+.moderra-cart-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 120%);
+    z-index: 10004;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: min(360px, calc(100vw - 32px));
+    width: max-content;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1e293b, #4338ca);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+    box-shadow: 0 16px 40px rgba(67, 56, 202, 0.45);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.moderra-cart-toast.visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.moderra-cart-toast i {
+    font-size: 20px;
+    color: #fde68a;
+    flex-shrink: 0;
+}
+
+.moderra-cart-toast span {
+    line-height: 1.35;
+}
+
+body.chatbot-open .moderra-cart-toast {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 768px) {
+    .moderra-cart-toast {
+        bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+        max-width: calc(100vw - 24px);
+    }
+
+    body.chatbot-open .moderra-cart-toast {
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+}

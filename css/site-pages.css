@@ -1,0 +1,105 @@
+/* Alt sayfalar (ana sayfa dışı) — mobil uyum */
+
+@media (max-width: 768px) {
+    .page-header,
+    .page-header-premium {
+        padding: 48px 0 32px !important;
+        text-align: center;
+    }
+
+    .page-header h1,
+    .page-header-premium h1 {
+        font-size: 1.65rem !important;
+        line-height: 1.25;
+        padding: 0 12px;
+    }
+
+    .page-header p,
+    .page-header-premium p {
+        font-size: 14px !important;
+        padding: 0 16px;
+    }
+
+    .content-section {
+        padding: 24px 16px !important;
+    }
+
+    .content-section h2 {
+        font-size: 1.35rem !important;
+    }
+
+    footer .footer-content {
+        grid-template-columns: 1fr !important;
+        gap: 32px !important;
+        text-align: center;
+    }
+
+    footer .footer-links {
+        padding: 0;
+    }
+
+    footer .social-icons {
+        justify-content: center;
+    }
+
+    /* Eski konsept sayfaları — dropdown menü */
+    .navbar .dropdown-content {
+        position: static;
+        display: none;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding-left: 12px;
+    }
+
+    .navbar .dropdown.open .dropdown-content {
+        display: block;
+    }
+
+    .navbar .dropdown > a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Hakkımızda / SSS geniş içerik */
+    .about-hero,
+    .faq-container,
+    .about-grid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+
+    .faq-item {
+        margin-bottom: 10px;
+    }
+
+    /* Konsept bardaklar — geniş layout */
+    .konsept-layout,
+    .concept-page-wrap {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .cup-grid,
+    .products-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-section {
+        padding: 20px 12px !important;
+    }
+
+    .content-section i.fa-heart,
+    .content-section i.fa-gift {
+        font-size: 48px !important;
+    }
+}

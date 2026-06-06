@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Güvenli Ödeme — Moderra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 16px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 30px;
+            color: white;
+            opacity: 0.9;
+        }
+        .brand span { color: #818cf8; }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 32px;
+            width: 100%;
+            max-width: 460px;
+            backdrop-filter: blur(20px);
+        }
+
+        .shield {
+            width: 64px; height: 64px;
+            background: rgba(16,185,129,0.15);
+            border: 2px solid rgba(16,185,129,0.4);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .shield i { font-size: 28px; color: #10b981; }
+
+        h1 { font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 6px; }
+        .subtitle { font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 28px; }
+
+        .info-row {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .info-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .info-icon i { color: #818cf8; font-size: 14px; }
+        .info-label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-size: 15px; font-weight: 800; color: white; margin-top: 2px; }
+
+        .amount-row {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(99,102,241,0.1));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .amount-label { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .amount-value { font-size: 36px; font-weight: 900; color: #10b981; margin-top: 4px; }
+
+        .pay-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(79,70,229,0.4);
+            transition: all 0.2s;
+            margin-bottom: 14px;
+        }
+        .pay-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 40px rgba(79,70,229,0.5); }
+        .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .security-note {
+            font-size: 11px;
+            color: #475569;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .security-note i { color: #10b981; }
+
+        /* iframe wrapper */
+        #iframe-section {
+            display: none;
+            width: 100%;
+            max-width: 520px;
+            margin-top: 20px;
+        }
+        #iframe-section iframe {
+            width: 100%;
+            height: 650px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        /* States */
+        #error-section { display: none; text-align: center; }
+        #error-section .icon { font-size: 48px; margin-bottom: 16px; }
+        #error-section h2 { font-size: 20px; margin-bottom: 8px; }
+        #error-section p { color: #94a3b8; font-size: 14px; }
+
+        #paid-section { display: none; text-align: center; }
+        #paid-section .icon { font-size: 56px; color: #10b981; margin-bottom: 16px; }
+        #paid-section h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+        #paid-section p { color: #94a3b8; font-size: 14px; }
+
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="brand"><i class="fas fa-cube"></i> Moderra<span>.</span></div>
+
+<!-- Hata durumu -->
+<div id="error-section" class="card">
+    <div class="icon">⚠️</div>
+    <h2>Ödeme Linki Bulunamadı</h2>
+    <p id="error-msg">Bu ödeme linki geçersiz veya süresi dolmuş.</p>
+</div>
+
+<!-- Ödendi durumu -->
+<div id="paid-section" class="card">
+    <div class="icon"><i class="fas fa-check-circle"></i></div>
+    <h2>Ödeme Tamamlandı</h2>
+    <p>Bu ödeme linki daha önce kullanıldı ve ödeme başarıyla alındı.</p>
+</div>
+
+<!-- Ödeme bilgileri -->
+<div id="pay-section" class="card" style="display:none;">
+    <div class="shield">
+        <i class="fas fa-shield-halved"></i>
+    </div>
+    <h1>Güvenli Ödeme</h1>
+    <p class="subtitle">Aşağıdaki bilgileri kontrol edip ödemenizi gerçekleştirin</p>
+
+    <div class="info-row">
+        <div class="info-icon"><i class="fas fa-user"></i></div>
+        <div>
+            <div class="info-label">Müşteri</div>
+            <div class="info-value" id="disp-name">—</div>
+        </div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-icon"><i class="fas fa-tag"></i></div>
+        <div>
+            <div class="info-label">Açıklama</div>
+            <div class="info-value" id="disp-desc">—</div>
+        </div>
+    </div>
+
+    <div class="amount-row">
+        <div class="amount-label">Ödenecek Tutar</div>
+        <div class="amount-value" id="disp-amount">—</div>
+    </div>
+
+    <button class="pay-btn" id="pay-btn" onclick="startPayment()">
+        <i class="fas fa-lock"></i> Güvenli Ödeme Yap
+    </button>
+    <p class="security-note">
+        <i class="fas fa-lock"></i> 256-bit SSL ile şifreleniyor &nbsp;|&nbsp; PayTR güvencesiyle
+    </p>
+</div>
+
+<!-- PayTR iframe -->
+<div id="iframe-section">
+    <iframe id="paytr-iframe" src="" allowfullscreen></iframe>
+</div>
+
+<script>
+    const params   = new URLSearchParams(location.search);
+    const reqId    = params.get('id');
+    let   payReq   = null;
+
+    async function init() {
+        if (!reqId) { showError('Geçersiz link: ödeme ID bulunamadı.'); return; }
+
+        try {
+            const res  = await fetch(`/api/payment-requests?id=${encodeURIComponent(reqId)}`);
+            if (!res.ok) { showError('Bu ödeme linki bulunamadı.'); return; }
+            payReq = await res.json();
+
+            if (payReq.status === 'odendi') {
+                document.getElementById('paid-section').style.display = 'block';
+                return;
+            }
+
+            // Bilgileri doldur
+            document.getElementById('disp-name').textContent   = payReq.customerName  || '—';
+            document.getElementById('disp-desc').textContent   = payReq.description   || '—';
+            document.getElementById('disp-amount').textContent = '₺' + parseFloat(payReq.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+            document.getElementById('pay-section').style.display = 'block';
+
+        } catch (e) {
+            showError('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.');
+        }
+    }
+
+    async function startPayment() {
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Hazırlanıyor...';
+
+        try {
+            const res  = await fetch('/api/payment-requests', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ action: 'get-token', requestId: reqId })
+            });
+            const data = await res.json();
+
+            if (!data.token) {
+                alert('Ödeme başlatılamadı: ' + (data.error || 'Bilinmeyen hata'));
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-lock"></i> Güvenli Ödeme Yap';
+                return;
+            }
+
+            // iframe göster
+            document.getElementById('pay-section').style.display   = 'none';
+            const iframeSection = document.getElementById('iframe-section');
+            iframeSection.style.display = 'block';
+            document.getElementById('paytr-iframe').src = `https://www.paytr.com/odeme/guvenli/${data.token}`;
+
+        } catch (e) {
+            alert('Sunucu hatası: ' + e.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-lock"></i> Güvenli Ödeme Yap';
+        }
+    }
+
+    function showError(msg) {
+        document.getElementById('error-msg').textContent = msg;
+        document.getElementById('error-section').style.display = 'block';
+    }
+
+    init();
+</script>
+</body>
+</html>

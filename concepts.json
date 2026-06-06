@@ -1,0 +1,50 @@
+[
+  {
+    "id": "yilbasi",
+    "name": "Yılbaşı Konsept",
+    "name_en": "New Year Concept",
+    "desc_tr": "Yeni yıla özel baskılı premium karton bardaklar. Kar taneleri, çam ağacı ve yılbaşı motifleriyle kişiselleştirilmiş tasarımlar.",
+    "desc_en": "Premium paper cups printed specially for the new year. Personalized designs with snowflakes, pine trees and new year motifs.",
+    "published": true,
+    "theme_color": "#6366f1",
+    "bg_color": "#f0f4ff",
+    "text_color": "#1e293b",
+    "base_image": "images/bardak.png",
+    "label_text": "Yılbaşı Özel",
+    "price": 15.0,
+    "variations": {
+      "4oz-nolid":  { "stock": 100, "price": 15.0 },
+      "4oz-lid":    { "stock": 100, "price": 17.0 },
+      "7oz-nolid":  { "stock": 80,  "price": 18.0 },
+      "7oz-lid":    { "stock": 80,  "price": 20.0 },
+      "8oz-nolid":  { "stock": 60,  "price": 20.0 },
+      "8oz-lid":    { "stock": 60,  "price": 22.0 },
+      "12oz-nolid": { "stock": 40,  "price": 25.0 },
+      "12oz-lid":   { "stock": 40,  "price": 27.0 }
+    }
+  },
+  {
+    "id": "dugun",
+    "name": "Düğün Konsept",
+    "name_en": "Wedding Concept",
+    "desc_tr": "Düğün ve nişan törenlerine özel zarif tasarımlı bardaklar. Çiftlerin isimlerini ve tarihlerini ekleyebildiğiniz özel baskı.",
+    "desc_en": "Elegant cups for weddings and engagements. Special printing where couples can add their names and dates.",
+    "published": true,
+    "theme_color": "#d4af37",
+    "bg_color": "#fffbeb",
+    "text_color": "#1a0e00",
+    "base_image": "images/bardak.png",
+    "label_text": "Düğün Özel",
+    "price": 18.0,
+    "variations": {
+      "4oz-nolid":  { "stock": 200, "price": 18.0 },
+      "4oz-lid":    { "stock": 200, "price": 20.0 },
+      "7oz-nolid":  { "stock": 150, "price": 22.0 },
+      "7oz-lid":    { "stock": 150, "price": 24.0 },
+      "8oz-nolid":  { "stock": 100, "price": 24.0 },
+      "8oz-lid":    { "stock": 100, "price": 26.0 },
+      "12oz-nolid": { "stock": 80,  "price": 28.0 },
+      "12oz-lid":   { "stock": 80,  "price": 30.0 }
+    }
+  }
+]

@@ -1,0 +1,225 @@
+/* Sepet Sayacı */
+#cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    display: none;
+    line-height: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Hero Slider */
+.slider {
+    margin: 30px 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    aspect-ratio: 2 / 1;
+    background: var(--border);
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    height: 100%;
+}
+
+.slide {
+    min-width: 100%;
+    position: relative;
+    height: 100%;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 2 / 1;
+    display: block;
+}
+
+.slide-content {
+    position: absolute;
+    top: 50%;
+    left: 80px;
+    transform: translateY(-50%);
+    color: white;
+    max-width: 550px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 30px;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+}
+
+.slide-content h2 {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.slider-nav {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 20;
+}
+
+.slider-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.slider-dot.active {
+    background: white;
+    transform: scale(1.3);
+}
+
+/* Ürünler Bölümü */
+.section-title {
+    text-align: center;
+    margin: 60px 0 40px;
+    font-size: 32px;
+    color: var(--secondary);
+    font-weight: 800;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-gradient);
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+    min-height: 400px;
+    contain: layout;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    position: relative;
+    padding: 0;
+    overflow: visible;
+}
+
+.product-card .product-img {
+    border-radius: 15px 15px 0 0;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.product-img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    transition: transform 0.5s;
+    cursor: pointer;
+    aspect-ratio: 400 / 280;
+    display: block;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.08);
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+    height: 40px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.add-to-cart {
+    flex: 1;
+    background-color: var(--light);
+    color: var(--secondary);
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: 0.3s;
+    border: 1px solid var(--border);
+}
+
+[data-theme='dark'] .add-to-cart {
+    background: var(--bg-main);
+}
+
+.add-to-cart:hover {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+}
+
+.inspect-btn {
+    width: 50px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+[data-theme='dark'] .inspect-btn {
+    background: var(--bg-main);
+    color: white;
+}
+
+.inspect-btn:hover {
+    background: var(--primary-gradient);
+    color: white;
+}
+

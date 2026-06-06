@@ -1,0 +1,15 @@
+<!-- Sepet Drawer -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 style="margin:0;font-size:22px;font-weight:900;color:#1e293b;">
+                <i class="fas fa-shopping-basket" style="color:var(--primary);margin-right:10px;"></i> Sepetim
+            </h2>
+            <span style="cursor:pointer;font-size:28px;color:#cbd5e1;" onclick="document.body.classList.remove('cart-open')">&times;</span>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        <div id="cart-items-list"></div>
+        <div class="cart-drawer-footer">
+            <div id="cart-total-price-area"></div>
+        </div>
+    </div>
+    <div class="cart-overlay" onclick="document.body.classList.remove('cart-open')"></div>

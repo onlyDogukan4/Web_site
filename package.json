@@ -3,10 +3,32 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "npm run build:css && npm run build:js && node server.js",
+    "dev": "npm run build:css && npm run build:js && node server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test",
+    "test:server": "node scripts/test-server.js",
+    "test:all": "npm run test && npm run test:e2e",
+    "build:css": "node scripts/build-css.js",
+    "build:js": "npx -y esbuild js/cart/index-src.js --bundle --minify --outfile=js/cart/index.js && npx -y esbuild js/pages/index-src.js --bundle --minify --outfile=js/pages/index.js && npx -y esbuild js/pages/concepts-src.js --bundle --minify --outfile=js/pages/concepts.js && npx -y esbuild js/pages/sss-src.js --bundle --minify --outfile=js/pages/sss.js && npx -y esbuild js/pages/takip-src.js --bundle --minify --outfile=js/pages/takip.js",
+    "build:html": "node scripts/build-html.js",
+    "sync:navbars": "node scripts/sync-site-navbars.js",
+    "verify:api": "node scripts/verify-api-count.js",
+    "install:sharp": "npm install -D sharp",
+    "optimize:images": "node scripts/optimize-images.js",
+    "cleanup": "node scripts/cleanup.js",
+    "vercel-build": "npm run build:css && npm run build:js && npm run build:html && npm run verify:api"
   },
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "mongodb": "^7.1.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "sharp": "^0.34.5",
+    "vitest": "^3.2.4"
   }
 }

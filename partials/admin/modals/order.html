@@ -1,0 +1,47 @@
+<!-- ORDER MODAL (SADECE SİPARİŞE ÖZEL) -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal-card" id="order-modal-card" style="max-width: 500px;">
+            <h2 id="o-modal-title" style="margin-bottom:20px">Manuel Sipariş Oluştur</h2>
+
+            <!-- Tasarım Detayları (sadece edit modunda, cartData varsa görünür) -->
+            <div id="o-design-section" style="display:none; margin-bottom:20px; background:#f8fafc; border-radius:16px; padding:20px; border:2px solid #e0e7ff;">
+                <div style="font-size:12px; font-weight:800; color:#6366f1; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-paint-brush"></i> Müşteri Tasarım & Logo Detayları
+                </div>
+                <div id="o-customer-info" style="margin-bottom:12px; font-size:13px; color:#475569; display:grid; grid-template-columns:1fr 1fr; gap:6px;"></div>
+                <div id="o-design-items" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Müşteri Ad Soyad</label>
+                <input type="text" id="o-customer" class="editable-input" placeholder="Ahmet Yılmaz">
+            </div>
+            <div class="form-group">
+                <label>Sipariş İçeriği (Ürünler)</label>
+                <textarea id="o-items" class="editable-input" rows="3" placeholder="2000 adet 8.5 oz karton bardak"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Toplam Fiyat (₺)</label>
+                <input type="number" id="o-price" class="editable-input" placeholder="Örn: 2500">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select id="o-status" class="editable-input">
+                        <option value="alindi">Sipariş Alındı</option>
+                        <option value="kargoda">Kargoya Verildi</option>
+                        <option value="teslim">Teslim Edildi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tahmini Teslim Günü</label>
+                    <input type="date" id="o-delivery" class="editable-input">
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                <button class="btn btn-secondary" onclick="closeModal('order-modal')">Vazgeç</button>
+                <button class="btn btn-primary" id="o-save-btn" onclick="createManualOrder()">Kaydet ve Kod Üret</button>
+            </div>
+            <span class="close-btn" onclick="closeModal('order-modal')" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px;">&times;</span>
+        </div>
+    </div>

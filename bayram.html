@@ -2,7 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Bayram Konseptli Bardaklar | Moderra</title>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -10,34 +11,29 @@
     <link rel="stylesheet" href="chatbot.css">
 </head>
 <body>
+    <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
-            <a href="index.html" class="logo">Moderra</a>
-
+            <a href="index.html" class="logo"><i class="fas fa-cube"></i> Moderra</a>
             <ul class="nav-links" id="nav-links">
-                <li><a href="index.html">Ana Sayfa</a></li>
-                <li class="dropdown">
-                    <a href="#">Konsept Bardaklar <i class="fas fa-chevron-down"></i></a>
-                    <ul class="dropdown-content">
-                        <li><a href="yilbasi.html">Yılbaşı</a></li>
-                        <li><a href="bayram.html">Bayram</a></li>
-                        <li><a href="dugun.html">Düğün</a></li>
-                        <li><a href="toplanti.html">Toplantı</a></li>
-                        <li><a href="dogum-gunu.html">Doğum Günü</a></li>
-                        <li><a href="fuar.html">Fuar</a></li>
-                    </ul>
-                </li>
-                <li><a href="sss.html">S.S.S.</a></li>
-                <li><a href="about.html">Hakkımızda</a></li>
+                <li><a href="index.html" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="konsept-bardaklar.html" data-tr="Konsept Bardaklar" data-en="Concept Cups">Konsept Bardaklar</a></li>
+                <li><a href="takip.html" data-tr="Sipariş Takibi" data-en="Order Tracking">Sipariş Takibi</a></li>
+                <li><a href="sss.html" data-tr="S.S.S." data-en="F.A.Q.">S.S.S.</a></li>
+                <li><a href="about.html" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li class="lang-switch"><a href="#" id="lang-toggle">EN</a></li>
             </ul>
-
             <div class="nav-icons">
-                <i class="fas fa-search"></i>
-                <i class="fas fa-shopping-cart" onclick="window.location.href='index.html'"></i>
-                <i class="fas fa-user"></i>
-                <div class="hamburger">
-                    <i class="fas fa-bars"></i>
-                </div>
+                <i class="fas fa-search" id="open-search"></i>
+                <i class="fas fa-moon" id="theme-toggle"></i>
+                <i class="fas fa-shopping-cart" id="open-cart-modal">
+                    <span id="cart-count" style="display:none;">0</span>
+                </i>
+                <i class="fas fa-user-circle" id="open-profile-modal"></i>
+                <button type="button" class="hamburger" id="hamburger-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="nav-links">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </nav>
@@ -68,14 +64,6 @@
         </div>
     </footer>
 
-    <script>
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.getElementById('nav-links');
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    </script>
-    <script src="env.js"></script>
     <script src="chatbot.js"></script>
     
     <!-- Vercel Speed Insights -->
@@ -83,5 +71,27 @@
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
+        <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
+
+<!-- Sepet (tum sayfalarda ortak) -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 class="cart-header-title">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i> Sepetim
+            </h2>
+            <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Sepeti kapat">&times;</button>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        <div id="cart-items-list"></div>
+        <div class="cart-drawer-footer">
+            <div id="cart-total-price-area"></div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
+
+    <script type="module" src="js/cart/index.js"></script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

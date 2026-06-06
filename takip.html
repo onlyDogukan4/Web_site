@@ -2,244 +2,39 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sipariş Takibi | Moderra</title>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-        }
-
-        [data-theme="dark"] {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-            text-align: center;
-        }
-
-        .header { margin-bottom: 50px; }
-        .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
-        .header p { color: var(--text-muted); }
-
-        .search-box {
-            background: var(--card-bg);
-            padding: 10px;
-            border-radius: 20px;
-            display: flex;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            margin-bottom: 40px;
-        }
-
-        .search-box input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 15px 20px;
-            font-size: 16px;
-            outline: none;
-            color: var(--text);
-        }
-
-        .search-box button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 30px;
-            border-radius: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .search-box button:hover { transform: scale(1.05); }
-
-        /* Tracking Result Overlay */
-        #result-container {
-            display: none;
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            text-align: left;
-            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .order-info-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .order-id { font-size: 20px; font-weight: 800; color: var(--primary); }
-
-        /* Stepper */
-        .stepper {
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            margin: 40px 0;
-        }
-
-        .stepper::before {
-            content: '';
-            position: absolute;
-            top: 25px; left: 0; right: 0;
-            height: 4px;
-            background: var(--border);
-            z-index: 1;
-        }
-
-        .step-progress {
-            position: absolute;
-            top: 25px; left: 0;
-            height: 4px;
-            background: var(--primary);
-            z-index: 2;
-            transition: width 1s ease;
-            width: 0%;
-        }
-
-        .step {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            flex: 1;
-        }
-
-        .step-icon {
-            width: 54px;
-            height: 54px;
-            background: var(--card-bg);
-            border: 4px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            transition: 0.3s;
-            color: var(--text-muted);
-        }
-
-        .step.active .step-icon {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .step.completed .step-icon {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-
-        .step-label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
-        .step.active .step-label { color: var(--text); }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .detail-item {
-            padding: 15px;
-            background: var(--bg);
-            border-radius: 15px;
-        }
-
-        .detail-item span { display: block; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; }
-        .detail-item p { font-weight: 700; }
-
-        .empty-state { padding: 40px; color: var(--text-muted); }
-        
-        /* Navbar matching */
-        .back-btn {
-            position: absolute;
-            top: 20px; left: 20px;
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-    </style>
 </head>
 <body>
 
-    <a href="index.html" class="nav-back-button" style="position: fixed; top: 20px; left: 20px; font-weight: 700; color: #6366f1; text-decoration: none; font-size: 13px; background: #eef2ff; padding: 12px 24px; border-radius: 12px; display: flex; align-items: center; gap: 10px; transition: 0.3s; z-index: 9999; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15); border: 2px solid white;">
-        <i class="fas fa-arrow-left"></i> <span class="hide-mobile">ANA SAYFAYA DÖN</span>
-    </a>
+    <!-- Geri Dönüş Butonu -->
+    <a href="index.html" class="back-btn nav-back-button"><i class="fas fa-arrow-left"></i> Ana Sayfa</a>
 
-    <nav class="navbar" style="background: transparent; border-bottom: none; padding: 15px 0; position: sticky; top: 0; z-index: 1000; height: 75px; display: flex; align-items: center;">
-        <div class="container" style="display: flex; justify-content: center; width: 100%; max-width: 1200px; margin: 0 auto; min-height: 45px; align-items: center;">
-            <div style="font-size: 24px; font-weight: 800; color: #4e54c8; display: flex; align-items: center; gap: 10px; white-space: nowrap; cursor: default;">
-                <i class="fas fa-cube"></i> Moderra
-            </div>
-        </div>
-    </nav>
-    <style>
-        .nav-back-button:hover {
-            background: #6366f1;
-            color: white !important;
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
-        }
-        @media (max-width: 600px) {
-            .hide-mobile { display: none; }
-            .nav-back-button { padding: 10px; top: 10px; left: 10px; }
-        }
-    </style>
-
-    <div class="container">
+    <div class="container" style="padding-top: 32px;">
         <div class="header">
             <h1>Siparişini Takip Et</h1>
             <p>Sipariş numaranı girerek güncel durumu öğrenebilirsin.</p>
         </div>
 
         <div class="search-box">
-            <input type="text" id="order-id-input" placeholder="Örn: MOD-12345">
+            <input type="text" id="order-id-input" placeholder="Sipariş kodunuzu girin (Örn: MOD12345)">
             <button onclick="trackOrder()">Sorgula</button>
+        </div>
+
+        <div class="instruction-card" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:20px; margin-top:20px; color:#475569; font-size:14px; line-height:1.6;">
+            <h3 style="margin:0 0 10px 0; color:#1e293b; font-size:16px; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-info-circle" style="color:var(--primary);"></i> Siparişimi Nasıl Takip Ederim?
+            </h3>
+            <ul style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;">
+                <li>Siparişinizi oluşturduktan sonra size verilen <strong>MOD...</strong> ile başlayan sipariş numarasını yukarıdaki kutucuğa girin.</li>
+                <li><strong>"Sorgula"</strong> butonuna tıklayarak siparişinizin anlık durumunu görüntüleyin.</li>
+                <li>Eğer sipariş kodunuzu bilmiyorsanız veya bulamıyorsanız WhatsApp destek hattımızdan bizimle iletişime geçebilirsiniz.</li>
+            </ul>
         </div>
 
         <div id="result-container">
@@ -298,94 +93,28 @@
         </div>
     </div>
 
-    <script>
-        async function trackOrder() {
-            const id = document.getElementById('order-id-input').value.trim().toUpperCase();
-            if (!id) return;
+    <script src="js/pages/takip.js" defer></script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
 
-            // Reset UI
-            document.getElementById('result-container').style.display = 'none';
-            document.getElementById('not-found').style.display = 'none';
+<!-- Sepet (tum sayfalarda ortak) -->
+    <div id="cart-modal" class="cart-drawer">
+        <div class="cart-header">
+            <h2 class="cart-header-title">
+                <i class="fas fa-shopping-basket" aria-hidden="true"></i> Sepetim
+            </h2>
+            <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Sepeti kapat">&times;</button>
+        </div>
+        <div id="cart-progress-sticky"></div>
+        <div id="cart-items-list"></div>
+        <div class="cart-drawer-footer">
+            <div id="cart-total-price-area"></div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay" aria-hidden="true"></div>
 
-            try {
-                const response = await fetch('/api/orders?t=' + Date.now());
-                if (!response.ok) throw new Error("Veri çekilemedi (500)");
-                
-                const orders = await response.json();
-                
-                // Verinin dizi olduğunu doğrula
-                if (!Array.isArray(orders)) {
-                    console.error("API hatası veya boş veri:", orders);
-                    document.getElementById('not-found').style.display = 'block';
-                    return;
-                }
-
-                const order = orders.find(o => o.orderId.trim().toUpperCase() === id);
-
-                if (order) {
-                    showOrder(order);
-                } else {
-                    document.getElementById('not-found').style.display = 'block';
-                }
-            } catch (e) {
-                console.error("Tracking error", e);
-                alert("Sipariş verileri şu an alınamıyor. Sunucu hatası (500).");
-            }
-        }
-
-        function showOrder(order) {
-            const container = document.getElementById('result-container');
-            container.style.display = 'block';
-
-            // Requested dynamic heading
-            document.getElementById('display-order-id').innerHTML = `
-                <span style="color:var(--text-muted); font-size:14px; display:block; margin-bottom:5px;">Sipariş Sorgulama Sonucu</span>
-                #${order.orderId} nolu ${order.customerName} siparişi:
-            `;
-            document.getElementById('display-customer').textContent = order.customerName;
-            document.getElementById('display-delivery').textContent = order.estimatedDelivery || "Bilgi Bekleniyor";
-            document.getElementById('display-items').textContent = order.items;
-            const priceEl = document.getElementById('display-price');
-            if (order.totalPrice && parseFloat(order.totalPrice) > 0) {
-                priceEl.textContent = '₺' + parseFloat(order.totalPrice).toLocaleString('tr-TR', {minimumFractionDigits: 2});
-            } else {
-                priceEl.textContent = 'Bilgi Bekleniyor';
-            }
-            
-            const statusMap = {
-                'alindi': 'SİPARİŞ ALINDI',
-                'hazirlaniyor': 'HAZIRLANIYOR',
-                'kargoda': 'KARGODA',
-                'teslim': 'TESLİM EDİLDİ'
-            };
-            document.getElementById('status-text').textContent = statusMap[order.status] || order.status.toUpperCase();
-
-            // Progress Logic
-            const steps = {
-                'alindi': 1,
-                'hazirlaniyor': 2,
-                'kargoda': 3,
-                'teslim': 4
-            };
-            const currentStep = steps[order.status] || 1;
-
-            // Update steps classes
-            for (let i = 1; i <= 4; i++) {
-                const el = document.getElementById('step-' + i);
-                el.classList.remove('active', 'completed');
-                if (i < currentStep) el.classList.add('completed');
-                if (i === currentStep) el.classList.add('active');
-            }
-
-            // Update progress bar
-            const progress = ((currentStep - 1) / 3) * 100;
-            document.getElementById('progress-bar').style.width = progress + '%';
-        }
-
-        // Theme sync with parent if needed
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
-    </script>
+    <script type="module" src="js/cart/index.js"></script>
+    <script src="js/site/nav-active.js" defer></script>
+    <script src="js/mobile.js" defer></script>
 </body>
 </html>

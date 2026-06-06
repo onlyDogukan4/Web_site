@@ -1,0 +1,202 @@
+/* CART DRAWER GLOBAL */
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(480px, 100vw);
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    z-index: 10000;
+    box-shadow: -30px 0 60px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.cart-open {
+    overflow: hidden;
+}
+
+body.cart-open .cart-drawer {
+    transform: translateX(0);
+}
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.5s;
+}
+
+body.cart-open .cart-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cart-header,
+#cart-progress-sticky {
+    flex-shrink: 0;
+}
+
+#cart-items-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+}
+
+.cart-drawer-footer {
+    flex-shrink: 0;
+    padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    background: var(--glass-bg, #fff);
+    border-top: 1px solid var(--border, #f1f5f9);
+    overflow-y: auto;
+    max-height: min(48vh, 420px);
+}
+
+#checkout-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+#checkout-options button {
+    min-height: 54px;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#checkout-options button:active {
+    transform: scale(0.98);
+}
+
+.cart-header-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-header-title i {
+    color: var(--primary);
+}
+
+.cart-close-btn {
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.cart-close-btn:hover {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+#checkout-options button:first-child {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+}
+
+#checkout-options button:last-child {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+}
+
+#whatsapp-checkout {
+    display: none !important;
+}
+
+.cart-item-highlight {
+    outline: 3px solid var(--primary, #6366f1);
+    outline-offset: 4px;
+    border-radius: 16px;
+    transition: outline 0.25s ease;
+}
+
+#cart-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#cart-items-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#cart-items-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* Body & Scroll */
+body {
+    background: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.6;
+    transition: background 0.4s ease, color 0.4s ease;
+    user-select: none;
+}
+
+/* Hide Chatbot when Cart is Open */
+body.cart-open .chatbot-container,
+body.cart-open .chatbot-button {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.8) translateY(20px) !important;
+    transition: 0.3s ease !important;
+}
+
+/* Admin panelinde ve modallarda seçime izin ver */
+.main-content,
+.sidebar,
+#login-overlay,
+.modal-card,
+.modal-content {
+    user-select: auto !important;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: 0.3s;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+

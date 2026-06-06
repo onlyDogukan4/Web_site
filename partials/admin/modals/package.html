@@ -1,0 +1,39 @@
+<!-- PACKAGE MODAL -->
+    <div class="modal-overlay" id="package-modal">
+        <div class="modal-card" style="max-width: 600px;">
+            <h2 id="pkg-modal-title">Paket Düzenle</h2>
+            <div class="form-group">
+                <label>Paket Adı</label>
+                <input type="text" id="pkg-name" class="editable-input">
+            </div>
+            <div class="form-group">
+                <label>Paket Görseli (Sürükle-Bırak)</label>
+                <div class="drop-zone" id="pkg-drop-zone">
+                    <div id="pkg-drop-text" style="text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-box-open fa-2x"></i><br>
+                        <span style="font-size: 11px;">Paket resmini buraya bırakın</span>
+                    </div>
+                    <img id="pkg-preview" src="" style="display:none; height:100px;">
+                </div>
+                <input type="file" id="pkg-file" accept="image/*" style="display:none">
+            </div>
+            <div class="form-group">
+                <label>Ürün ID'leri (Virgül ile)</label>
+                <input type="text" id="pkg-items" class="editable-input">
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>İndirim (%)</label><input type="number" id="pkg-discount" class="editable-input"></div>
+                <div class="form-group"><label>Sıralama</label><input type="number" id="pkg-order" class="editable-input" value="0"></div>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="pkg-published" style="width:20px; height:20px;">
+                <label style="margin:0;">Sitede Yayınla (Aktif Et)</label>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="closeModal('package-modal')">İptal</button>
+                <button class="btn btn-primary" onclick="handlePackageSave()">Değişiklikleri Kaydet</button>
+            </div>
+            <span class="close-btn" onclick="closeModal('package-modal')">&times;</span>
+        </div>
+    </div>

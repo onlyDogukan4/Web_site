@@ -1,0 +1,676 @@
+/**
+ * Moderra — Mobil & tablet düzenlemeleri
+ * Ek framework gerekmez; mevcut site ile uyumlu.
+ */
+
+:root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --nav-height: 60px;
+    --touch-min: 44px;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+img,
+video,
+iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* iOS odak zoom'unu engelle */
+input,
+select,
+textarea {
+    font-size: 16px;
+}
+
+/* ─── Tablet (≤900px) ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    #packages-container {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        min-height: 0 !important;
+    }
+
+    .premium-cards-grid,
+    .concept-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .product-detail-container {
+        flex-direction: column !important;
+    }
+
+    .modal-card,
+    .modal-content {
+        max-width: calc(100vw - 24px) !important;
+        margin: 12px !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ─── Telefon (≤768px) ────────────────────────────────────────── */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: var(--safe-bottom);
+    }
+
+    :root {
+        --nav-height: 56px;
+    }
+
+    .navbar {
+        padding-top: var(--safe-top);
+        /* backdrop-filter fixed konumlamayı navbar içine hapseder — mobilde kapat */
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        overflow: visible;
+    }
+
+    .navbar-container {
+        overflow: visible;
+    }
+
+    .navbar .container {
+        padding-left: max(12px, var(--safe-left));
+        padding-right: max(12px, var(--safe-right));
+    }
+
+  .navbar-container {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas: 'logo actions';
+        align-items: center;
+        padding: 6px 0;
+        gap: 8px;
+        min-height: var(--nav-height);
+        position: relative;
+    }
+
+    .logo {
+        grid-area: logo;
+        font-size: 16px !important;
+        max-width: none;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .logo i {
+        font-size: 17px !important;
+        margin-right: 5px !important;
+    }
+
+    /* Üst çubuk: yalnızca sepet + menü */
+    .nav-icons {
+        grid-area: actions;
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        margin: 0 !important;
+    }
+
+    /* Mobilde üst çubukta yalnızca sepet + menü; ID'siz eski ikonları da gizle */
+    .navbar .nav-icons > i:not(#open-cart-modal) {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        pointer-events: none !important;
+    }
+
+    .navbar .nav-icons > #open-cart-modal {
+        display: flex !important;
+        visibility: visible !important;
+        align-items: center !important;
+        justify-content: center !important;
+        pointer-events: auto !important;
+        position: relative !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px;
+        min-height: 44px;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        font-size: 18px !important;
+        border-radius: 12px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        color: var(--primary, #6366f1) !important;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .navbar .nav-icons > #open-cart-modal #cart-count {
+        display: none;
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        align-items: center;
+        justify-content: center;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+        font-size: 9px;
+        font-weight: 900;
+        background: #ef4444;
+        color: #fff;
+        border-radius: 999px;
+        border: 2px solid var(--glass-bg, #fff);
+        line-height: 1;
+    }
+
+    .navbar .nav-icons > .hamburger,
+    .navbar .nav-icons > button.hamburger {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px;
+        min-height: 44px;
+        margin: 0 !important;
+        font-size: 18px !important;
+        border-radius: 12px;
+        background: rgba(99, 102, 241, 0.06);
+        border: 1px solid rgba(99, 102, 241, 0.12);
+    }
+
+    .navbar .nav-icons > .hamburger,
+    .navbar .nav-icons > button.hamburger {
+        background: var(--primary-gradient);
+        color: #fff !important;
+        border: none;
+    }
+
+    .navbar .nav-icons > .hamburger i,
+    .navbar .nav-icons > button.hamburger i {
+        color: #fff;
+    }
+
+    .navbar .nav-icons > .hamburger.is-open,
+    .navbar .nav-icons > button.hamburger.is-open {
+        background: #1e293b;
+    }
+
+    /* Menü: sağdan tam yükseklik çekmece (body'ye taşınır — mobile.js) */
+    .navbar-container > #nav-links {
+        grid-column: unset;
+        grid-row: unset;
+    }
+
+    #nav-links.nav-links {
+        display: flex !important;
+        flex: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: auto !important;
+        width: min(300px, 88vw) !important;
+        max-width: 88vw !important;
+        height: 100dvh !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: calc(12px + var(--safe-top)) 16px calc(20px + var(--safe-bottom)) !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+        background: var(--bg-card, #fff) !important;
+        box-shadow: -8px 0 40px rgba(0, 0, 0, 0.25) !important;
+        z-index: 10002 !important;
+        transform: translateX(100%) !important;
+        transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.32s !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        border: none !important;
+        border-left: 1px solid var(--border) !important;
+        visibility: hidden;
+        pointer-events: none;
+        list-style: none;
+    }
+
+    #nav-links.nav-links.active {
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    #nav-links.nav-links li {
+        width: 100%;
+        flex-shrink: 0;
+    }
+
+    #nav-links.nav-links a {
+        display: block;
+        width: 100%;
+        padding: 14px 16px !important;
+        font-size: 15px !important;
+        border-radius: 12px;
+        font-weight: 600;
+        white-space: normal;
+    }
+
+    #nav-links.nav-links a::after {
+        display: none;
+    }
+
+    .nav-drawer-header {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 4px 14px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nav-drawer-header strong {
+        font-size: 18px;
+        color: var(--text-main, #1e293b);
+    }
+
+    .nav-drawer-close {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .nav-mobile-section-label {
+        list-style: none;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        padding: 12px 4px 6px;
+        margin: 0;
+    }
+
+    .nav-mobile-tools {
+        list-style: none;
+        width: 100%;
+        margin: 0 0 4px;
+        padding: 0;
+    }
+
+    .nav-mobile-tools-inner {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .nav-mobile-tool {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        min-height: 48px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg, #f8fafc);
+        color: var(--secondary);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-mobile-tool i {
+        font-size: 16px;
+        color: var(--primary);
+        width: 20px;
+        text-align: center;
+    }
+
+    .nav-mobile-tool--full {
+        grid-column: 1 / -1;
+    }
+
+    .lang-switch {
+        margin-top: 4px;
+    }
+
+    .lang-switch a,
+    #lang-toggle {
+        display: block;
+        text-align: center;
+        padding: 12px !important;
+        border-radius: 12px;
+    }
+
+    /* Karartma — tıklanınca menü kapanır (mobile.js) */
+    body.nav-open .nav-backdrop {
+        display: block;
+    }
+
+    .nav-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        z-index: 10001;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .hamburger,
+    button.hamburger {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        font: inherit;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Arama çubuğu — navbar altında */
+    .search-bar-sticky {
+        top: calc(var(--nav-height) + var(--safe-top)) !important;
+    }
+
+    .search-bar-inner {
+        padding: 12px 16px !important;
+    }
+
+    /* Sepet — tam ekran (inline width override) */
+    .cart-drawer,
+    #cart-modal.cart-drawer,
+    #cart-modal[style*="width"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100dvh !important;
+        padding-bottom: var(--safe-bottom);
+    }
+
+    .cart-header {
+        padding: 16px 18px !important;
+    }
+
+    .cart-header h2 {
+        font-size: 18px !important;
+    }
+
+    #cart-items-list {
+        padding: 12px 14px !important;
+    }
+
+    #checkout-options {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    #checkout-options button {
+        min-height: 48px;
+        padding: 12px 10px !important;
+        flex-direction: row !important;
+        font-size: 12px !important;
+        letter-spacing: 0.02em;
+        border-radius: 12px !important;
+    }
+
+    #checkout-options button i {
+        font-size: 18px !important;
+    }
+
+    #whatsapp-checkout {
+        min-height: 52px;
+        padding: 16px !important;
+        font-size: 15px !important;
+    }
+
+    /* Slider */
+    .slider {
+        margin: 12px 0 !important;
+        border-radius: 14px !important;
+    }
+
+    .slide-content h2 {
+        font-size: 22px !important;
+    }
+
+  .slide-content .btn,
+    .slide-content .cta-button {
+        min-height: var(--touch-min);
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Ürün grid — tek kolon küçük ekranda daha okunaklı */
+    .products {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    .product-img {
+        height: 120px !important;
+    }
+
+    /* Modallar tam ekran */
+    .modal-overlay {
+        padding: 0 !important;
+        align-items: flex-end !important;
+    }
+
+    .modal-content,
+    .modal-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92dvh !important;
+        border-radius: 20px 20px 0 0 !important;
+        margin: 0 !important;
+    }
+
+    .product-detail-image {
+        padding: 24px !important;
+    }
+
+    .product-detail-info {
+        padding: 20px 16px !important;
+    }
+
+  footer {
+        padding: 60px 0 40px !important;
+        margin-top: 60px !important;
+    }
+
+    .footer-content {
+        gap: 28px !important;
+    }
+
+    /* PayTR ödeme modalı */
+    #paytr-modal {
+        padding: 0 !important;
+        align-items: stretch !important;
+    }
+
+    .paytr-shell {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+    }
+
+    .paytr-head {
+        padding: 14px 16px !important;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .paytr-head-total {
+        display: none;
+    }
+
+    .paytr-body {
+        flex-direction: column !important;
+    }
+
+    .paytr-side {
+        width: 100% !important;
+        max-height: 38vh !important;
+        flex-shrink: 0;
+        border-right: none !important;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .paytr-frame {
+        flex: 1 !important;
+        min-height: 50vh !important;
+    }
+
+    #paytr-iframe {
+        min-height: 50vh !important;
+    }
+
+    /* Konsept sayfası */
+    .concept-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .confirm-footer {
+        grid-template-columns: 1fr !important;
+        padding: 16px !important;
+    }
+
+    /* Sipariş takip */
+    .track-form-row,
+    .details-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .nav-back-button {
+        top: calc(12px + var(--safe-top)) !important;
+        left: 12px !important;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* ─── Küçük telefon (≤480px) ──────────────────────────────────── */
+@media (max-width: 480px) {
+    .logo {
+        font-size: 0 !important;
+    }
+
+    .logo i {
+        font-size: 22px !important;
+        margin-right: 0 !important;
+    }
+
+    .products {
+        grid-template-columns: 1fr !important;
+    }
+
+    .product-title {
+        height: auto !important;
+        min-height: 2.6em;
+    }
+
+    .section-title {
+        font-size: 1.35rem !important;
+        margin: 28px 0 16px !important;
+    }
+
+    #product-category-nav {
+        gap: 6px !important;
+        margin-bottom: 16px !important;
+    }
+
+    #product-category-nav button {
+        font-size: 11px !important;
+        padding: 8px 12px !important;
+    }
+
+    .slide-content {
+        left: 10px !important;
+        right: 10px !important;
+        padding: 12px !important;
+    }
+
+    .slide-content h2 {
+        font-size: 17px !important;
+    }
+
+    .slide-content p {
+        display: none;
+    }
+
+    .vip-toast-card,
+    #vip-toast-card {
+        min-width: 0 !important;
+        padding: 24px 20px !important;
+    }
+}
+
+/* Yatay taşmayı kes */
+body {
+    overflow-x: hidden;
+}
+
+/* Menü açıkken arka plan kaydırma kilidi — yalnızca mobil */
+@media (max-width: 768px) {
+    body.nav-open {
+        overflow: hidden;
+        touch-action: none;
+    }
+}
+
+/* Chatbot tam ekran — arka plan kaydırma kilidi */
+body.chatbot-open {
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* Dokunmatik kaydırma alanları */
+.table-scroll,
+.admin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}

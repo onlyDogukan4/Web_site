@@ -1,9 +1,40 @@
 {
     "cleanUrls": true,
     "rewrites": [
-        { "source": "/products.json", "destination": "/api/products" },
-        { "source": "/orders.json", "destination": "/api/orders" },
-        { "source": "/packages.json", "destination": "/api/packages" },
-        { "source": "/concepts.json", "destination": "/api/concepts" }
+        { "source": "/orders.json", "destination": "/api/data?resource=orders" },
+        { "source": "/packages.json", "destination": "/api/data?resource=packages" },
+        { "source": "/concepts.json", "destination": "/api/data?resource=concepts" },
+        { "source": "/api/products", "destination": "/api/data?resource=products" },
+        { "source": "/api/packages", "destination": "/api/data?resource=packages" },
+        { "source": "/api/concepts", "destination": "/api/data?resource=concepts" },
+        { "source": "/api/campaigns", "destination": "/api/data?resource=campaigns" },
+        { "source": "/api/settings", "destination": "/api/data?resource=settings" },
+        { "source": "/api/orders", "destination": "/api/data?resource=orders" },
+        { "source": "/api/paytr-token", "destination": "/api/paytr?action=token" },
+        { "source": "/api/paytr-callback", "destination": "/api/paytr?action=callback" },
+        { "source": "/api/paytr-installments", "destination": "/api/paytr?action=installments" },
+        { "source": "/api/payment-requests", "destination": "/api/paytr?action=payment-requests" },
+        { "source": "/api/site-context", "destination": "/api/chat" },
+        { "source": "/api/cart-chat", "destination": "/api/chat?mode=cart" }
+    ],
+    "headers": [
+        {
+            "source": "/(css|js|images)/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        },
+        {
+            "source": "/(.*)\\.(css|js|png|jpg|jpeg|gif|svg|ico|webp)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        }
     ]
 }

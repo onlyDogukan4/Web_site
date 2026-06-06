@@ -1,0 +1,226 @@
+/* Modals (Common) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 900px;
+    position: relative;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    color: var(--gray);
+    font-size: 32px;
+    font-weight: bold;
+    z-index: 10;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    color: var(--primary);
+    transform: rotate(90deg);
+}
+
+/* Product Detail Modal (Professional Zoom) */
+.product-detail-container {
+    display: flex;
+    flex-direction: row;
+    min-height: 600px;
+    background: var(--bg-card);
+}
+
+.product-detail-image {
+    flex: 1;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    position: relative;
+    border-right: 1px solid var(--border);
+}
+
+[data-theme='dark'] .product-detail-image {
+    background: #0f172a;
+}
+
+.product-detail-image img {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.product-detail-image:hover img {
+    transform: scale(1.05);
+}
+
+.product-detail-info {
+    flex: 1;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#detail-title {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+    line-height: 1.1;
+}
+
+#detail-price {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 25px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+#detail-desc {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    line-height: 1.8;
+}
+
+#detail-add-btn {
+    padding: 20px 40px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-weight: 800;
+    border-radius: 16px;
+    text-transform: uppercase;
+}
+
+/* Vision & Mission Cards (Professional CSS) */
+.premium-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.premium-card {
+    background: var(--bg-card);
+    border-radius: 32px;
+    padding: 50px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.premium-card::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: var(--primary-gradient);
+    opacity: 0.05;
+    border-radius: 50%;
+    transition: 0.5s;
+}
+
+.premium-card:hover {
+    transform: translateY(-15px);
+    border-color: var(--primary);
+    box-shadow: 0 25px 60px rgba(78, 84, 200, 0.1);
+}
+
+.premium-card:hover::before {
+    opacity: 0.15;
+    transform: scale(1.5);
+}
+
+.card-icon-wrap {
+    width: 80px;
+    height: 80px;
+    background: var(--light);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    font-size: 32px;
+    color: var(--primary);
+    transition: 0.3s;
+}
+
+.premium-card:hover .card-icon-wrap {
+    background: var(--primary);
+    color: white;
+}
+
+.premium-card h3 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.premium-card p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-muted);
+}
+
+/* Mobile Adjustments for Product Modal Symmetry */
+@media (max-width: 768px) {
+    .product-detail-container {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .product-detail-image {
+        padding: 40px 20px;
+        min-height: 250px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .product-detail-image img {
+        max-height: 220px;
+    }
+    .product-detail-info {
+        padding: 30px 20px;
+    }
+    #detail-title {
+        font-size: 26px;
+    }
+    #detail-price {
+        font-size: 24px;
+    }
+    #detail-desc {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+    #detail-add-btn {
+        width: 100%;
+    }
+}
+

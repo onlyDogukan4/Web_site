@@ -1,0 +1,59 @@
+/* VIP PREMIUM SYSTEM */
+.vip-concept-frame {
+    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        linear-gradient(45deg, #d4af37, #f7ef8a, #d4af37) border-box !important;
+    border: 2px solid transparent !important;
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2) !important;
+}
+
+.vip-badge {
+    background: linear-gradient(45deg, #d4af37, #f7ef8a);
+    color: #1a1a1a;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.vip-toast {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: linear-gradient(45deg, #1e293b, #0f172a);
+    color: #d4af37;
+    padding: 20px 30px;
+    border-radius: 24px;
+    z-index: 30000;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    transform: translateX(120%);
+    transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid #d4af37;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vip-toast.active {
+    transform: translateX(0);
+}
+
+.vip-toast-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(45deg, #d4af37, #f7ef8a);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    font-size: 20px;
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+}
+
